@@ -1,0 +1,552 @@
+{% extends "master.html" %}
+{% block content %}
+
+<!-- Delete assessment Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="deleteToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+          <strong class="me-auto">Success</strong>
+          <small>Just now</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+          Assessment deleted.
+      </div>
+  </div>
+</div>
+
+<!-- Cloning assessment Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="cloningToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+          <strong class="me-auto">Cloning...</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+  </div>
+</div>
+
+<!-- Cloned assessment Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="cloneToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+          <strong class="me-auto">Cloned</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+  </div>
+</div>
+
+<!-- Delete assessment confirmation modal -->
+<div class="modal fade" id="deleteassessmentmodal" tabindex="-1">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Delete Confirmation</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="mb-3" id="delete-warning">ERROR</div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+              <button type="button" class="btn btn-danger" onclick="" id="hard-delete-button">Delete</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Create new assessment modal -->
+<div class="modal fade" id="newassessmentmodal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Assessment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="col-form-label">Name</label>
+            <input type="text" class="form-control" name="name" placeholder="Annual ACME Purple Team" id="name-new" autocomplete="off">
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Description</label>
+            <textarea class="form-control" name="description" placeholder="The purpose of this engagement is to..." required id="description-new" autocomplete="off"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Industry</label>
+            <select class="form-select" name="industry" id="industry-new" autocomplete="false">
+              <option value="" selected disabled>Select...</option>
+              <option value="Agriculture">Agriculture</option>
+              <option value="AssetAndWealthManagement">Asset & Wealth Management</option>
+              <option value="BankingAndCapitalMarkets">Banking and Capital Markets</option>
+              <option value="ConstructionAndTransportation">Construction & Transportation</option>
+              <option value="Defence">Defence</option>
+              <option value="Education">Education</option>
+              <option value="EnergyOilAndGas">Energy (Oil & Gas)</option>
+              <option value="EntertainmentAndMedia">Entertainment & Media</option>
+              <option value="FinancialServices">Financial Services</option>
+              <option value="Government">Government</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Infrastructure">Infrastructure</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Mining">Mining</option>
+              <option value="PowerAndUtilities">Power & Utilities</option>
+              <option value="RealEstate">Real Estate</option>
+              <option value="RetailAndConsumer">Retail & Consumer</option>
+              <option value="Superannuation">Superannuation</option>
+              <option value="Telecommunications">Telecommunications</option>
+              <option value="Technology">Technology</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Percieved Org Technical Maturity</label>
+            <select class="form-select" name="techmaturity" autocomplete="false" id="techmaturity-new">
+              <option value="" selected disabled>Select...</option>
+              <option value="1">1 - Very Immature</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5 - Very Mature</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Percieved Org Operational Maturity</label>
+            <select class="form-select" name="opmaturity" autocomplete="false" id="opmaturity-new">
+              <option value="" selected disabled>Select...</option>
+              <option value="1">1 - Very Immature</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5 - Very Mature</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">SOC Model</label>
+            <select class="form-select" name="socmodel" autocomplete="false" id="socmodel-new">
+              <option value="" selected disabled>Select...</option>
+              <option value="FullInHouse">Full In-House</option>
+              <option value="Tier1Ext">Tier 1 External, Rest In-House</option>
+              <option value="Tier123Ext">Tier 1-3 External, Rest In-House</option>
+              <option value="FullManaged">Full Managed</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">SOC Provider</label>
+            <select class="form-select" name="socprovider" autocomplete="false" id="socprovider-new">
+              <option value="" selected disabled>Select...</option>
+              <option value="Vendor">Vendor - E.g. CrowdStrike Overwatch</option>
+              <option value="Dedicated">Dedicated - E.g. Seamless Intelligence</option>
+              <option value="Big4">Big 4 - E.g. KPMG SOC</option>
+              <option value="Telco">Telco - E.g. Telstra Purple</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Teams Webhook URL</label>
+            <input type="text" class="form-control" name="webhook" id="webhook-new" placeholder="https://" autocomplete="off">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="newAssessment()" id="new-ass-button">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Update assessment modal -->
+<div class="modal fade" id="updateassessmentmodal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Assessment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <input type="hidden" class="form-control" name="id" id="id" autocomplete="off" required>
+          <div class="mb-3">
+            <label class="col-form-label">Name</label>
+            <input type="text" class="form-control" name="name" id="name-update" placeholder="Annual ACME Purple Team" required autocomplete="off" required>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Description</label>
+            <textarea class="form-control" name="description" placeholder="The purpose of this engagement is to..." id="description-update"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Industry</label>
+            <select class="form-select" name="industry" autocomplete="false" id="industry-update" >
+              <option value="" selected disabled>Select...</option>
+              <option value="Agriculture">Agriculture</option>
+              <option value="AssetAndWealthManagement">Asset & Wealth Management</option>
+              <option value="BankingAndCapitalMarkets">Banking and Capital Markets</option>
+              <option value="ConstructionAndTransportation">Construction & Transportation</option>
+              <option value="Defence">Defence</option>
+              <option value="Education">Education</option>
+              <option value="EnergyOilAndGas">Energy (Oil & Gas)</option>
+              <option value="EntertainmentAndMedia">Entertainment & Media</option>
+              <option value="FinancialServices">Financial Services</option>
+              <option value="Government">Government</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Infrastructure">Infrastructure</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Mining">Mining</option>
+              <option value="PowerAndUtilities">Power & Utilities</option>
+              <option value="RealEstate">Real Estate</option>
+              <option value="RetailAndConsumer">Retail & Consumer</option>
+              <option value="Superannuation">Superannuation</option>
+              <option value="Telecommunications">Telecommunications</option>
+              <option value="Technology">Technology</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Percieved Org Technical Maturity</label>
+            <select class="form-select" name="techmaturity" autocomplete="false" id="techmaturity-update">
+              <option value="" selected disabled>Select...</option>
+              <option value="1">1 - Very Immature</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5 - Very Mature</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Percieved Org Operational Maturity</label>
+            <select class="form-select" name="opmaturity" autocomplete="false" id="opmaturity-update">
+              <option value="" selected disabled>Select...</option>
+              <option value="1">1 - Very Immature</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5 - Very Mature</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">SOC Model</label>
+            <select class="form-select" name="socmodel" autocomplete="false" id="socmodel-update">
+              <option value="" selected disabled>Select...</option>
+              <option value="FullInHouse">Full In-House</option>
+              <option value="Tier1Ext">Tier 1 External, Rest In-House</option>
+              <option value="Tier123Ext">Tier 1-3 External, Rest In-House</option>
+              <option value="FullManaged">Full Managed</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">SOC Provider</label>
+            <select class="form-select" name="socprovider" autocomplete="false" id="socprovider-update">
+              <option value="" selected disabled>Select...</option>
+              <option value="Vendor">Vendor - E.g. CrowdStrike Overwatch</option>
+              <option value="Dedicated">Dedicated - E.g. Seamless Intelligence</option>
+              <option value="Big4">Big 4 - E.g. KPMG SOC</option>
+              <option value="Telco">Telco - E.g. Telstra Purple</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="col-form-label">Teams Webhook URL</label>
+            <input type="text" class="form-control" name="webhook" id="webhook-update" placeholder="https://" autocomplete="off">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="editAssessment()" id="edit-ass-button">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- import ass modal -->
+<form action="/assessment/import/entire" enctype="multipart/form-data" method="POST" class="m-0">
+  <div class="modal fade" id="importassessmentmodal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Import Entire Assessment</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <div class="mb-3">
+                      <p>Select the <code>Assessment.zip</code> file output from <code>Export > Entire Assessment</code>.</p>
+                      <input class="form-control" type="file" id="formFile" name="file" accept=".zip,application/zip" autocomplete="false">
+
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Import</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</form>
+
+<div class="m-2 mt-0">
+<div id="toolbar">
+  <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">Assessments</p>
+  {% if not current_user.has_role("Blue") %}
+  <button id="add" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newassessmentmodal">Assessment</button>
+  <button id="add" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#importassessmentmodal">Import Assessment</button>
+  {% endif %}
+</div>
+
+<table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-search-clear-button="true" id="ass-table" style="display: none">
+  <thead>
+    <tr class="tr-class-1">
+      <th data-field="id" data-visible="false">ID</th>
+      <th data-field="name" data-sortable="true" data-width="20" data-width-unit="%">Name</th>
+      <th data-field="description" data-width="35" data-width-unit="%">Description</th>
+      <th data-field="progress" data-sortable="true" data-width="15" data-width-unit="%" class="text-center">Progress</th>
+      <!-- <th data-field="outcome" data-sortable="true" data-width="15" data-width-unit="%" class="text-center">Outcome</th> -->
+      <th data-field="actions" data-width="15" data-width-unit="%" class="text-center"{% if current_user.has_role("Blue") or current_user.has_role("Spectator") %} data-visible="false"{% endif %}>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-#ID#">
+      <td>#ID#</td>
+      <td id="td-id-1" class="td-class-1" data-title="bootstrap table"><a href="/assessment/run/#ID#">#NAME#</a></td>
+      <td>#DESC#</td>
+      <td><div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100"></div></div></td>
+      <td>
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-danger py-0" title="Delete" onclick="softDeleteAssessment('#NAME#', '#ID#')">
+              <i class="bi-trash-fill">&zwnj;</i>
+          </button>
+          <button type="button" class="btn btn-primary py-0" title="Clone" onclick="cloneAssessment(this, '#ID#', '#NAME#', '#DESC#', '0%')">
+            <i class="bi-files">&zwnj;</i>
+          </button>
+          <button type="button" class="btn btn-primary py-0" title="Edit" onclick="updateAssessmentModal(this, '#ID#', '#NAME#', '#DESC#', '#INDUSTRY#', '#TECHMATURITY#', '#OPMATURITY#', '#SOCMODEL#', '#SOCPROVIDER#', '#WEBHOOK#')">
+              <i class="bi-pencil">&zwnj;</i>
+          </button>
+        </div>
+      </td>
+    </tr>
+    {% for a in assessments %}
+    {% if a.id in current_user.assessment_list() %}
+    <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-{{ a.id }}">
+      <td>
+        {{ a.id }}
+      </td>
+      <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
+        <a href="/assessment/run/{{ a.id }}">{{ a.name }}</a>
+      </td>
+      <td>{{ a.description or "-" }}</td>
+      <td>
+        <div class="progress">
+          {% set percentages = a.get_status() %}
+          <div class="progress-bar{% if percentages['pending_percent'] == 100 %} bg-success{% endif %}" role="progressbar" style="width: {{ percentages["pending_percent"] }}%;" aria-valuenow="{{ percentages["pending_percent"] }}" aria-valuemin="0" aria-valuemax="100">{{ percentages["pending_percent"] }}%</div>
+        </div>
+      </td>
+      <!-- 
+      <td>
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+          <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+        </div>
+      </td>
+    -->
+      <td>
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-danger py-0" title="Delete" onclick="softDeleteAssessment('{{ a.name }}', '{{ a.id }}')">
+              <i class="bi-trash-fill">&zwnj;</i>
+          </button>
+          <!-- <a href="/assessment/clone/{{ a.id }}" type="button" class="btn btn-primary py-0" title="Clone" role="button" onclick="cloneAssessment(this, '{{ a.id }}', '{{ a.name }}', '{{ a.description }}')cloneAssessment(this, '{{ a.id }}', '{{ a.name }}', '{{ a.description }}')"> -->
+          <button type="button" class="btn btn-primary py-0" title="Clone" onclick="cloneAssessment(this, '{{ a.id }}', '{{ a.name }}', '{{ a.description }}', `{{ percentages['pending_percent'] }}`)">
+            <i class="bi-files">&zwnj;</i>
+          </button>
+          <!-- </a> -->
+          <button type="button" class="btn btn-primary py-0" title="Edit" onclick="updateAssessmentModal(this, '{{ a.id }}', '{{ a.name }}', '{{ a.description }}', '{{ a.industry }}', '{{ a.techmaturity }}', '{{ a.opmaturity }}', '{{ a.socmodel }}', '{{ a.socprovider }}', '{{ a.webhook }}')">
+              <i class="bi-pencil">&zwnj;</i>
+          </button>
+          <!-- <button type="button" class="btn btn-warning py-0" title="Export">
+              <i class="bi-table">&zwnj;</i>
+          </button> -->
+        </div>
+      </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+<script>
+  
+  $(function () {
+    $('#ass-table').bootstrapTable('hideRow', {index:0})
+    $('#ass-table').show()
+  })
+
+  // document.querySelector("#name-update").addEventListener("keyup", event => {
+  //   if(event.key !== "Enter") return;
+  //   editAssessment()
+  //   event.preventDefault();
+  // });
+
+  // document.querySelector("#description-update").addEventListener("keyup", event => {
+  //   if(event.key !== "Enter") return;
+  //   editAssessment()
+  //   event.preventDefault();
+  // });
+
+  // document.querySelector("#name-new").addEventListener("keyup", event => {
+  //   if(event.key !== "Enter") return;
+  //   newAssessment()
+  //   event.preventDefault();
+  // });
+
+  // document.querySelector("#description-new").addEventListener("keyup", event => {
+  //   if(event.key !== "Enter") return;
+  //   newAssessment()
+  //   event.preventDefault();
+  // });
+
+  function softDeleteAssessment (name, id) {
+    $("#delete-warning").text("Really delete '" + name + "'? This will remove all tests, results, notes and evidence.")
+    $("#hard-delete-button").attr("onclick", "hardDeleteAssessment('" + id + "')")
+    $('#deleteassessmentmodal').modal('show')
+  }
+
+  function hardDeleteAssessment (id) {
+    $('#deleteassessmentmodal').modal('hide')
+
+    $.get("/assessment/delete/" + id, function (data, status) {
+      if (status == "success") {
+        $("#ass-table").bootstrapTable('remove', {field: "id", values: [id]})
+        new bootstrap.Toast(document.querySelector('#deleteToast')).show();
+      }
+    });
+  }
+
+  function updateAssessmentModal(e, id, name, description, industry="", techmaturity="", opmaturity="", socmodel="", socprovider="", webhook="") {
+		$('#updateassessmentmodal #id').val(id)
+		$('#updateassessmentmodal').data('id', id)
+		$('#updateassessmentmodal #name-update').val(name)
+		$('#updateassessmentmodal').data('name', name)
+		$('#updateassessmentmodal #description-update').val(description)
+		$('#updateassessmentmodal').data('description', description)
+		$('#updateassessmentmodal #industry-update').val(industry)
+		$('#updateassessmentmodal').data('industry', industry)
+		$('#updateassessmentmodal #techmaturity-update').val(techmaturity)
+		$('#updateassessmentmodal').data('techmaturity', techmaturity)
+		$('#updateassessmentmodal #opmaturity-update').val(opmaturity)
+		$('#updateassessmentmodal').data('opmaturity', opmaturity)
+		$('#updateassessmentmodal #socmodel-update').val(socmodel)
+		$('#updateassessmentmodal').data('socmodel', socmodel)
+		$('#updateassessmentmodal #socprovider-update').val(socprovider)
+		$('#updateassessmentmodal').data('socprovider', socprovider)
+		$('#updateassessmentmodal #webhook-update').val(webhook)
+		$('#updateassessmentmodal').data('webhook', webhook)
+		$('#updateassessmentmodal').modal('show')
+	}
+
+  function cloneAssessment (e, id, name, description, pct) {
+    new bootstrap.Toast(document.querySelector('#cloningToast')).show();
+    $.get("/assessment/clone/" + id, function (data, status) {
+      if (status == "success") {
+        orig = $("#ass-table").bootstrapTable('getData').find(row => row.id == id)
+        idx = $("#ass-table").bootstrapTable('getData').findIndex(row => row.id == id)
+        clone = JSON.stringify(orig).replaceAll(id, data.id)
+        clone = clone.replaceAll(name, "Copy of " + name)
+        clone = clone.replaceAll(pct + "%", "0")
+        $("#ass-table").bootstrapTable('insertRow', {index: idx + 1, row: JSON.parse(clone)})
+        new bootstrap.Toast(document.querySelector('#cloneToast')).show();
+      }
+    });
+    
+  }
+
+  function editAssessment () {
+    id = $('#updateassessmentmodal #id').val()
+		newName = $('#updateassessmentmodal #name-update').val()
+		origName = $('#updateassessmentmodal').data('name')
+		newDesc = $('#updateassessmentmodal #description-update').val()
+		origDesc = $('#updateassessmentmodal').data('description')
+		newIndustry = $('#updateassessmentmodal #industry-update').val()
+		origIndustry = $('#updateassessmentmodal').data('industry')
+		newTechMaturity = $('#updateassessmentmodal #techmaturity-update').val()
+		origTechMaturity = $('#updateassessmentmodal').data('techmaturity')
+		newOpMaturity = $('#updateassessmentmodal #opmaturity-update').val()
+		origOpMaturity = $('#updateassessmentmodal').data('opmaturity')
+		newSocModel = $('#updateassessmentmodal #socmodel-update').val()
+		origSocModel = $('#updateassessmentmodal').data('socmodel')
+		newSocProvider = $('#updateassessmentmodal #socprovider-update').val()
+		origSocProvider = $('#updateassessmentmodal').data('socprovider')
+		newWebhook = $('#updateassessmentmodal #webhook-update').val()
+		origWebhook = $('#updateassessmentmodal').data('webhook')
+
+    let dat = {
+      name: newName,
+      description: newDesc,
+      industry: newIndustry,
+      techmaturity: newTechMaturity,
+      opmaturity: newOpMaturity,
+      socmodel: newSocModel,
+      socprovider: newSocProvider,
+      webhook: newWebhook
+    }
+
+    $.post("/assessment/update/" + id, dat, function (data, status) {
+      console.log(status)
+      if (status == "nocontent") {
+        orig = $("#ass-table").bootstrapTable('getData').find(row => row.id == id)
+        idx = $("#ass-table").bootstrapTable('getData').findIndex(row => row.id == id)
+        clone = JSON.stringify(orig).replaceAll(origName, newName)
+        clone = clone.replaceAll(origDesc, newDesc)
+        clone = clone.replaceAll(origIndustry, newIndustry)
+        clone = clone.replaceAll(origTechMaturity, newTechMaturity)
+        clone = clone.replaceAll(origOpMaturity, newOpMaturity)
+        clone = clone.replaceAll(origSocModel, newSocModel)
+        clone = clone.replaceAll(origSocProvider, newSocProvider)
+        clone = clone.replaceAll(origWebhook, newWebhook)
+        $("#ass-table").bootstrapTable('updateRow', {index: idx, row: JSON.parse(clone)})
+      }
+    });
+
+    $('#updateassessmentmodal').modal('hide')
+  }
+
+  function newAssessment () {
+		name = $('#newassessmentmodal #name-new').val()
+		desc = $('#newassessmentmodal #description-new').val()
+		industry = $('#newassessmentmodal #industry-new').val()
+		techmaturity = $('#newassessmentmodal #techmaturity-new').val()
+		opmaturity = $('#newassessmentmodal #opmaturity-new').val()
+		socmodel = $('#newassessmentmodal #socmodel-new').val()
+		socprovider = $('#newassessmentmodal #socprovider-new').val()
+		webhook = $('#newassessmentmodal #webhook-new').val()
+
+    let dat = {
+      name: name,
+      description: desc,
+      industry: industry,
+      techmaturity: techmaturity,
+      opmaturity: opmaturity,
+      socmodel: socmodel,
+      socprovider: socprovider,
+      webhook: webhook
+    }
+
+    $.post("/assessment/new", dat, function (data, status) {
+      console.log(status)
+      if (status == "success") {
+        rowTmpl = $("#ass-table").bootstrapTable('getData')[0]
+        clone = JSON.stringify(rowTmpl).replaceAll("#ID#", data.id)
+        clone = clone.replaceAll("#NAME#", name)
+        clone = clone.replaceAll("#DESC#", desc)
+        clone = clone.replaceAll("#INDUSTRY#", industry)
+        clone = clone.replaceAll("#TECHMATURITY#", techmaturity)
+        clone = clone.replaceAll("#OPMATURITY#", opmaturity)
+        clone = clone.replaceAll("#SOCMODEL#", socmodel)
+        clone = clone.replaceAll("#SOCPROVIDER#", socprovider)
+        clone = clone.replaceAll("#WEBHOOK#", webhook)
+        $("#ass-table").bootstrapTable('append', JSON.parse(clone))
+      }
+    });
+    $('#newassessmentmodal').modal('hide')
+  }
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,633 @@
+{% extends "master.html" %}
+{% block content %}
+
+<script type="text/javascript">
+    selectedIds = []
+
+    function deleteTest(e, ids) {
+        if (e.target.tagName != "A") e.stopPropagation();
+        $("#table").bootstrapTable('uncheckAll')
+        ids.forEach(id => $("#table").bootstrapTable('remove', {field: "id", values: [id]}));
+        $.get("/testcase/delete?ids=" + ids.join(), function (data, status) {
+            if (status == "success") {
+                new bootstrap.Toast(document.querySelector('#deleteToast')).show();
+            }
+        });
+    }
+
+    function cloneTest (e, id, name, description) {
+        e.stopPropagation();
+        new bootstrap.Toast(document.querySelector('#cloningToast')).show();
+        $.get("/testcase/clone/" + id, function (data, status) {
+        if (status == "success") {
+
+            orig = $("#table").bootstrapTable('getData').find(row => row.id == "#ID#")
+            idx = $("#table").bootstrapTable('getData').findIndex(row => row.id == id)
+            clone = JSON.stringify(orig).replaceAll("#ID#", data.id)
+            clone = clone.replaceAll("#NAME#", data.name)
+            clone = clone.replaceAll("#PHASE#", data.phase)
+            clone = clone.replaceAll("#MITREID#", data.mitreid)
+            $("#table").bootstrapTable('insertRow', {index: idx + 1, row: JSON.parse(clone)})
+            new bootstrap.Toast(document.querySelector('#cloneToast')).show();
+        }
+        });
+        
+    }
+
+    function newTest (multi) {
+        if (multi) {
+            dat = {ids: $("#template-table").bootstrapTable('getSelections').map(i => i.id)}
+        }
+        else {
+            name = $('#name').val()
+            mitreid = $('#mitreid').val()
+            phase = $('#phase').val()
+            dat = {name: name, mitreid: mitreid, phase: phase}
+        }
+        $.post("/testcase/add", dat, function (data, status) {
+        if (status == "success") {
+            data.forEach(test => {
+                orig = $("#table").bootstrapTable('getData').find(row => row.id == "#ID#")
+                clone = JSON.stringify(orig).replaceAll("#ID#", test.id)
+                clone = clone.replaceAll("#NAME#", test.name)
+                clone = clone.replaceAll("#PHASE#", test.phase)
+                clone = clone.replaceAll("#MITREID#", test.mitreid)
+                $("#table").bootstrapTable('insertRow', {index: 0, row: JSON.parse(clone)})
+            });     
+        }
+        });
+        $('#newtestcase').modal('hide')
+        $('#templatesModal').modal('hide')
+        $("#template-table").bootstrapTable('uncheckAll')
+    }
+
+    function resetTest (e, id) {
+        e.stopPropagation();
+        $.get("/testcase/reset/" + id, function (data, status) {
+        if (status == "success") {
+
+            orig = $("#table").bootstrapTable('getData').find(row => row.id == "#ID#")
+            idx = $("#table").bootstrapTable('getData').findIndex(row => row.id == id)
+            clone = JSON.stringify(orig).replaceAll("#ID#", data.id)
+            clone = clone.replaceAll("#NAME#", data.name)
+            clone = clone.replaceAll("#PHASE#", data.phase)
+            clone = clone.replaceAll("#MITREID#", data.mitreid)
+            $("#table").bootstrapTable('remove', {field: "id", values: [id]})
+            $("#table").bootstrapTable('insertRow', {index: idx, row: JSON.parse(clone)})
+            new bootstrap.Toast(document.querySelector('#resetToast')).show();
+        }
+        });
+    }
+
+    function visibleTest (e, ids) {
+        if (e.target.tagName != "A") e.stopPropagation();
+        $.get("/testcase/visible?ids=" + ids.join(), function (data, status) {
+            if (status == "success") {
+                ids.forEach((id) => {
+                    idx = $("#table").bootstrapTable('getData').findIndex(row => row.id == id)
+                    oldState = $("#table").bootstrapTable('getData')[idx]["state"]
+                    if (oldState.includes("Hidden")) {
+                        $("#table").bootstrapTable('updateCell', {index: idx, field: 'state', value: oldState.replace(" (Hidden)", "")})
+                    }
+                    else {
+                        $("#table").bootstrapTable('updateCell', {index: idx, field: 'state', value: oldState + " (Hidden)"})
+                    }
+                })
+            }
+        });
+    }
+
+    function testcaseFormatter(i, row) {
+        // var html = []
+        // $.each(row, function (key, value) {
+        //     html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+        // })
+        // return html.join('')
+        return "<p>Are there any testcase details that are useful to store in the fold to save you from opening a testcase just to peek at one detail? Keep in mind it may be better suited for tags e.g 'No Red Files' or a column e.g 'Start Date'. I'm keeping this PoC here if we /do/ think of something to put here.</p>"
+    }
+
+    $(window).on('load', function() {
+        $('#table').bootstrapTable()
+        idx = $("#table").bootstrapTable('getData').findIndex(row => row.id == "#ID#")
+        $('#table').bootstrapTable('hideRow', {index:idx})
+        $('#table').show()
+        $('#template-table').bootstrapTable()
+
+        $('#template-table').on( 'check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function (e) {
+            count = $('#template-table').bootstrapTable('getSelections').length
+            $('#add-templates').text(`Add ${count} Testcase(s)`)
+            if (count == 0) {
+                $('#add-templates').hide()
+            }
+            else {
+                $('#add-templates').show()
+            }
+        } );
+        $('#table').on( 'check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function (e) {
+            selectedIds = $("#table").bootstrapTable('getSelections').map(i => i.id)
+            if (selectedIds.length > 0) {
+                $("#selected-dropdown").show()
+                id = $("#selected-json").data('id')
+                ids = selectedIds.join(",")
+                $("#selected-csv").attr('href', `/assessment/export/csv/${id}?ids=${ids}`)
+                $("#selected-json").attr('href', `/assessment/export/json/${id}?ids=${ids}`)
+                $("#selected-template").attr('href', `/assessment/export/template/${id}?ids=${ids}`)
+                $("#selected-atomics").attr('href', `/assessment/export/atomics/${id}?ids=${ids}`)
+
+                $("#bulk-dropdown").show()
+                
+                $("#selected-count").show()
+                $("#selected-count").text("(" + selectedIds.length + " selected)")
+
+            }
+            else {
+                $("#selected-dropdown").hide()
+                $("#bulk-dropdown").hide()
+                $("#selected-count").hide()
+            }
+        } );
+    });
+
+    
+
+    function detailFormatter(index, row) {
+        return row["html"]
+    }
+
+    // Badge filtering
+
+    function filterBadge(event, e) {
+        event.stopPropagation()
+        $('.bootstrap-table-filter-control-name').val(e.innerText)
+        $('#table').bootstrapTable('triggerSearch')
+    } 
+    function filterTag(event, e) {
+        event.stopPropagation()
+        $('.bootstrap-table-filter-control-tags').val(e.innerText)
+        $('#table').bootstrapTable('triggerSearch')
+    }   
+</script>
+
+<!-- Cloning test Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="cloningToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Cloning...</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+  </div>
+  
+<!-- Cloned test Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+<div id="cloneToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+        <strong class="me-auto">Cloned</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+</div>
+
+<!-- Cloned test Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+<div id="resetToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+        <strong class="me-auto">Reset testcase</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+</div>
+
+<!-- Confirm delete Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+<div id="deleteToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+        <strong class="me-auto">Testcase not deleted, instead, right click delete to confirm</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+</div>
+
+<!-- New Test Modal-->
+
+<div class="modal fade" id="newtestcase" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Test Case</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Descriptive test case name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="mitreid" class="form-label">Mitre ID</label>
+                    <br/>
+                    <select class="selectpicker form-control border" data-live-search="true" data-size="10" name="mitreid" id="mitreid" required>
+                        {% for mitre in mitres %}
+                        <option data-subtext="{{ mitre[1] }}">{{ mitre[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phase" class="form-label">Phase / Tactic</label>
+                    <select id="phase" name="phase" class="form-label form-select" required>
+                        <option value="none" selected disabled hidden>Select...</option>
+                        <option value="Reconnaissance">Reconnaissance</option>
+                        <option value="Resource Development">Resource Development</option>
+                        <option value="Initial Access">Initial Access</option>
+                        <option value="Execution">Execution</option>
+                        <option value="Persistence">Persistence</option>
+                        <option value="Privilege Escalation">Privilege Escalation</option>
+                        <option value="Defense Evasion">Defense Evasion</option>
+                        <option value="Credential Access">Credential Access</option>
+                        <option value="Discovery">Discovery</option>
+                        <option value="Lateral Movement">Lateral Movement</option>
+                        <option value="Collection">Collection</option>
+                        <option value="Command and Control">Command and Control</option>
+                        <option value="Exfiltration">Exfiltration</option>
+                        <option value="Impact ">Impact</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" onclick="newTest()">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Select testcases from templates modal -->
+<div class="modal fade" id="templatesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Testcases</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <table id="template-table" data-search="true" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="add" data-sort-order="desc" data-detail-view="true" data-detail-formatter="detailFormatter" data-filter-control="true" data-show-search-clear-button="true" data-height="600" data-silent-sort="false" data-pagination="true">
+                        <thead>
+                            <tr>
+                                <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>
+                                <th data-field="src" id="nameField" data-filter-control="select">Src</th>
+                                <th data-field="phase" data-sortable="true" data-filter-control="select">Phase</th>
+                                <th data-field="technique">Technique</th>
+                                <th data-field="title">Title</th>
+                                <th data-field="html" data-visible="false">Details</th>
+                                <th data-field="id" data-visible="false">ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for template in templates %}
+                            <tr data-title="bootstrap table" data-object='{"key": "value"}' data-uniqueid="{{ template.id }}">
+                                <td></td>
+                                <td>{{ template.provider }}</td>
+                                <td>{{ template.phase }}</td>
+                                <td>{{ template.mitreid }} - {{ template.mitretitle }}</td>
+                                <td>{{ template.name }}</td>
+                                <td>{{ template.html|safe }}</td>
+                                <td>{{ template.id }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="newTest(true)" id="add-templates" style="display: none">Add Selected</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="deleteToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Success</strong>
+            <small>Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Test case deleted.
+        </div>
+    </div>
+</div>
+
+<!-- MITRE Modal -->
+<form action="/testcase/import/mitre" enctype="multipart/form-data" method="POST" class="m-0">
+    <div class="modal fade" id="mitreImportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mitreImportModalLabel">Import MITRE Layer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <p>Select your threat actor / ad-hoc TTP at <a href="https://mitre-attack.github.io/attack-navigator/" target="_blank">the Mitre ATT&CK Navigator</a> &gt; <code>Download Controls</code> &gt; <code>Download Layer as JSON</code>.</p>
+                        <label for="formFile" class="form-label">MITRE Layer .json</label>
+                        <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Template Modal -->
+<form action="/assessment/import/template/{{ ass.id }}" enctype="multipart/form-data" method="POST" class="m-0">
+    <div class="modal fade" id="templateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import Testcase Template</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <p>Select the <code>template.json</code> file output from <code>Export > Testcase Template</code>.</p>
+                        <!-- <label for="formFile" class="form-label">template.json</label> -->
+                        <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json" autocomplete="false">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="m-2 mt-0">
+    <div id="toolbar">
+        <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">{{ ass.name }}</p>
+        {% if not current_user.has_role("Blue") %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                New...
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newtestcase">Test Case</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#templatesModal">Test Case From Template</a></li>
+            </ul>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Import...
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#mitreImportModal">Mitre ATT&CK Layer</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#templateModal">Testcase Template</a></li>
+            </ul>
+        </div>
+        {% endif %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Export...
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/assessment/export/json/{{ ass.id }}">Results as JSON</a></li>
+                <li><a class="dropdown-item" href="/assessment/export/csv/{{ ass.id }}">Results as CSV</a></li>
+                {% if not current_user.has_role("Blue") %}
+                <li><a class="dropdown-item" href="/assessment/export/template/{{ ass.id }}">Assessment Template</a></li>
+                <li><a class="dropdown-item" href="/assessment/export/entire/{{ ass.id }}">Entire Assessment</a></li>
+                {% endif %}
+                <div id="selected-dropdown" style="display:none">
+                    <li><a class="dropdown-item" href="/assessment/export/json/{{ ass.id }}" id="selected-json" data-id="{{ ass.id }}">Selected Results as JSON</a></li>
+                    <li><a class="dropdown-item" href="/assessment/export/csv/{{ ass.id }}" id="selected-csv">Selected Results as CSV</a></li>
+                    {% if not current_user.has_role("Blue") %}
+                    <li><a class="dropdown-item" href="/assessment/export/template/{{ ass.id }}" id="selected-template">Selected Assessment Template</a></li>
+                    <li><a class="dropdown-item" href="/assessment/export/atomics/{{ ass.id }}" id="selected-atomics">Selected Testcase Templates</a></li>
+                    {% endif %}
+                </div>
+            </ul>
+        </div>
+        {% if not current_user.has_role("Blue") %}
+        <div class="btn-group" id="bulk-dropdown" style="display:none">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Bulk...
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="visibleTest(event, selectedIds)">Toggle Testcase Visibility</a></li>
+                <li><a class="dropdown-item" href="#" onclick="deleteTest(event, selectedIds)">Delete Testcases</a></li>
+                <li><a class="dropdown-item" href="#" onclick="$('#table').bootstrapTable('uncheckAll')">Clear Selection</a></li>
+            </ul>
+        </div>
+        {% endif %}
+        <div class="btn-group">
+            <a type="button" class="btn btn-primary" href="/assessment/stats/{{ ass.id }}">Statistics</a>
+        </div>
+        <span id="selected-count" class="ms-1"></span>
+    </div>
+    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="table" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="start" data-sort-order="asc" data-detail-view="true" data-detail-formatter="testcaseFormatter" data-silent-sort="false" style="display:none;" data-cookie="true" data-cookie-id-table="assessmentSave">
+        <thead>
+            <tr class="tr-class-1">
+                <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>
+                <th data-field="id" data-visible="false" data-switchable="false">ID</th>
+                <th data-field="mitreid" data-sortable="true" data-width="10" data-width-unit="%" data-filter-control="input">Mitre ID</th>
+                <th data-field="name" data-sortable="true" data-filter-control="input">Name</th>
+                <th data-field="tactic" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select">Tactic</th>
+                <th data-field="state" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select">State</th>
+                <th data-field="tags" data-width="15" data-width-unit="%" data-filter-control="input">Tags</th>
+                <th data-field="start" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Start</th>
+                <th data-field="modify" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Modified</th>
+                <th data-field="preventscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Prevention</th>
+                <th data-field="detectscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Detection</th>
+                <th data-field="outcome" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Outcome</th>
+                <th data-field="actions" class="text-center" data-width="10" data-width-unit="%" data-switchable="false"{% if current_user.has_role("Blue") %} data-visible="false"{% endif %}>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-#ID#">
+                <td></td>
+                <td>#ID#</td>
+                <td>#MITREID#</td>
+                <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
+                    <span style="display:none">#NAME#</span>
+                    <a href="/testcase/run/#ID#">#NAME#</a>
+                </td>
+                <td>#PHASE#</td>
+                <td class="bg-light">Pending (Hidden)</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-info py-0" onclick="visibleTest(event, [`#ID#`])" title="Toggle Visiblity">
+                            <i class="bi-eye">&zwnj;</i>
+                        </button>
+                        <button type="button" class="btn btn-warning py-0" onclick="cloneTest(event, '#ID#')" title="Clone">
+                            <i class="bi-files">&zwnj;</i>
+                        </button>
+                        <button type="button" class="btn btn-warning py-0"  title="Reset" onclick="resetTest(event, `#ID#`)">
+                            <i class="bi-arrow-clockwise">&zwnj;</i>
+                        </button>
+                        <button type="button" class="btn btn-danger py-0" onclick="new bootstrap.Toast(document.querySelector('#deleteToast')).show();" oncontextmenu="deleteTest(event, [`#ID#`])" title="Delete">
+                            <i class="bi-trash-fill">&zwnj;</i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% for t in tests %}
+            {% if not (current_user.has_role("Blue") and t.visible == false) %}
+            <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-{{t.id}}">
+                <td></td>
+                <td>{{ t.id }}</td>
+                <td>{{ t.mitreid }}</td>
+                <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
+                    <span style="display:none">{{ t.name }}</span>
+                    <a href="/testcase/run/{{t.id}}">{{ t.name }}</a>
+                    
+                    {% if not t.kbentry and not current_user.has_role("Blue") %}
+                    <span class="badge bg-danger" onclick="filterBadge(event, this)" style="cursor: pointer">No KB</span>
+                    {% endif %}
+                    {% if t.state == "Complete" %}
+                        {% if not current_user.has_role("Blue") %}
+                        <!-- Badges for RED -->
+                            {% if t.visible == false %}
+                            <span class="badge bg-danger" onclick="filterBadge(event, this)" style="cursor: pointer">Hidden</span>
+                            {% endif %}
+                            {% if not t.blockedrating and not t.detectionrating %}
+                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Score(s)</span>
+                            {% endif %}
+                            {% if not t.actions %}
+                            <span class="badge bg-danger" onclick="filterBadge(event, this)" style="cursor: pointer">No Command</span>
+                            {% endif %}
+                            {% if not t.redfiles %}
+                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Red Files</span>
+                            {% endif %}
+                            {% if not t.sources %}
+                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Source</span>
+                            {% endif %}
+                            {% if not t.targets %}
+                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Target</span>
+                            {% endif %}
+                            {% if not t.tools %}
+                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Tools</span>
+                            {% endif %}
+                        {% endif %}
+                        <!-- Badges for ALL -->
+                        {% if not t.bluefiles %}
+                        <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Blue Files</span>
+                        {% endif %}
+                        {% if not t.controls %}
+                        <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Controls</span>
+                        {% endif %}
+                        {% if not t.bluenotes %}
+                        <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Observations</span>
+                        {% endif %}
+                        {% if t.logged == "" or t.blocked == "" %}
+                        <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">Incomplete Scoring</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>{{ t.phase }}</td>
+                <td class="{% if t.state == 'Pending' %}bg-light{% endif %}{% if t.state == 'In progress' %}bg-warning{% endif %}{% if t.state == 'Complete' %}bg-primary{% endif %}">{{ t.state }}{% if not t.visible == true %} (Hidden){% endif %}</td>
+                <td>
+                {% for tag in t.tags %}
+                    {% for t in ass.tags if t.id|string == tag %}
+                    <span class='badge rounded-pill' style="background:{{ t.colour }}; cursor:pointer" onclick="filterTag(event, this)">{{ t.name }}</span>
+                    {% endfor %}
+                {% endfor %}
+                </td>
+
+                <!-- Optionals -->
+                <td>{{ t.starttime or "-" }}</td>
+                <td>{{ t.modifytime or "-" }}</td>
+                <td style='background-color: {{ {"0.0": "#FB6B64", "0.5": "#FB6B64", "1.0": "#FCC000", "1.5": "#FCC000", "2.0": "#FDD964", "2.5": "#FDD964", "3.0": "#B8DF43", "3.5": "#B8DF43", "4.0": "#C8DFFF", "4.5": "#C8DFFF", "5.0": "#C8DFFF", "N/A": "#fff", "-": "#fff"}[t.blockedrating or "-"] }}'>{{ t.blockedrating or "-" }}</td>
+                <td style='background-color: {{ {"0.0": "#FB6B64", "0.5": "#FB6B64", "1.0": "#FCC000", "1.5": "#FCC000", "2.0": "#FDD964", "2.5": "#FDD964", "3.0": "#B8DF43", "3.5": "#B8DF43", "4.0": "#C8DFFF", "4.5": "#C8DFFF", "5.0": "#C8DFFF", "N/A": "#fff", "-": "#fff"}[t.detectionrating or "-"] }}'>{{ t.detectionrating or "-" }}</td>
+                <td style='background-color: {% if t.blocked == "Yes" %}#C8DFFF{% elif t.alerted == "Yes" %}#C8DFFF{% elif t.logged == "Yes" %}#B8DF43{% elif t.state == "Complete" %}#FB6B64{% else %}#fff{% endif %}'>{% if t.blocked == "Yes" %}Blocked{% elif t.alerted == "Yes" %}Alerted{% elif t.logged == "Yes" %}Logged{% elif t.state == "Complete" %}Blind{% else %}Pending{% endif %}</td>
+
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-info py-0" onclick="visibleTest(event, [`{{t.id}}`])" title="Toggle Visiblity">
+                            <i class="bi-eye">&zwnj;</i>
+                        </button>
+                        <button type="button" class="btn btn-warning py-0" onclick="cloneTest(event, '{{t.id}}')" title="Clone">
+                            <i class="bi-files">&zwnj;</i>
+                        </button>
+                        <button type="button" class="btn btn-warning py-0"  title="Reset" onclick="resetTest(event, `{{t.id}}`)">
+                            <i class="bi-arrow-clockwise">&zwnj;</i>
+                        </button>
+                        <button type="button" class="btn btn-danger py-0" onclick="new bootstrap.Toast(document.querySelector('#deleteToast')).show();" oncontextmenu="deleteTest(event, [`{{t.id}}`]); return false;" title="Delete">
+                            <i class="bi-trash-fill">&zwnj;</i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="hex">
+    <object id="mitre-hexs" data="/static/images/mitre-hexagons.svg" type="image/svg+xml" style="display:block; margin:0 auto;width: 600px;opacity: 0;"></object>
+</div>
+
+<script>
+
+    tacticStats = {{ stats | safe }}
+
+    // Onload - update mitre attack chain hexagon SVG
+    $(window).on('load', function(){
+        // Grab the SVG document
+        var svgDoc = document.getElementById("mitre-hexs").contentDocument;
+
+        // Order to display hexagons in
+        tactics = ["Execution", "Command and Control", "Discovery", "Persistence", "Privilege Escalation", "Credential Access", "Lateral Movement", "Exfiltration", "Impact"]
+        hex = 1
+
+        // Initalise all hexagons as blank
+        for (const x of Array(9).keys()) {
+            svgDoc.querySelectorAll('.hex-' + (x+1)).forEach(j => j.style.display = "none");
+        }
+
+        // For each tactic we have data for
+        tactics.forEach(tactic => {
+            if (Object.keys(tacticStats).includes(tactic)) {
+                // Calculate the score
+                total = tacticStats[tactic].blocked + tacticStats[tactic].alerted - tacticStats[tactic].missed
+                if (total > 1) color = "#B8DF43"
+                else if (total < -1) color = "#FB6B64"
+                else color = "#FFC000"
+
+                // Update the hexagon text and colours
+                svgDoc.querySelectorAll('.hex-' + hex).forEach(j => j.style.display = "block");
+                svgDoc.getElementById(`hex-${hex}-stroke`).style.stroke = color
+                svgDoc.getElementById(`hex-${hex}-stroke`).style.fill = "#eeeeee"
+                svgDoc.getElementById(`hex-${hex}-label`).innerText = tactic
+                hex += 1
+            }
+        })
+
+        // Hexagon starts hidden, once populate, show to user
+        document.getElementById("mitre-hexs").style.opacity = 1
+    });
+</script>
+
+{% endblock %}

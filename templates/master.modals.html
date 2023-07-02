@@ -1,0 +1,89 @@
+<!-- Profile update modal -->
+
+<form action="/manage/access/user/update-password" method="POST" class="m-0">
+  <div class="modal fade" id="profileModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label class="col-form-label">Old Password</label>
+              <input type="password" class="form-control" name="oldpass" required>
+            </div>
+            <div class="mb-3">
+              <label class="col-form-label">New Password</label>
+              <input type="password" class="form-control" name="newpass" required>
+            </div>
+            <div class="mb-3">
+              <label class="col-form-label">Confirm New Password</label>
+              <input type="password" class="form-control" name="newpassconfirm" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="modal" tabindex="-1" role="dialog" id="aboutModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">About / Credits</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <h5>About</h5>
+        <p><span class="text-primary">PurpleOps</span>&copy; v0.0 is brought to you by <a href="https://cybercx.com/" target="_blank">CyberCX</a>.</p>
+        <h5>Credits</h5>
+        <details>
+          <summary>Atomic Red Team</summary>
+          <p><a href="https://github.com/redcanaryco/atomic-red-team" target="_blank">Atomic Red Team</a> is licenced under the MIT License:</p>
+          <code><pre class="border m-1 p-1">The MIT License
+
+Copyright (c) 2018 Red Canary, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</pre></code>
+        </details>
+        <br/>
+        <details>
+          <summary>SIGMA Rules</summary>
+          <p><a href="https://github.com/redcanaryco/atomic-red-team" target="_blank">Atomic Red Team</a> are licenced under the <a target="_blank" href="https://github.com/SigmaHQ/sigma/blob/master/LICENSE.Detection.Rules.md">Detection Rule License (DRL) 1.1</a></p>
+        </details>
+        <br/>
+        <details>
+          <summary>MITRE ATT&CK</summary>
+          <p><a href="https://attack.mitre.com" target="_blank">MITRE ATT&CK</a> is licenced as follows:</p>
+          <code><pre class="border m-1 p-1">The MITRE Corporation (MITRE) hereby grants you a non-exclusive, royalty-free license to use ATT&CK® for research, development, and commercial purposes. Any copy you make for such purposes is authorized provided that you reproduce MITRE's copyright designation and this license in any such copy.
+
+"© 2021 The MITRE Corporation. This work is reproduced and distributed with the permission of The MITRE Corporation."</pre></code>
+        </details>
+        <br/>
+      </div>
+    </div>
+  </div>
+</div>

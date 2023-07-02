@@ -1,0 +1,42 @@
+[
+	{
+		"name": "LogRhythm",
+		"description": "Log ingestion and analysing"
+	},
+	{
+		"name": "Cisco Umbrella",
+		"description": "DNS monitoring tool"
+	},
+	{
+		"name": "Windows Defender",
+		"description": "Inbuilt Windows anti-virus"
+	},
+	{
+		"name": "Cylance",
+		"description": "EDR"
+	},
+	{
+		"name": "McAfee",
+		"description": "EDR"
+	},
+	{
+		"name": "zScaler",
+		"description": "Network proxy"
+	},
+	{
+		"name": "Dark Trace",
+		"description": "Network UEBA"
+	},
+	{
+		"name": "Crowd Strike",
+		"description": "EDR"
+	},
+	{
+		"name": "Microsoft Defender for Endpoint",
+		"description": "EDR"
+	},
+	{
+		"name": "Microsoft Defender for Identity",
+		"description": "UEBA"
+	}
+]
