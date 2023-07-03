@@ -262,11 +262,16 @@ class User(db.Document, UserMixin):
     email = db.StringField(max_length=255)
     username = db.StringField(max_length=255, unique=True, nullable=True)
     password = db.StringField(max_length=255)
-    lastauth = db.DateTimeField()
     roles = db.ListField(db.ReferenceField(Role), default=[])
     assessments = db.ListField(db.ReferenceField(Assessment), default=[])
     initpwd = db.BooleanField(default=True)
     active = db.BooleanField(default=True)
+
+    last_login_at = db.DateTimeField()
+    current_login_at = db.DateTimeField()
+    last_login_ip = db.StringField()
+    current_login_ip = db.StringField()
+    login_count = db.IntField()
 
     fs_uniquifier = db.StringField(max_length=255, unique=True)
     tf_primary_method = db.StringField(max_length=64, nullable=True)

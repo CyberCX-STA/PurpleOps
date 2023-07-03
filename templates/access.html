@@ -32,7 +32,7 @@
 				<td>{{ user.username}}</td>
 				<td>{{ user.email}}</td>
 				<td>{{ user.roles | map(attribute='name') | join(', ') or "-" }}</td>
-				<td>{{ user.lastauth or "Never authed"}}</td>
+				<td>{{ user.last_login_at or "Never authed"}}</td>
 				<td>{{ user.assessments | map(attribute='name') | join(', ') }}</td>
 				<td>
 					<div class="btn-group btn-group-sm" role="group">

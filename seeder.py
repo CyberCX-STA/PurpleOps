@@ -179,14 +179,15 @@ def prepareRolesAndAdmin ():
     if User.objects().count() == 0:
         password = str(uuid.uuid4())
         dotenv.set_key(dotenv_file, "ADMIN_PWD", password)
+        # TODO set to invalid email
         user_datastore.create_user(
-            email='admin@purpleops.app',
+            email='admin@purpleops.com',
             username='admin',
             password=password,
             roles=[Role.objects(name="Admin").first()],
             initpwd=False
         )
-        print(f"\tCreated initial admin: U: admin@purpleops.app P: {password}")
+        print(f"\tCreated initial admin: U: admin@purpleops.com P: {password}")
 
 #####
 

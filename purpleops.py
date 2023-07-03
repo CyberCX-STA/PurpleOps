@@ -32,6 +32,7 @@ app.config['SECURITY_TWO_FACTOR_ALWAYS_VALIDATE'] = False
 app.config['SECURITY_TWO_FACTOR_LOGIN_VALIDITY'] = "1 weeks"
 app.config['SECURITY_TOTP_SECRETS'] = {"1": os.getenv('TOTP_SECRET')}
 app.config['SECURITY_TOTP_ISSUER'] = f"PurpleOps - {os.getenv('NAME')}"
+app.config['SECURITY_TRACKABLE'] = True
 
 app.register_blueprint(access.blueprint_access)
 app.register_blueprint(assessment.blueprint_assessment)
@@ -48,12 +49,8 @@ security = Security(app, user_datastore)
 
 @app.route('/')
 @app.route('/index')
-# @auth_required()
+@auth_required()
 def index():
-    curUser = User.objects(fs_uniquifier=current_user.get_id()).first()
-    curUser.lastauth = datetime.now()
-    curUser.save()
-
     assessments = Assessment.objects().all()
     return render_template('assessments.html', assessments=assessments)
 
