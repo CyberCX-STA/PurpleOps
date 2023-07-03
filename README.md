@@ -39,6 +39,14 @@ How PurpleOps is different:
 
 ## Installation
 
+TMP:
+
+```
+pip3 install 'flask-security-too[common,mfa,fsqla]==5.0.2'
+pip3 install flask-mongoengine openpyxl gitpython
+pip3 install 'flask-wtf==1.0.1'
+```
+
 ```bash
 # Clone this repository
 $ git clone https://github.com/blah/blah

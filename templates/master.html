@@ -97,7 +97,7 @@
                     {% if current_user.has_role("Admin") %}
                     <li><a class="dropdown-item" href="/manage/access">Access Control</a></li>
                     {% endif %}
-                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">Update Password</a></li>
+                    <li><a class="dropdown-item" href="/password/change">Update Password</a></li>
                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">About / Credits</a></li>
                 </ul>
                 <a href="/logout" class="btn btn-outline-danger" title="Logout">

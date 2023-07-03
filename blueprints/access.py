@@ -55,20 +55,3 @@ def createuser():
             assessments=[Assessment.objects(name=assessment).first() for assessment in request.form.getlist('assessments')]
         )
         return redirect("/manage/access")
-
-@blueprint_access.route('/manage/access/user/update-password', methods = ['POST'])
-@auth_required()
-def updatepassword():
-    if request.method == 'POST':
-        userID = current_user.get_id()
-        curUser = User.objects(fs_uniquifier=userID).first()
-        if utils.verify_password(request.form['oldpass'], curUser.password):
-            if request.form['newpass'] == request.form['newpassconfirm']:
-                curUser.password = utils.hash_password(request.form['newpass'])
-                curUser.initpwd = False
-                curUser.save()
-            else:
-                print("TODO PASSWD DONT MATCH")
-        else:
-            print("TODO WRONG OLD PASS")
-        return redirect("/")

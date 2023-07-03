@@ -6,6 +6,8 @@ import shutil
 import requests
 import dotenv
 import uuid
+import secrets
+import passlib.totp
 from model import *
 from flask import Flask, redirect
 from flask_security import utils
@@ -13,8 +15,8 @@ from openpyxl import load_workbook
 from git import Repo
 from glob import glob
 
-dotenv_file = dotenv.find_dotenv()
-dotenv.load_dotenv(dotenv_file)
+dotenvFile = dotenv.find_dotenv()
+dotenv.load_dotenv(dotenvFile)
 
 # Adjust for local dev
 PWD = "/home/harrison/Tools/PurpleOps"
@@ -178,43 +180,63 @@ def prepareRolesAndAdmin ():
     
     if User.objects().count() == 0:
         password = str(uuid.uuid4())
-        dotenv.set_key(dotenv_file, "ADMIN_PWD", password)
+        dotenv.set_key(dotenvFile, "POPS_ADMIN_PWD", password)
         # TODO set to invalid email
         user_datastore.create_user(
-            email='admin@purpleops.com',
-            username='admin',
-            password=password,
-            roles=[Role.objects(name="Admin").first()],
-            initpwd=False
+            email = 'admin@purpleops.com',
+            username = 'admin',
+            password = password,
+            roles = [Role.objects(name="Admin").first()],
+            initpwd = False
         )
         print(f"\tCreated initial admin: U: admin@purpleops.com P: {password}")
 
+def precipitateSecrets ():
+    dotenv.set_key(
+        dotenvFile,
+        "FLASK_SECURITY_PASSWORD_SALT",
+        str(secrets.SystemRandom().getrandbits(128))
+    )
+    dotenv.set_key(
+        dotenvFile,
+        "FLASK_SECRET_KEY",
+        secrets.token_urlsafe()
+    )
+    dotenv.set_key(
+        dotenvFile,
+        "FLASK_SECURITY_TOTP_SECRETS",
+        f"{{1: {passlib.totp.generate_secret()}}}"
+    )
+
 #####
 
-print("Clearing old gubbs")
-Tactic.objects.delete()
-Technique.objects.delete()
-Sigma.objects.delete()
-TestCaseTemplate.objects.delete()
-KnowlegeBase.objects.delete()
+# print("Clearing old gubbs")
+# Tactic.objects.delete()
+# Technique.objects.delete()
+# Sigma.objects.delete()
+# TestCaseTemplate.objects.delete()
+# KnowlegeBase.objects.delete()
 
-print("Pulling MITRE tactics")
-parseMitreTactics()
+# print("Pulling MITRE tactics")
+# parseMitreTactics()
 
-print("Pulling MITRE techniques")
-parseMitreTechniques()
+# print("Pulling MITRE techniques")
+# parseMitreTechniques()
 
-print("Pulling SIGMA detections")
-parseSigma()
+# print("Pulling SIGMA detections")
+# parseSigma()
 
-print("Pulling Atomic Red Team testcases")
-parseAtomicRedTeam()
+# print("Pulling Atomic Red Team testcases")
+# parseAtomicRedTeam()
 
-print("Parsing Custom testcases")
-parseCustomTestcases()
+# print("Parsing Custom testcases")
+# parseCustomTestcases()
 
-print("Parsing Custom KBs")
-parseCustomKBs()
+# print("Parsing Custom KBs")
+# parseCustomKBs()
 
-print("Preparing roles and initial admin")
-prepareRolesAndAdmin()
+# print("Preparing roles and initial admin")
+# prepareRolesAndAdmin()
+
+print("Precipitating (randomising) secrets")
+precipitateSecrets()

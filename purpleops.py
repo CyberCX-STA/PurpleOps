@@ -9,30 +9,8 @@ from blueprints import access, assessment, assessment_utils, assessment_import, 
 
 load_dotenv()
 
-# TODO Can these be injected directly into env vars rather than re-specifying?
 app = Flask(__name__)
-app.config['MONGODB_SETTINGS'] = {
-    'db': os.getenv('MONGO_DB'),
-    'host': os.getenv('MONGO_HOST'),
-    'port': int(os.getenv('MONGO_PORT'))
-}
-app.config['DEBUG'] = os.getenv('DEBUG') == "True"
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SALT')
-app.config['SECURITY_TWO_FACTOR'] = os.getenv('MFA') == "True"
-app.config['SECURITY_TWO_FACTOR_REQUIRED'] = os.getenv('MFA') == "True"
-app.config["SECURITY_LOGIN_USER_TEMPLATE"] = "login.html"
-app.config['SECURITY_TWO_FACTOR_ENABLED_METHODS'] = ['authenticator']
-app.config['SECURITY_TWO_FACTOR_SETUP_URL'] = "/mfa/register"
-app.config['SECURITY_TWO_FACTOR_TOKEN_VALIDATION_URL'] = "/mfa/verify"
-app.config['SECURITY_TWO_FACTOR_SETUP_TEMPLATE'] = "mfa_register.html"
-app.config['SECURITY_TWO_FACTOR_VERIFY_CODE_TEMPLATE'] = "mfa_verify.html"
-app.config['SECURITY_TWO_FACTOR_RESCUE_MAIL'] = "rescue@purpleops.invalid"
-app.config['SECURITY_TWO_FACTOR_ALWAYS_VALIDATE'] = False
-app.config['SECURITY_TWO_FACTOR_LOGIN_VALIDITY'] = "1 weeks"
-app.config['SECURITY_TOTP_SECRETS'] = {"1": os.getenv('TOTP_SECRET')}
-app.config['SECURITY_TOTP_ISSUER'] = f"PurpleOps - {os.getenv('NAME')}"
-app.config['SECURITY_TRACKABLE'] = True
+app.config.from_pyfile("flask.cfg")
 
 app.register_blueprint(access.blueprint_access)
 app.register_blueprint(assessment.blueprint_assessment)
