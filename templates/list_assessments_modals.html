@@ -1,0 +1,244 @@
+<!-- Delete assessment confirmation modal -->
+<div class="modal fade" id="deleteassessmentmodal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Delete Confirmation</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3" id="delete-warning">ERROR</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+				<button type="button" class="btn btn-danger" onclick="" id="hard-delete-button">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Create new assessment modal -->
+<div class="modal fade" id="newassessmentmodal" tabindex="-1">
+<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+		<h5 class="modal-title">New Assessment</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<div class="mb-3">
+			<label class="col-form-label">Name</label>
+			<input type="text" class="form-control" name="name" placeholder="Annual ACME Purple Team" id="name-new" autocomplete="off">
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Description</label>
+			<textarea class="form-control" name="description" placeholder="The purpose of this engagement is to..." required id="description-new" autocomplete="off"></textarea>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Industry</label>
+			<select class="form-select" name="industry" id="industry-new" autocomplete="false">
+			<option value="" selected disabled>Select...</option>
+			<option value="Agriculture">Agriculture</option>
+			<option value="AssetAndWealthManagement">Asset & Wealth Management</option>
+			<option value="BankingAndCapitalMarkets">Banking and Capital Markets</option>
+			<option value="ConstructionAndTransportation">Construction & Transportation</option>
+			<option value="Defence">Defence</option>
+			<option value="Education">Education</option>
+			<option value="EnergyOilAndGas">Energy (Oil & Gas)</option>
+			<option value="EntertainmentAndMedia">Entertainment & Media</option>
+			<option value="FinancialServices">Financial Services</option>
+			<option value="Government">Government</option>
+			<option value="Healthcare">Healthcare</option>
+			<option value="Infrastructure">Infrastructure</option>
+			<option value="Insurance">Insurance</option>
+			<option value="Mining">Mining</option>
+			<option value="PowerAndUtilities">Power & Utilities</option>
+			<option value="RealEstate">Real Estate</option>
+			<option value="RetailAndConsumer">Retail & Consumer</option>
+			<option value="Superannuation">Superannuation</option>
+			<option value="Telecommunications">Telecommunications</option>
+			<option value="Technology">Technology</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Percieved Org Technical Maturity</label>
+			<select class="form-select" name="techmaturity" autocomplete="false" id="techmaturity-new">
+			<option value="" selected disabled>Select...</option>
+			<option value="1">1 - Very Immature</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5 - Very Mature</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Percieved Org Operational Maturity</label>
+			<select class="form-select" name="opmaturity" autocomplete="false" id="opmaturity-new">
+			<option value="" selected disabled>Select...</option>
+			<option value="1">1 - Very Immature</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5 - Very Mature</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">SOC Model</label>
+			<select class="form-select" name="socmodel" autocomplete="false" id="socmodel-new">
+			<option value="" selected disabled>Select...</option>
+			<option value="FullInHouse">Full In-House</option>
+			<option value="Tier1Ext">Tier 1 External, Rest In-House</option>
+			<option value="Tier123Ext">Tier 1-3 External, Rest In-House</option>
+			<option value="FullManaged">Full Managed</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">SOC Provider</label>
+			<select class="form-select" name="socprovider" autocomplete="false" id="socprovider-new">
+			<option value="" selected disabled>Select...</option>
+			<option value="Vendor">Vendor - E.g. CrowdStrike Overwatch</option>
+			<option value="Dedicated">Dedicated - E.g. Seamless Intelligence</option>
+			<option value="Big4">Big 4 - E.g. KPMG SOC</option>
+			<option value="Telco">Telco - E.g. Telstra Purple</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Teams Webhook URL</label>
+			<input type="text" class="form-control" name="webhook" id="webhook-new" placeholder="https://" autocomplete="off">
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-primary" onclick="newAssessment()" id="new-ass-button">Create</button>
+	</div>
+	</div>
+</div>
+</div>
+
+<!-- Update assessment modal -->
+<div class="modal fade" id="updateassessmentmodal" tabindex="-1">
+<div class="modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header">
+		<h5 class="modal-title">Update Assessment</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+	</div>
+	<div class="modal-body">
+		<form>
+		<input type="hidden" class="form-control" name="id" id="id" autocomplete="off" required>
+		<div class="mb-3">
+			<label class="col-form-label">Name</label>
+			<input type="text" class="form-control" name="name" id="name-update" placeholder="Annual ACME Purple Team" required autocomplete="off" required>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Description</label>
+			<textarea class="form-control" name="description" placeholder="The purpose of this engagement is to..." id="description-update"></textarea>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Industry</label>
+			<select class="form-select" name="industry" autocomplete="false" id="industry-update" >
+			<option value="" selected disabled>Select...</option>
+			<option value="Agriculture">Agriculture</option>
+			<option value="AssetAndWealthManagement">Asset & Wealth Management</option>
+			<option value="BankingAndCapitalMarkets">Banking and Capital Markets</option>
+			<option value="ConstructionAndTransportation">Construction & Transportation</option>
+			<option value="Defence">Defence</option>
+			<option value="Education">Education</option>
+			<option value="EnergyOilAndGas">Energy (Oil & Gas)</option>
+			<option value="EntertainmentAndMedia">Entertainment & Media</option>
+			<option value="FinancialServices">Financial Services</option>
+			<option value="Government">Government</option>
+			<option value="Healthcare">Healthcare</option>
+			<option value="Infrastructure">Infrastructure</option>
+			<option value="Insurance">Insurance</option>
+			<option value="Mining">Mining</option>
+			<option value="PowerAndUtilities">Power & Utilities</option>
+			<option value="RealEstate">Real Estate</option>
+			<option value="RetailAndConsumer">Retail & Consumer</option>
+			<option value="Superannuation">Superannuation</option>
+			<option value="Telecommunications">Telecommunications</option>
+			<option value="Technology">Technology</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Percieved Org Technical Maturity</label>
+			<select class="form-select" name="techmaturity" autocomplete="false" id="techmaturity-update">
+			<option value="" selected disabled>Select...</option>
+			<option value="1">1 - Very Immature</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5 - Very Mature</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Percieved Org Operational Maturity</label>
+			<select class="form-select" name="opmaturity" autocomplete="false" id="opmaturity-update">
+			<option value="" selected disabled>Select...</option>
+			<option value="1">1 - Very Immature</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5 - Very Mature</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">SOC Model</label>
+			<select class="form-select" name="socmodel" autocomplete="false" id="socmodel-update">
+			<option value="" selected disabled>Select...</option>
+			<option value="FullInHouse">Full In-House</option>
+			<option value="Tier1Ext">Tier 1 External, Rest In-House</option>
+			<option value="Tier123Ext">Tier 1-3 External, Rest In-House</option>
+			<option value="FullManaged">Full Managed</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">SOC Provider</label>
+			<select class="form-select" name="socprovider" autocomplete="false" id="socprovider-update">
+			<option value="" selected disabled>Select...</option>
+			<option value="Vendor">Vendor - E.g. CrowdStrike Overwatch</option>
+			<option value="Dedicated">Dedicated - E.g. Seamless Intelligence</option>
+			<option value="Big4">Big 4 - E.g. KPMG SOC</option>
+			<option value="Telco">Telco - E.g. Telstra Purple</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label class="col-form-label">Teams Webhook URL</label>
+			<input type="text" class="form-control" name="webhook" id="webhook-update" placeholder="https://" autocomplete="off">
+		</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-primary" onclick="editAssessment()" id="edit-ass-button">Update</button>
+	</div>
+	</div>
+</div>
+</div>
+
+<!-- import ass modal -->
+<form action="/assessment/import/entire" enctype="multipart/form-data" method="POST" class="m-0">
+<div class="modal fade" id="importassessmentmodal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Import Entire Assessment</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3">
+					<p>Select the <code>Assessment.zip</code> file output from <code>Export > Entire Assessment</code>.</p>
+					<input class="form-control" type="file" id="formFile" name="file" accept=".zip,application/zip" autocomplete="false">
+
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="submit" class="btn btn-primary">Import</button>
+			</div>
+		</div>
+	</div>
+</div>
+</form>

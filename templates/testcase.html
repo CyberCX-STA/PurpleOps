@@ -1,0 +1,68 @@
+{% extends "master.html" %}
+{% block content %}
+
+{% include 'templates/assessment.toasts.html' %}
+{% include 'templates/assessment.modals.html' %}
+
+<form action="/testcase/run/{{ testcase.id }}" method="Post" id="ttpform" value="{{ testcase.id }}" style="max-width: 1600px; margin: 0 auto" enctype="multipart/form-data">
+    <div class="container-fluid">
+        <div class="row mt-3" style="margin: 0 -1px 0 -2px">
+            <div class="col-7">
+                <div class="input-group">
+                    <span class="input-group-text">TTP</span>
+                    <!-- <input type="text" name="mitreid" id="mitreid" class="form-control flex-grow-0" value="{{ testcase.mitreid }}" style="width: 7em" required> -->
+                    <select class="selectpicker form-control flex-grow-0" data-live-search="true" data-size="10" name="mitreid" id="mitreid" required value="{{ testcase.mitreid }}" data-width="7em"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+                        {% for mitre in mitres %}
+                        <option data-subtext="{{ mitre[1] }}"{% if mitre[0] == testcase.mitreid %} selected=""{% endif %}>{{ mitre[0] }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="name" id="name" class="form-control" value="{{ testcase.name }}" required{% if current_user.has_role("Blue") %} disabled{% endif %}>
+                    {% if mitrename %}
+                    <button class="btn btn-secondary" type="button" title="Info" onclick="$('#ttpInfo').modal('show')">
+                        <i class="bi-info-square-fill">&zwnj;</i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Phase</span>
+                    <select id="phase" name="phase" class="form-select"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+                        {% for tactic in tactics %}
+                        <option value="{{ tactic.name }}" {% if testcase.phase==tactic.name %} selected{% endif%}>
+                            {{ tactic.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="input-group">
+                    <span class="input-group-text">Status</span>
+                    <input id="state" name="state" type="text" class="form-control {% if testcase.state=="In progress" %}bg-warning{% endif%}{% if testcase.state=="Complete" %}bg-primary{% endif%}"
+                        value="{{ testcase.state }}" disabled>
+                    <!-- Pending / Running / Awaiting Blue / Complete -->
+                </div>
+            </div>
+            <div class="col-1">
+                <div class="btn-group w-100" role="group">
+                    <a class="btn btn-outline-danger" href="/assessment/run/{{assessmentid}}" role="button" title="Return Without Saving">
+                        <i class="bi-arrow-return-left">&zwnj;</i>
+                    </a>
+                    <button id="save" name="save" class="btn btn-success ms-2" type="submit" title="Save">
+                        <i class="bi-check-square-fill">&zwnj;</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr class="m-0" />
+        <div class="row">
+            <!-- RED -->
+            {% include 'templates/testcase.red.html' %}
+            <!-- BLUE -->
+            {% include 'templates/testcase.blue.html' %}
+        </div>
+    </div>
+</form>
+<script src="/static/scripts/testcase.run_testcase.js"></script> 
+{% endblock %}

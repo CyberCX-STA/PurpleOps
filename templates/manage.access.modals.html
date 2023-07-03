@@ -1,0 +1,95 @@
+<!-- New / update user modal -->
+<form action="/manage/access/user" method="POST" class="m-0" id="userDetailForm">
+    <div class="modal fade" id="userDetailModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="userDetailLabel">New User</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="username" class="col-form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="johns" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="col-form-label">Email</label>
+                <input type="text" class="form-control" id="email" name="email" placeholder="johns@example.com" required>
+              </div>
+              <div class="mb-3" id="password-section">
+                <label for="password" class="col-form-label">Password</label> <button type="button" class="btn btn-primary btn-sm m-0 p-0 px-1" onclick="document.getElementById('password').value = randomPassword()">Random</button>
+                <input type="text" class="form-control" id="password" name="password" placeholder="Password" required>
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label">Role</label>
+                <select class="selectpicker form-control" multiple data-live-search="true" title="Role(s)" data-style="" data-style-base="form-control" data-live-search-placeholder="Search..." data-width="auto" name="roles" id="roles">
+                    <option>Admin</option>
+                    <option>Spectator</option>
+                    <option>Blue</option>
+                    <option>Red</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label">Assessments</label>
+                <select class="selectpicker form-control" multiple data-live-search="true" title="Assessment(s)" data-style="" data-style-base="form-control" data-live-search-placeholder="Search..." data-width="auto" name="assessments" id="assessments">
+					{% for assessment in assessments %}
+                    	<option>{{ assessment.name }}</option>
+					{% endfor %}
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" id="userDetailButton">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</form>
+
+<!-- Confirm delete user -->
+<div class="modal fade" id="delUserModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Delete User</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3" id="delUserWarning">ERROR</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+				<button type="button" class="btn btn-danger" id="hard-delete-button" onclick="delUser()">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Password Reset -->
+<form action="/manage/access/user/" method="POST" class="m-0" id="pwdResetForm">
+    <div class="modal fade" id="pwdResetModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="pwdresetModalLabel">Change Password for ERROR</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="recipient-name" class="col-form-label">New Password</label>
+                <input type="password" class="form-control" id="recipient-name" name="password" placeholder="Password" required>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Change</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</form>

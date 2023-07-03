@@ -4,5 +4,10 @@ function randomPassword () {
 	w2 = nouns[Math.floor(Math.random()*nouns.length)];
 	w3 = nouns[Math.floor(Math.random()*nouns.length)];
 	w4 = nouns[Math.floor(Math.random()*nouns.length)];
-	return `${w1} ${w2} ${w3} ${w4}`
+	p1 = `${w1}-${w2}-${w3}-${w4}`
+	p2 = ""
+	for (let i = 0; i < p.length; i++) {
+		p2 += Math.random() < .75 ? p[i] : p[i].toUpperCase()
+	}
+	return p2
 }

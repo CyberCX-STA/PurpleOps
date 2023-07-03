@@ -40,7 +40,7 @@ app.register_blueprint(blueprint_manage_user.blueprint_manage_user)
 app.register_blueprint(blueprint_assessment.blueprint_assessment)
 app.register_blueprint(blueprint_testcase.blueprint_testcase)
 
-db = getdb()
+# db = getdb()
 db.init_app(app)
 
 security = Security(app, user_datastore)

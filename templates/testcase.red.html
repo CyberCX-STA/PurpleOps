@@ -1,0 +1,169 @@
+<div class="col m-2 me-0 border-end border-light">
+	<div class="row my-2 align-items-center">
+		<div class="col-2">
+			<button id="run-button" name="run-button" type="button"
+				class="btn {% if testcase.state=="Pending" %}btn-outline-success{% endif%}{% if testcase.state=="In progress" %}btn-outline-warning{% endif%}{% if testcase.state=="Complete" %}btn-outline-primary{% endif%} btn-sm w-100" aria-pressed="false"
+				value="{{ testcase.state }}" onclick="updateState()"{% if current_user.has_role("Blue") %} disabled{% endif %}>{% if testcase.state=="Pending" %}Start{% endif%}{% if testcase.state=="In progress" %}Stop{% endif%}{% if testcase.state=="Complete" %}Restart{% endif%}</button>
+		</div>
+		<div class="col-4">
+			<div class="input-group input-group-sm">
+				<span class="input-group-text text-danger" title="Start time">
+					<i class="bi-clock-history">&zwnj;</i>
+				</span>
+				<input id='time-start' name="starttime" type='text' class='form-control' placeholder="Start time" value="{% if testcase.starttime %} {{ testcase.starttime.strftime('%m/%d/%Y, %I:%M %P') }}{% endif %}"{% if current_user.has_role("Blue") %} disabled{% endif %}/>
+			</div>
+		</div>
+		<div class="col-4">
+			<div class="input-group input-group-sm">
+				<span class="input-group-text text-danger" title="End time">
+					<i class="bi-clock-fill">&zwnj;</i>
+				</span>
+				<input id='time-end' name="endtime" type='text' class='form-control' placeholder="Stop time" value="{% if testcase.endtime %} {{ testcase.endtime.strftime('%m/%d/%Y, %I:%M %P') }}{% endif %}"{% if current_user.has_role("Blue") %} disabled{% endif %}/>
+			</div>
+		</div>
+		<div class="col-2">
+			<div class="btn-group-sm text-end" role="group">
+				<select class="selectpicker" data-width="fit" data-live-search="true" autocomplete="off" value="" title="Go" onchange="location = this.value;" data-style-base="form-control-sm form-control">
+					{% for test in testcases | sort(attribute='state') %}
+					{% if not (current_user.has_role("Blue") and not test.visible) %}
+					<option value="/testcase/run/{{test.id}}">{{test.name}} ({{test.state}})</option>
+					{% endif %}
+					{% endfor %}
+				</select>
+				{% if not current_user.has_role("Blue") %}
+					<input type="checkbox" class="btn-check" name="visible" id="visible" autocomplete="off"{% if testcase.visible %} checked{% endif %}>
+					<label class="btn btn-outline-primary" for="visible"><i class="bi-eye">&zwnj;</i></label>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<div class="row my-3 d-flex">
+		<div class="col" style="max-width: 33.4%;">
+			<div class="input-group input-group-sm">
+				<span class="input-group-text text-danger" id="source-label" onclick="manageMulti(this)"
+					style="cursor:pointer;" title="Manage Sources">
+					<i class="bi-send">&zwnj;</i>
+				</span>
+				<select class="selectpicker form-control" multiple data-live-search="true" title="Source(s)"
+					data-style="" data-style-base="form-control-sm form-control"
+					data-live-search-placeholder="Search..." data-width="auto" id="sources"
+					name="sources" onchange="manageMulti(this)" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+					<option data-icon="bi-gear">Manage</option>
+					<option data-divider="true"></option>
+					{% for source in testcase.sources %}
+						<option selected class="dynopt-sources" value="{{ source }}"></option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		<div class="col" style="max-width: 33.3%;">
+			<div class="input-group input-group-sm">
+				<span class="input-group-text text-danger" id="target-label" onclick="manageMulti(this)"
+					style="cursor:pointer;" title="Manage targets">
+					<i class="bi-bullseye">&zwnj;</i>
+				</span>
+				<select class="selectpicker form-control" multiple data-live-search="true" title="Target(s)"
+					data-style="" data-style-base="form-control-sm form-control"
+					data-live-search-placeholder="Search..." data-width="auto" id="targets"
+					name="targets" onchange="manageMulti(this)" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+					<option data-icon="bi-gear">Manage</option>
+					<option data-divider="true"></option>
+					{% for target in testcase.targets %}
+						<option selected class="dynopt-targets" value="{{ target }}"></option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		<div class="col" style="max-width: 33.3%;">
+			<div class="input-group input-group-sm">
+				<span class="input-group-text text-danger" id="tool-label" onclick="manageMulti(this)"
+					style="cursor:pointer;" title="Manage Tools">
+					<i class="bi-tools">&zwnj;</i>
+				</span>
+				<select class="selectpicker form-control" multiple data-live-search="true" title="Tools(s)"
+					data-style="" data-style-base="form-control-sm form-control"
+					data-live-search-placeholder="Search..." data-width="auto" id="tools"
+					name="tools" onchange="manageMulti(this)" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+					<option data-icon="bi-gear">Manage</option>
+					<option data-divider="true"></option>
+					{% for tool in testcase.tools %}
+						<option selected class="dynopt-tools" value="{{ tool }}"></option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="row my-3">
+		<div class="col">
+				<div class="input-group my-3 mt-0" id="red-objective">
+					<span class="input-group-text px-1 text-danger"
+						style="writing-mode: vertical-lr">Objective</span>
+					<textarea class="form-control" name="objective" id="objective"
+						style="min-height: 5em"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.objective }}</textarea>
+				</div>
+				<div class="input-group my-3" id="red-actions">
+					<span class="input-group-text px-1 text-danger"
+						style="writing-mode: vertical-lr;">Actions</span>
+					{% if not current_user.has_role("Blue") %}
+					<div class="flex-grow-1 border rounded">
+						<div class="input-group input-group-sm ref">
+							<select class="form-select p-1" id="templateselect" autocomplete="off" onchange="templateChange(this)">
+								<option selected hidden value="">Current</option>
+								{% for template in templates %}
+								<option value="template{{ template.id }}">{{ template.provider }} - {{ template.name }}</option>
+								{% endfor %}
+							</select>
+							<button type="button"
+								class="btn btn-light input-group-text border border-top-0 rounded-0"
+								title="Command Info" onclick="templateModal()" id="template-info" style="display: none">
+								<i class="bi-info-square">&zwnj;</i>
+							</button>
+						</div>
+					{% endif %}
+						<textarea class="form-control" name="actions" id="actions" oninput="templateClear()"
+							style="min-height: {% if not current_user.has_role("Blue") %}3{% else %}4.5{% endif %}em;font-family: monospace;font-size:0.94em;"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.actions }}</textarea>
+					{% if not current_user.has_role("Blue") %}
+					</div>
+					{% endif %}
+				</div>
+				<div class="input-group my-2" id="red-notes">
+					<span class="input-group-text px-1 text-danger"
+						style="writing-mode: vertical-lr;">Notes</span>
+					<textarea class="form-control" name="rednotes" id="notes"
+						style="min-height: 4em"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.rednotes }}</textarea>
+				</div>
+		</div>
+
+	</div>
+	<div class="row">
+		<div class="row m-0">
+			<ul class="list-group p-0">
+				{% if not current_user.has_role("Blue") %}
+				<li class="list-group-item">
+					<div class="input-group input-group-sm">
+						<label class="input-group-text text-danger" for="redfiles">Upload
+							Evidence</label>
+						<input type="file" class="form-control" id="redfiles" name="redfiles" multiple="multiple"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+					</div>
+				</li>
+				{% endif %}
+				{% for file in testcase.redfiles %}
+				<li class="list-group-item">
+					{% if not current_user.has_role("Blue") %}
+					<button type="button" class="btn btn-outline-danger btn-sm me-2" onclick="deleteFile(this, 'red', '{{ testcase.id }}', '{{ file.name }}')">
+						<i class="bi-trash small">&zwnj;</i>
+					</button>
+					{% endif %}
+					<button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="downloadFile(this, '{{ testcase.id }}', '{{ file.name }}')"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<i class="bi-download small">&zwnj;</i>
+					</button>
+					<a href="/testcase/display/{{ testcase.id }}/{{ file.name }}" target="_blank" style="display:none;{% if (file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg') %}display:inline;{% endif %}"><img class="img-fluid img-thumbnail" style="max-width: 80%" src="/testcase/display/{{ testcase.id }}/{{ file.name }}"/></a>
+					
+					<input style="margin-left: 6em; width:80%;display:none;{% if ((file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg')) and not current_user.has_role("Blue") %}display:inline;{% endif %}" class="form-control form-control-sm" type="text" placeholder="Caption..." value="{{ file.caption }}" id="RED{{ file.path }}" name="RED{{ file.path }}"/>
+					<span class="name small" style="display:inline;{% if (file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg') %}display:none;{% endif %}">{{ file.name }}</span>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+</div>

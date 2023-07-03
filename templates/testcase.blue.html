@@ -1,0 +1,210 @@
+<div class="col m-2 ms-0 blue">
+	<div class="row my-2">
+		<div class="col input-group-sm">
+			<!-- BLOCKED -->
+			<span class="input-group-text text-primary rounded-0 rounded-top border-bottom-0">Blocked</span>
+			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ced4da">
+				<label class="col-6 col-form-label">Blocked</label>
+				<div class="col-6">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="blocked-yes" name="blocked" value="Yes"
+							{% if testcase.blocked=="Yes" %} checked{% endif%}>
+						<label class="form-check-label" for="blocked-yes">Yes</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="blocked-partial" name="blocked" value="Partial"
+							{% if testcase.blocked=="Partial" %} checked{% endif%}>
+						<label class="form-check-label" for="blocked-partial">Partial</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="blocked-no" name="blocked" value="No"
+							{% if testcase.blocked=="No" %} checked{% endif%}>
+						<label class="form-check-label" for="blocked-no">No</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="blocked-na" name="blocked" value="N/A"
+							{% if testcase.blocked=="N/A" %} checked{% endif%}>
+						<label class="form-check-label" for="blocked-na">N/A</label>
+					</div>
+					<input class="form-check-input" type="radio" id="blocked-null" name="blocked" value=""{% if testcase.blocked==none %} checked{% endif%} hidden>
+				</div>
+				<div id="blockedrating-container" class="row m-0 p-0 my-1">
+					<label for="blockedrating" class="col-6 col-form-label">Block Rating <a href="/static/images/prevention_scoring.png" target="_blank" class="bi-question-circle">&zwnj;</a></label>
+					<div class="col-6">
+						<select class="form-select p-1" id="blockedrating" name="blockedrating" value="{{testcase.blockedrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+							<option value="" hidden></option>
+							<option value="N/A" hidden>N/A</option>
+							{% for val in ["0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"] %}
+							<option value="{{ val }}" {% if testcase.blockedrating==val %} selected{% endif%}>{{ val }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+			</div>
+			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Priority</span>
+			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ced4da">
+				<label class="col-6 col-form-label">Focus <a href="/static/images/priority_scoring.png" target="_blank" class="bi-question-circle">&zwnj;</a></label>
+				<div class="col-6">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="priority-prevent" name="priority" value="Prevent"
+							{% if testcase.priority=="Prevent" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<label class="form-check-label" for="priority-prevent">Prevent</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="priority-detect" name="priority" value="Detect"
+							{% if testcase.priority=="Detect" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<label class="form-check-label" for="priority-detect">Detect</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="priority-na" name="priority" value="N/A"
+							{% if testcase.priority=="N/A" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<label class="form-check-label" for="priority-detect">N/A</label>
+					</div>
+					<input class="form-check-input" type="radio" id="priority-null" name="priority" value=""{% if testcase.priority==none %} checked{% endif%} hidden>
+				</div>
+				<div class="my-1"></div>
+				<div id="urgency-container" class="row m-0 p-0 my-1">
+					<label for="priorityurgency" class="col-6 col-form-label">Urgency</label>
+					<div class="col-6">
+						<select class="form-select p-1" id="priorityurgency" name="priorityurgency" value="{{testcase.priorityurgency or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+							<option value="" hidden></option>
+							{% for val in ["Low", "Medium", "High"] %}
+								<option value="{{ val }}" {% if testcase.priorityurgency==val %} selected{% endif%}>{{ val }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col input-group-sm">
+			<span class="input-group-text text-primary rounded-0 rounded-top border-bottom-0">Detected</span>
+			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ced4da">
+				<label class="col-6 col-form-label">Alerted</label>
+				<div class="col-6">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="alert-yes" value="Yes"
+							name="alerted" {% if testcase.alerted=="Yes" %} checked{% endif%}>
+						<label class="form-check-label" for="alert-yes">Yes</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="alert-no" value="No"
+							name="alerted" {% if testcase.alerted=="No" %} checked{% endif%}>
+						<label class="form-check-label" for="alert-no">No</label>
+					</div>
+					<input class="form-check-input" type="radio" id="alert-null" name="alerted" value=""{% if testcase.alerted==none %} checked{% endif%} hidden>
+				</div>
+				<div id="alert-container" class="row m-0 p-0 my-1">
+					<label for="alert" class="col-6 col-form-label">Alert Severity</label>
+					<div class="col-6">
+						<select class="form-select p-1" id="alert" name="alertseverity" value="{{testcase.alertseverity or ''}}">
+							<option value="" hidden></option>
+							{% for val in ["Informational", "Low", "Medium", "High", "Critical"] %}
+							<option value="{{ val }}" {% if testcase.alertseverity==val %} selected{% endif%}>{{ val }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div id="logged-container" class="row m-0 p-0 my-1">
+					<label class="col-6 col-form-label">Logged</label>
+					<div class="col-6">
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="radio" id="log-yes" value="Yes"
+								name="logged" {% if testcase.logged=="Yes" %} checked{% endif%}>
+							<label class="form-check-label" for="log-yes">Yes</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="radio" id="log-no" value="No"
+								name="logged" {% if testcase.logged=="No" %} checked{% endif%}>
+							<label class="form-check-label" for="log-no">No</label>
+						</div>
+						<input class="form-check-input" type="radio" id="logged-null" name="logged" value=""{% if testcase.logged==none %} checked{% endif%} hidden>
+					</div>
+				</div>
+				<div id="detection-container" class="row m-0 p-0 my-1">
+					<label for="colFormLabel" class="col-6 col-form-label">Detection Rating <a href="/static/images/detection_scoring.png" target="_blank" class="bi-question-circle">&zwnj;</a></label>
+					<div class="col-6">
+						<select class="form-select p-1" id="detection-quality" name="detectionrating" value="{{testcase.detectionrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+							<option value="" hidden></option>
+							{% for val in ["0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"] %}
+							<option value="{{ val }}" {% if testcase.detectionrating==val %} selected{% endif%}>{{ val }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="input-group input-group-sm d-none">
+					<span class="input-group-text text-primary">
+						<i class="bi-clock-fill">&zwnj;</i>
+					</span>
+					<input id='time-detect' name="detecttime" type='text' class='form-control' placeholder="Detection time" value="{{ testcase.detecttime }}"/>
+				</div>
+			</div>
+
+			<!-- TAGS -->
+			<div class="input-group input-group-sm mt-3">
+				<span class="input-group-text text-primary" id="controls-label" onclick="manageMulti(this)"
+					style="cursor:pointer;" title="Manage Controls">
+					<i class="bi-pause-circle">&zwnj;</i>
+				</span>
+				<select class="selectpicker form-control" multiple data-live-search="true" title="Control(s)"
+					data-style="" data-style-base="form-control-sm form-control"
+					data-live-search-placeholder="Search..." data-width="auto" id="controls"
+					name="controls" onchange="manageMulti(this)" autocomplete="off" data-size="10">
+					<option data-icon="bi-gear">Manage</option>
+					<option data-divider="true"></option>
+					{% for control in testcase.controls %}
+						<option selected class="dynopt-controls" value="{{ control }}"></option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="input-group input-group-sm mt-3">
+				<span class="input-group-text text-primary" id="tags-label" onclick="manageTags(this)"
+					style="cursor:pointer;" title="Manage Tags">
+					<i class="bi-tags">&zwnj;</i>
+				</span>
+				<select class="selectpicker form-control" multiple data-live-search="true" title="Tag(s)"
+					data-style="" data-style-base="form-control-sm form-control"
+					data-live-search-placeholder="Search..." data-width="auto" id="tags"
+					name="tags" onchange="manageTags(this)" autocomplete="off">
+					<option data-icon="bi-gear">Manage</option>
+					<option data-divider="true"></option>
+					{% for tag in testcase.tags %}
+						<option selected class="dynopt-tags" value="{{ tag }}"></option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="row my-3">
+		<div class="input-group">
+			<span class="input-group-text px-1 text-primary"
+				style="writing-mode: vertical-lr;">Observations</span>
+			<textarea class="form-control" name="bluenotes" id="bluenotes"
+				style="min-height: 7em">{{ testcase.bluenotes }}</textarea>
+		</div>
+	</div>
+	<div class="row m-0">
+		<ul class="list-group p-0">
+			<li class="list-group-item">
+				<div class="input-group input-group-sm">
+					<label class="input-group-text text-primary" for="bluefiles">Upload
+						Evidence</label>
+					<input type="file" class="form-control" id="bluefiles" name="bluefiles" multiple="multiple">
+				</div>
+			</li>
+			{% for file in testcase.bluefiles %}                                    
+			<li class="list-group-item">
+				<button type="button" class="btn btn-outline-danger btn-sm me-2" onclick="deleteFile(this, 'blue', '{{ testcase.id }}', '{{ file.name }}')">
+					<i class="bi-trash small">&zwnj;</i>
+				</button>
+				<button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="downloadFile(this, '{{ testcase.id }}', '{{ file.name }}')">
+					<i class="bi-download small">&zwnj;</i>
+				</button>
+				<a href="/testcase/display/{{ testcase.id }}/{{ file.name }}" target="_blank" style="display:none;{% if (file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg') %}display:inline;{% endif %}"><img class="img-fluid img-thumbnail" style="max-width: 80%" src="/testcase/display/{{ testcase.id }}/{{ file.name }}"/></a>
+					
+				<input style="margin-left: 6em; width:80%;display:none;{% if ((file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg')) and not current_user.has_role("Blue") %}display:inline;{% endif %}" class="form-control form-control-sm" type="text" placeholder="Caption..." value="{{ file.caption }}" id="BLUE{{ file.path }}" name="BLUE{{ file.path }}"/>
+				<span class="name small" style="display:inline;{% if (file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg') %}display:none;{% endif %}">{{ file.name }}</span>
+			</li>
+			{% endfor %}
+		</ul>
+	</div>
+</div>

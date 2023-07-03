@@ -278,7 +278,6 @@ class User(db.Document, UserMixin):
         else:
             return [a.id for a in self.assessments]
 
-
 def getdb():
     return db
 
