@@ -16,14 +16,14 @@ from flask import Blueprint, render_template, redirect, request, session, send_f
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 
-@blueprint_testcase.route('/testcase/run/<id>',methods = ['POST'])
+@blueprint_testcase.route('/testcase/<id>',methods = ['POST'])
 @auth_required()
 def runtestcaseget(id):
     assessmentid = session["assessmentid"]
     ass = Assessment.objects(id=assessmentid).first()
     assessmentname = ass.name
     if current_user.has_role("Spectator"):
-            return redirect(f"/assessment/run/{assessmentid}")
+            return redirect(f"/assessment/{assessmentid}")
     testcase = TestCase.objects(id=id).first()
     if not testcase.assessmentid:
         testcase.assessmentid=assessmentid
@@ -87,9 +87,9 @@ def runtestcaseget(id):
         testcase.kbentry = False
     testcase.modifytime = datetime.now()
     testcase.save()
-    return redirect(f"/testcase/run/{id}#saved")
+    return redirect(f"/testcase/{id}#saved")
 
-@blueprint_testcase.route('/testcase/run/<id>',methods = ['GET'])
+@blueprint_testcase.route('/testcase/<id>',methods = ['GET'])
 @auth_required()
 def runtestcasepost(id):
     assessmentid = session["assessmentid"]

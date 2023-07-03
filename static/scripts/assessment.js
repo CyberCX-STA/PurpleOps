@@ -198,4 +198,3 @@ function filterTag(event, e) {
 }   
 
 
-tacticStats = {{ stats | safe }}

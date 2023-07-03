@@ -29,7 +29,7 @@
   <tbody>
     <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-#ID#">
       <td>#ID#</td>
-      <td id="td-id-1" class="td-class-1" data-title="bootstrap table"><a href="/assessment/run/#ID#">#NAME#</a></td>
+      <td id="td-id-1" class="td-class-1" data-title="bootstrap table"><a href="/assessment/#ID#">#NAME#</a></td>
       <td>#DESC#</td>
       <td><div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100"></div></div></td>
       <td>
@@ -53,7 +53,7 @@
         {{ a.id }}
       </td>
       <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
-        <a href="/assessment/run/{{ a.id }}">{{ a.name }}</a>
+        <a href="/assessment/{{ a.id }}">{{ a.name }}</a>
       </td>
       <td>{{ a.description or "-" }}</td>
       <td>
@@ -96,7 +96,7 @@
 </table>
 </div>
 
-<script src="/static/scripts/list_assessments.js"></script>
+<script src="/static/scripts/assessments.js"></script>
 
 
 {% endblock %}

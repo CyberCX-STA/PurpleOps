@@ -26,7 +26,7 @@
 				<select class="selectpicker" data-width="fit" data-live-search="true" autocomplete="off" value="" title="Go" onchange="location = this.value;" data-style-base="form-control-sm form-control">
 					{% for test in testcases | sort(attribute='state') %}
 					{% if not (current_user.has_role("Blue") and not test.visible) %}
-					<option value="/testcase/run/{{test.id}}">{{test.name}} ({{test.state}})</option>
+					<option value="/testcase/{{test.id}}">{{test.name}} ({{test.state}})</option>
 					{% endif %}
 					{% endfor %}
 				</select>

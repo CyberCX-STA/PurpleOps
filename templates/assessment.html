@@ -1,9 +1,9 @@
 {% extends "master.html" %}
 {% block content %}
 
-{% include 'templates/assessment.toasts.html' %}
+{% include 'assessment_toasts.html' %}
 
-{% include 'templates/assessment.modals.html' %}
+{% include 'assessment_modals.html' %}
 
 <div class="m-2 mt-0">
     <div id="toolbar">
@@ -95,7 +95,7 @@
                 <td>#MITREID#</td>
                 <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
                     <span style="display:none">#NAME#</span>
-                    <a href="/testcase/run/#ID#">#NAME#</a>
+                    <a href="/testcase/#ID#">#NAME#</a>
                 </td>
                 <td>#PHASE#</td>
                 <td class="bg-light">Pending (Hidden)</td>
@@ -130,7 +130,7 @@
                 <td>{{ t.mitreid }}</td>
                 <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
                     <span style="display:none">{{ t.name }}</span>
-                    <a href="/testcase/run/{{t.id}}">{{ t.name }}</a>
+                    <a href="/testcase/{{t.id}}">{{ t.name }}</a>
                     
                     {% if not t.kbentry and not current_user.has_role("Blue") %}
                     <span class="badge bg-danger" onclick="filterBadge(event, this)" style="cursor: pointer">No KB</span>
@@ -219,6 +219,7 @@
     <object id="mitre-hexs" data="/static/images/mitre-hexagons.svg" type="image/svg+xml" style="display:block; margin:0 auto;width: 600px;opacity: 0;"></object>
 </div>
 
-<script src="/static/scripts/assessment.assessment.js"></script> 
+<script src="/static/scripts/assessment.js"></script> 
+<script>tacticStats = {{ stats | safe }}</script>
 
 {% endblock %}

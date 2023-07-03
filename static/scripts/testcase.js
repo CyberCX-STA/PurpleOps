@@ -503,7 +503,7 @@ function downloadFile(e, id, file) {
 
 $("#assessment-crumb-button").css("display", "block");
 $("#assessment-crumb").text(assName)
-$("#assessment-crumb-button").attr("href", "/assessment/run/" + assID)
+$("#assessment-crumb-button").attr("href", "/assessment/" + assID)
 
 // Template select
 

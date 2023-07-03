@@ -4,7 +4,7 @@
 {% include 'templates/assessment.toasts.html' %}
 {% include 'templates/assessment.modals.html' %}
 
-<form action="/testcase/run/{{ testcase.id }}" method="Post" id="ttpform" value="{{ testcase.id }}" style="max-width: 1600px; margin: 0 auto" enctype="multipart/form-data">
+<form action="/testcase/{{ testcase.id }}" method="Post" id="ttpform" value="{{ testcase.id }}" style="max-width: 1600px; margin: 0 auto" enctype="multipart/form-data">
     <div class="container-fluid">
         <div class="row mt-3" style="margin: 0 -1px 0 -2px">
             <div class="col-7">
@@ -46,7 +46,7 @@
             </div>
             <div class="col-1">
                 <div class="btn-group w-100" role="group">
-                    <a class="btn btn-outline-danger" href="/assessment/run/{{assessmentid}}" role="button" title="Return Without Saving">
+                    <a class="btn btn-outline-danger" href="/assessment/{{assessmentid}}" role="button" title="Return Without Saving">
                         <i class="bi-arrow-return-left">&zwnj;</i>
                     </a>
                     <button id="save" name="save" class="btn btn-success ms-2" type="submit" title="Save">

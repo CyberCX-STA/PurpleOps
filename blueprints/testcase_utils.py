@@ -54,7 +54,7 @@ def deletetestcase():
         for id in request.args.get("ids").split(","):
             testcase = TestCase.objects(id=id).first()
             testcase.delete()
-    return redirect(f"/assessment/run/{assessmentid}") 
+    return redirect(f"/assessment/{assessmentid}") 
 
 @blueprint_testcase_utils.route('/testcase/clone/<id>', methods = ['GET'])
 @auth_required()
@@ -99,7 +99,7 @@ def visibletestcase():
             orig.visible = not orig.visible
             orig.save()
 
-    return redirect(f"/assessment/run/{assessmentid}") 
+    return redirect(f"/assessment/{assessmentid}") 
 
 
 @blueprint_testcase_utils.route('/testcase/state',methods = ['GET', 'POST'])
@@ -160,7 +160,7 @@ def postTestcaseReleaseCard(testcase, ass, url):
         targets = ", ".join([[k["name"] for k in ass["targets"] if str(k["id"]) == i][0] for i in testcase["targets"]])
         cardJSON = cardJSON.replace("#SOURCE#", sources)
         cardJSON = cardJSON.replace("#TARGET#", targets)
-        url = f"https://{url.split('/')[2]}/testcase/run/{testcase.id}"
+        url = f"https://{url.split('/')[2]}/testcase/{testcase.id}"
         cardJSON = cardJSON.replace("#URL#", url)
 
         if ass.webhook:
@@ -212,7 +212,7 @@ def importmitrelayer():
             newcase.mitreid = mitreid
             newcase.phase = tactic
             newcase.save()
-    return redirect(f"/assessment/run/{assessmentid}")
+    return redirect(f"/assessment/{assessmentid}")
 
 @blueprint_testcase_utils.route('/testcase/file/<color>/<id>/<file>',methods = ['DELETE'])
 @auth_required()
