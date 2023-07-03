@@ -19,7 +19,6 @@ app.config['MONGODB_SETTINGS'] = {
 }
 app.secret_key = "marc-hates-edward"
 
-db = getdb()
 db.init_app(app)
 
 def exporttemplate(id):

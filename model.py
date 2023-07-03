@@ -1,10 +1,8 @@
-from os import name
+import datetime
 from flask import jsonify
 from flask_mongoengine import MongoEngine
-from mongoengine.fields import MultiLineStringField
 from bson.objectid import ObjectId
 from flask_security import UserMixin, RoleMixin, MongoEngineUserDatastore
-import datetime
 
 db = MongoEngine()
 
@@ -282,8 +280,5 @@ class User(db.Document, UserMixin):
             return [a.id for a in Assessment.objects()]
         else:
             return [a.id for a in self.assessments]
-
-def getdb():
-    return db
 
 user_datastore = MongoEngineUserDatastore(db, User, Role)

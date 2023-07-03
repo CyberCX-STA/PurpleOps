@@ -1,9 +1,8 @@
 import os
 from model import *
-from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, render_template
-from flask_security import Security, current_user, auth_required
+from flask_security import Security, auth_required
 
 from blueprints import access, assessment, assessment_utils, assessment_import, assessment_export, testcase, testcase_utils
 
@@ -20,7 +19,6 @@ app.register_blueprint(assessment_export.blueprint_assessment_export)
 app.register_blueprint(testcase.blueprint_testcase)
 app.register_blueprint(testcase_utils.blueprint_testcase_utils)
 
-db = getdb()
 db.init_app(app)
 
 security = Security(app, user_datastore)

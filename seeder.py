@@ -1,5 +1,4 @@
 import yaml
-# import argparse
 import os
 import re
 import shutil
@@ -9,8 +8,7 @@ import uuid
 import secrets
 import passlib.totp
 from model import *
-from flask import Flask, redirect
-from flask_security import utils
+from flask import Flask
 from openpyxl import load_workbook
 from git import Repo
 from glob import glob
@@ -22,14 +20,7 @@ dotenv.load_dotenv(dotenvFile)
 PWD = "/home/harrison/Tools/PurpleOps"
 
 app = Flask(__name__)
-app.config['MONGODB_SETTINGS'] = {
-    'db': 'assessments3',
-    'host': 'localhost',
-    'port': 27017
-}
-app.secret_key = "marc-hates-edward"
-
-db = getdb()
+app.config.from_pyfile("flask.cfg")
 db.init_app(app)
 
 if not os.path.exists(f"{PWD}/external/"):
@@ -210,33 +201,33 @@ def precipitateSecrets ():
 
 #####
 
-# print("Clearing old gubbs")
-# Tactic.objects.delete()
-# Technique.objects.delete()
-# Sigma.objects.delete()
-# TestCaseTemplate.objects.delete()
-# KnowlegeBase.objects.delete()
+print("Clearing old gubbs")
+Tactic.objects.delete()
+Technique.objects.delete()
+Sigma.objects.delete()
+TestCaseTemplate.objects.delete()
+KnowlegeBase.objects.delete()
 
-# print("Pulling MITRE tactics")
-# parseMitreTactics()
+print("Pulling MITRE tactics")
+parseMitreTactics()
 
-# print("Pulling MITRE techniques")
-# parseMitreTechniques()
+print("Pulling MITRE techniques")
+parseMitreTechniques()
 
-# print("Pulling SIGMA detections")
-# parseSigma()
+print("Pulling SIGMA detections")
+parseSigma()
 
-# print("Pulling Atomic Red Team testcases")
-# parseAtomicRedTeam()
+print("Pulling Atomic Red Team testcases")
+parseAtomicRedTeam()
 
-# print("Parsing Custom testcases")
-# parseCustomTestcases()
+print("Parsing Custom testcases")
+parseCustomTestcases()
 
-# print("Parsing Custom KBs")
-# parseCustomKBs()
+print("Parsing Custom KBs")
+parseCustomKBs()
 
-# print("Preparing roles and initial admin")
-# prepareRolesAndAdmin()
+print("Preparing roles and initial admin")
+prepareRolesAndAdmin()
 
 print("Precipitating (randomising) secrets")
 precipitateSecrets()
