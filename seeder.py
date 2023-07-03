@@ -1,21 +1,27 @@
 import yaml
-import argparse
+# import argparse
 import os
 import re
 import shutil
 import requests
+import dotenv
+import uuid
 from model import *
 from flask import Flask, redirect
+from flask_security import utils
 from openpyxl import load_workbook
 from git import Repo
 from glob import glob
+
+dotenv_file = dotenv.find_dotenv()
+dotenv.load_dotenv(dotenv_file)
 
 # Adjust for local dev
 PWD = "/home/harrison/Tools/PurpleOps"
 
 app = Flask(__name__)
 app.config['MONGODB_SETTINGS'] = {
-    'db': 'assessments',
+    'db': 'assessments3',
     'host': 'localhost',
     'port': 27017
 }
@@ -49,31 +55,31 @@ def parseMitreTactics ():
     for row in rows:
         if row[0].value == "ID": # Skip header row
             continue
-        tactic = Tactic()
-        tactic.mitreid = row[headers.index("ID")].value
-        tactic.name = row[headers.index("name")].value
-        tactic.save()
+        Tactic(
+            mitreid = row[headers.index("ID")].value,
+            name = row[headers.index("name")].value
+        ).save()
 
 def parseMitreTechniques ():
     rows, headers = pullMitreAttack("techniques")
     for row in rows:
         if row[0].value == "ID": # Skip header row
             continue
-        technique = Technique()
-        technique.mitreid = row[headers.index("ID")].value
-        technique.name = row[headers.index("name")].value
-        technique.description = row[headers.index("description")].value
-        technique.detection = row[headers.index("detection")].value or "Missing data."
-        technique.tactics = row[headers.index("tactics")].value.split(",")
-        technique.save()
+        Technique(
+            mitreid = row[headers.index("ID")].value,
+            name = row[headers.index("name")].value,
+            description = row[headers.index("description")].value,
+            detection = row[headers.index("detection")].value or "Missing data.",
+            tactics = row[headers.index("tactics")].value.split(",")
+        ).save()
 
         # Include a default reporting writeup - can be overwritten with customs
-        kb = KnowlegeBase()
-        kb.mitreid = technique.mitreid
-        kb.overview = technique.description
-        kb.advice = technique.detection
-        kb.provider = "MITRE"
-        kb.save()
+        KnowlegeBase(
+            mitreid = row[headers.index("ID")].value,
+            overview = row[headers.index("description")].value,
+            advice = row[headers.index("detection")].value or "Missing data.",
+            provider = "MITRE"
+        ).save()
 
 def pullSigma ():
     if os.path.exists(f"{PWD}/external/sigma") and os.path.isdir(f"{PWD}/external/sigma"):
@@ -98,12 +104,12 @@ def parseSigma ():
                     associatedTTP.append(search.group(1).upper())
 
         for ttp in associatedTTP:
-            sigma = Sigma()
-            sigma.mitreid = ttp
-            sigma.title = yml["title"]
-            sigma.description = yml["description"]
-            sigma.url=url
-            sigma.save()
+            Sigma(
+                mitreid = ttp,
+                title = yml["title"],
+                description = yml["description"],
+                url=url
+            ).save()
 
 def pullAtomicRedTeam ():
     if os.path.exists(f"{PWD}/external/art") and os.path.isdir(f"{PWD}/external/art"):
@@ -127,30 +133,30 @@ def parseAtomicRedTeam ():
                         k = "#{" + i + "}"
                         baseCommand = baseCommand.replace(k, str(artTestcase["input_arguments"][i]["default"]))
                 
-                template = TestCaseTemplate()
-                template.name = artTestcase["name"]
-                template.mitreid = yml["attack_technique"]
-                # Infer the relevant phase from the first match from MITRE techniques
-                template.phase = Technique.objects(mitreid=template.mitreid).first()["tactics"][0]
-                template.objective = artTestcase["description"]
-                template.actions = baseCommand
-                template.provider = "ART"
-                template.save()
+                TestCaseTemplate(
+                    name = artTestcase["name"],
+                    mitreid = yml["attack_technique"],
+                    # Infer the relevant phase from the first match from MITRE techniques
+                    phase = Technique.objects(mitreid=yml["attack_technique"]).first()["tactics"][0],
+                    objective = artTestcase["description"],
+                    actions = baseCommand,
+                    provider = "ART"
+                ).save()
 
 def parseCustomTestcases ():
     for customTestcase in glob(f'{PWD}/custom/testcases/*.yaml'):
         with open(customTestcase, "r") as customTestcaseFile:
             yml = yaml.safe_load(customTestcaseFile)
 
-        template = TestCaseTemplate()
-        template.name = yml["name"]
-        template.mitreid = yml["mitreid"]
-        template.phase = yml["phase"]
-        template.objective = yml["objective"]
-        template.actions = yml["actions"]
-        template.rednotes = yml["rednotes"]
-        template.provider = yml["provider"]
-        template.save()
+        TestCaseTemplate(
+            name = yml["name"],
+            mitreid = yml["mitreid"],
+            phase = yml["phase"],
+            objective = yml["objective"],
+            actions = yml["actions"],
+            rednotes = yml["rednotes"],
+            provider = yml["provider"]
+        ).save()
 
 def parseCustomKBs ():
     for customKB in glob(f'{PWD}/custom/knowledgebase/*.yaml'):
@@ -163,6 +169,24 @@ def parseCustomKBs ():
         KB.advice = yml["advice"]
         KB.provider = yml["provider"]
         KB.save()
+
+def prepareRolesAndAdmin ():
+    if Role.objects().count() == 0:
+        for role in ["Admin", "Red", "Blue", "Spectator"]:
+            roleObj = Role(name=role)
+            roleObj.save()
+    
+    if User.objects().count() == 0:
+        password = str(uuid.uuid4())
+        dotenv.set_key(dotenv_file, "ADMIN_PWD", password)
+        user_datastore.create_user(
+            email='admin@purpleops.app',
+            username='admin',
+            password=password,
+            roles=[Role.objects(name="Admin").first()],
+            initpwd=False
+        )
+        print(f"\tCreated initial admin: U: admin@purpleops.app P: {password}")
 
 #####
 
@@ -190,3 +214,6 @@ parseCustomTestcases()
 
 print("Parsing Custom KBs")
 parseCustomKBs()
+
+print("Preparing roles and initial admin")
+prepareRolesAndAdmin()

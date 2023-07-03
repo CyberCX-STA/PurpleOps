@@ -1,3 +1,4 @@
+name: Extract LSASS Memory with Process Explorer
 mitreid: T1003.001
 phase: Credential Access
 objective: Dump LSASS ProcExp

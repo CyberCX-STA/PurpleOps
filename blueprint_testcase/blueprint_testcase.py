@@ -12,7 +12,7 @@ from flask import Blueprint, render_template, redirect, request, session, send_f
 # TODO, reuse from MAIN purplebench.py
 # Couldn't be bothered to figure out the dependancy hiararchy and
 # cross ref :)
-mitreimportmapping = {"defense-evasion": "Defense Evasion", "collection": "Collection", "exfiltration": "Exfiltration", "command-and-control": "Command and Control", "impact": "Impact", "discovery": "Discovery", "execution": "Execution", "credential-access": "Credential Access", "persistence": "Persistence", "initial-access": "Initial Access", "lateral-movement": "Lateral Movement", "exfiltration": "Exfiltration", "privilege-escalation": "Privilege Escalation", "resource-development": "Resource Development", "reconnaissance": "Reconnaissance"}
+# mitreimportmapping = {"defense-evasion": "Defense Evasion", "collection": "Collection", "exfiltration": "Exfiltration", "command-and-control": "Command and Control", "impact": "Impact", "discovery": "Discovery", "execution": "Execution", "credential-access": "Credential Access", "persistence": "Persistence", "initial-access": "Initial Access", "lateral-movement": "Lateral Movement", "exfiltration": "Exfiltration", "privilege-escalation": "Privilege Escalation", "resource-development": "Resource Development", "reconnaissance": "Reconnaissance"}
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 
@@ -286,7 +286,7 @@ def importmitrelayer():
     for t in mitredata["techniques"]:
         mitreid = t["techniqueID"]
         print(f"{assessmentid}")
-        tactic = mitreimportmapping[t["tactic"]]
+        tactic = t["tactic"]
         technique = Technique.objects(mitreid=mitreid).first()
         hastmpl = (TestCaseTemplate.objects(mitreid=mitreid).first() != None)
         if hastmpl:

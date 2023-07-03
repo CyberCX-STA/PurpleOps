@@ -266,7 +266,7 @@ class User(db.Document, UserMixin):
     roles = db.ListField(db.ReferenceField(Role), default=[])
     assessments = db.ListField(db.ReferenceField(Assessment), default=[])
     initpwd = db.BooleanField(default=True)
-    # active = db.BooleanField(default=True)
+    active = db.BooleanField(default=True)
 
     fs_uniquifier = db.StringField(max_length=255, unique=True)
     tf_primary_method = db.StringField(max_length=64, nullable=True)
