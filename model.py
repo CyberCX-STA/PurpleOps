@@ -256,7 +256,7 @@ class Assessment(db.Document):
 
 class Role(db.Document, RoleMixin):
     name = db.StringField(max_length=80, unique=True)
-    # description = db.StringField(max_length=255)
+    description = db.StringField(max_length=255, default="")
 
 class User(db.Document, UserMixin):
     email = db.StringField(max_length=255)

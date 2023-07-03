@@ -21,12 +21,12 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SALT')
 app.config['SECURITY_TWO_FACTOR'] = os.getenv('MFA') == "True"
 app.config['SECURITY_TWO_FACTOR_REQUIRED'] = os.getenv('MFA') == "True"
-app.config["SECURITY_LOGIN_USER_TEMPLATE"] = "login_form.html"
+app.config["SECURITY_LOGIN_USER_TEMPLATE"] = "login.html"
 app.config['SECURITY_TWO_FACTOR_ENABLED_METHODS'] = ['authenticator']
-app.config['SECURITY_TWO_FACTOR_SETUP_URL'] = "/mfa-register"
-app.config['SECURITY_TWO_FACTOR_TOKEN_VALIDATION_URL'] = "/mfa-verify"
-app.config['SECURITY_TWO_FACTOR_SETUP_TEMPLATE'] = "mfa-register.html"
-app.config['SECURITY_TWO_FACTOR_VERIFY_CODE_TEMPLATE'] = "mfa-verify.html"
+app.config['SECURITY_TWO_FACTOR_SETUP_URL'] = "/mfa/register"
+app.config['SECURITY_TWO_FACTOR_TOKEN_VALIDATION_URL'] = "/mfa/verify"
+app.config['SECURITY_TWO_FACTOR_SETUP_TEMPLATE'] = "mfa_register.html"
+app.config['SECURITY_TWO_FACTOR_VERIFY_CODE_TEMPLATE'] = "mfa_verify.html"
 app.config['SECURITY_TWO_FACTOR_RESCUE_MAIL'] = "rescue@purpleops.invalid"
 app.config['SECURITY_TWO_FACTOR_ALWAYS_VALIDATE'] = False
 app.config['SECURITY_TWO_FACTOR_LOGIN_VALIDITY'] = "1 weeks"
@@ -41,21 +41,21 @@ app.register_blueprint(assessment_export.blueprint_assessment_export)
 app.register_blueprint(testcase.blueprint_testcase)
 app.register_blueprint(testcase_utils.blueprint_testcase_utils)
 
-# db = getdb()
+db = getdb()
 db.init_app(app)
 
 security = Security(app, user_datastore)
 
 @app.route('/')
 @app.route('/index')
-@auth_required()
+# @auth_required()
 def index():
     curUser = User.objects(fs_uniquifier=current_user.get_id()).first()
     curUser.lastauth = datetime.now()
     curUser.save()
 
     assessments = Assessment.objects().all()
-    return render_template('list_assessments.html', assessments=assessments)
+    return render_template('assessments.html', assessments=assessments)
 
 if __name__ == "__main__":
     app.run(host=os.getenv('HOST'), port=int(os.getenv('PORT')))
