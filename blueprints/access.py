@@ -1,11 +1,18 @@
 from model import *
 from utils import applyFormData
-from flask import Blueprint, redirect, request
+from flask import Blueprint, redirect, request, render_template
 from flask_security import auth_required, utils, current_user, roles_accepted
 
-blueprint_manage_user = Blueprint('blueprint_manage_user', __name__)
+blueprint_access = Blueprint('blueprint_access', __name__)
 
-@blueprint_manage_user.route('/manage/access/user/<id>', methods = ['POST', 'GET', 'DELETE'])
+@blueprint_access.route('/manage/access')
+@auth_required()
+@roles_accepted('Admin')
+def adminaccess():
+    users = User.objects
+    return render_template('manage.access.html', users=users, assessments=Assessment.objects)
+
+@blueprint_access.route('/manage/access/user/<id>', methods = ['POST', 'GET', 'DELETE'])
 @auth_required()
 @roles_accepted('Admin')
 def manageuser(id):
@@ -35,7 +42,7 @@ def manageuser(id):
             print("Can't delete admin")
         return ("", 204)
 
-@blueprint_manage_user.route('/manage/access/user', methods = ['POST'])
+@blueprint_access.route('/manage/access/user', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin')
 def createuser():
@@ -49,7 +56,7 @@ def createuser():
         )
         return redirect("/manage/access")
 
-@blueprint_manage_user.route('/manage/access/user/update-password', methods = ['POST'])
+@blueprint_access.route('/manage/access/user/update-password', methods = ['POST'])
 @auth_required()
 def updatepassword():
     if request.method == 'POST':

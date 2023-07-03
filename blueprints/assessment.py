@@ -11,7 +11,7 @@ from flask import Blueprint, render_template, redirect, request, session, send_f
 
 blueprint_assessment = Blueprint('blueprint_assessment', __name__)
 
-@blueprint_assessment.route('/assessment/new',methods = ['POST'])
+@blueprint_assessment.route('/assessment/new', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
 def newassessment():

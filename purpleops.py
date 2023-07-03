@@ -5,9 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_security import Security, current_user, auth_required
 
-from blueprint_testcase import blueprint_testcase
-from blueprint_assessment import blueprint_assessment
-from blueprint_manage import blueprint_manage, blueprint_manage_user
+from blueprints import access, assessment, assessment_utils, assessment_import, assessment_export, testcase, testcase_utils
 
 load_dotenv()
 
@@ -35,10 +33,13 @@ app.config['SECURITY_TWO_FACTOR_LOGIN_VALIDITY'] = "1 weeks"
 app.config['SECURITY_TOTP_SECRETS'] = {"1": os.getenv('TOTP_SECRET')}
 app.config['SECURITY_TOTP_ISSUER'] = f"PurpleOps - {os.getenv('NAME')}"
 
-app.register_blueprint(blueprint_manage.blueprint_manage)
-app.register_blueprint(blueprint_manage_user.blueprint_manage_user)
-app.register_blueprint(blueprint_assessment.blueprint_assessment)
-app.register_blueprint(blueprint_testcase.blueprint_testcase)
+app.register_blueprint(access.blueprint_access)
+app.register_blueprint(assessment.blueprint_assessment)
+app.register_blueprint(assessment_utils.blueprint_assessment_utils)
+app.register_blueprint(assessment_import.blueprint_assessment_import)
+app.register_blueprint(assessment_export.blueprint_assessment_export)
+app.register_blueprint(testcase.blueprint_testcase)
+app.register_blueprint(testcase_utils.blueprint_testcase_utils)
 
 # db = getdb()
 db.init_app(app)
