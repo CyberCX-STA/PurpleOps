@@ -105,7 +105,7 @@ $('#deleteUserButton').click(function() {
 });
 
 // Template for the action buttons (i.e. edit / delete user)
-function actionRowFormatter(username, z) {
+function actionFormatter(username) {
 	return `
 		<div class="btn-group btn-group-sm" role="group">
 			<button type="button" class="btn btn-primary py-0" title="Edit" onclick="editUserModal(this)">

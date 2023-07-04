@@ -1,6 +1,5 @@
 $(function () {
-    $('#ass-table').bootstrapTable('hideRow', {index:0})
-    $('#ass-table').show()
+    $('#assessmentTable').show()
   })
 
   // document.querySelector("#name-update").addEventListener("keyup", event => {
@@ -171,3 +170,31 @@ $(function () {
     });
     $('#newassessmentmodal').modal('hide')
   }
+
+function nameFormatter(name, row) {
+	return `<a href="/assessment/${row.id}">${name}</a>`
+}
+
+function progressFormatter(progress) {
+	return `
+		<div class="progress">
+			<div class="progress-bar" role="progressbar" style="width: ${progress}%;" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+	`
+}
+
+function actionFormatter() {
+	return `
+		<div class="btn-group btn-group-sm" role="group">
+			<button type="button" class="btn btn-danger py-0" title="Delete" onclick="softDeleteAssessment(this)">
+				<i class="bi-trash-fill">&zwnj;</i>
+			</button>
+			<button type="button" class="btn btn-primary py-0" title="Clone" onclick="cloneAssessment(this)">
+				<i class="bi-files">&zwnj;</i>
+			</button>
+			<button type="button" class="btn btn-primary py-0" title="Edit" onclick="updateAssessmentModal(this)">
+				<i class="bi-pencil">&zwnj;</i>
+			</button>
+		</div>
+	`
+}

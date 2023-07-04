@@ -6,87 +6,31 @@
 <div class="m-2 mt-0">
 <div id="toolbar">
   <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">Assessments</p>
-  {% if not current_user.has_role("Blue") %}
-  <button id="add" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newassessmentmodal">New Assessment</button>
-  <button id="import" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#importassessmentmodal">Import Assessment</button>
+  {% if current_user.has_role("Admin") or current_user.has_role("Red") %}
+  <button id="add" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAssessmentModal">New Assessment</button>
+  <button id="import" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#importAssessmentModal">Import Assessment</button>
   {% endif %}
 </div>
 
-<table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-search-clear-button="true" id="ass-table" style="display: none">
+<table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-search-clear-button="true" id="assessmentTable" data-unique-id="id" data-id-field="id" style="display: none">
   <thead>
     <tr class="tr-class-1">
       <th data-field="id" data-visible="false">ID</th>
-      <th data-field="name" data-sortable="true" data-width="20" data-width-unit="%">Name</th>
+      <th data-field="name" data-sortable="true" data-width="20" data-width-unit="%" data-formatter="nameFormatter">Name</th>
       <th data-field="description" data-width="35" data-width-unit="%">Description</th>
-      <th data-field="progress" data-sortable="true" data-width="15" data-width-unit="%" class="text-center">Progress</th>
-      <!-- <th data-field="outcome" data-sortable="true" data-width="15" data-width-unit="%" class="text-center">Outcome</th> -->
-      <th data-field="actions" data-width="15" data-width-unit="%" class="text-center"{% if current_user.has_role("Blue") or current_user.has_role("Spectator") %} data-visible="false"{% endif %}>Actions</th>
+      <th data-field="progress" data-sortable="true" data-width="15" data-width-unit="%" class="text-center" data-formatter="progressFormatter">Progress</th>
+      <th data-field="actions" data-width="15" data-width-unit="%" class="text-center"{% if not (current_user.has_role("Admin") or current_user.has_role("Red")) %} data-visible="false"{% endif %} data-formatter="actionFormatter">Actions</th>
     </tr>
   </thead>
-
   <tbody>
-    <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-#ID#">
-      <td>#ID#</td>
-      <td id="td-id-1" class="td-class-1" data-title="bootstrap table"><a href="/assessment/#ID#">#NAME#</a></td>
-      <td>#DESC#</td>
-      <td><div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100"></div></div></td>
-      <td>
-        <div class="btn-group btn-group-sm" role="group">
-          <button type="button" class="btn btn-danger py-0" title="Delete" onclick="softDeleteAssessment('#NAME#', '#ID#')">
-              <i class="bi-trash-fill">&zwnj;</i>
-          </button>
-          <button type="button" class="btn btn-primary py-0" title="Clone" onclick="cloneAssessment(this, '#ID#', '#NAME#', '#DESC#', '0%')">
-            <i class="bi-files">&zwnj;</i>
-          </button>
-          <button type="button" class="btn btn-primary py-0" title="Edit" onclick="updateAssessmentModal(this, '#ID#', '#NAME#', '#DESC#', '#INDUSTRY#', '#TECHMATURITY#', '#OPMATURITY#', '#SOCMODEL#', '#SOCPROVIDER#', '#WEBHOOK#')">
-              <i class="bi-pencil">&zwnj;</i>
-          </button>
-        </div>
-      </td>
-    </tr>
     {% for a in assessments %}
     {% if a.id in current_user.assessment_list() %}
-    <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-{{ a.id }}">
-      <td>
-        {{ a.id }}
-      </td>
-      <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
-        <a href="/assessment/{{ a.id }}">{{ a.name }}</a>
-      </td>
+    <tr data-title="bootstrap table" data-object='{"key": "value"}' id="{{ a.id }}">
+      <td>{{ a.id }}</td>
+      <td>{{ a.name }}</td>
       <td>{{ a.description or "-" }}</td>
-      <td>
-        <div class="progress">
-          {% set percentages = a.get_status() %}
-          <div class="progress-bar{% if percentages['pending_percent'] == 100 %} bg-success{% endif %}" role="progressbar" style="width: {{ percentages["pending_percent"] }}%;" aria-valuenow="{{ percentages["pending_percent"] }}" aria-valuemin="0" aria-valuemax="100">{{ percentages["pending_percent"] }}%</div>
-        </div>
-      </td>
-      <!-- 
-      <td>
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-          <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-        </div>
-      </td>
-    -->
-      <td>
-        <div class="btn-group btn-group-sm" role="group">
-          <button type="button" class="btn btn-danger py-0" title="Delete" onclick="softDeleteAssessment('{{ a.name }}', '{{ a.id }}')">
-              <i class="bi-trash-fill">&zwnj;</i>
-          </button>
-          <!-- <a href="/assessment/clone/{{ a.id }}" type="button" class="btn btn-primary py-0" title="Clone" role="button" onclick="cloneAssessment(this, '{{ a.id }}', '{{ a.name }}', '{{ a.description }}')cloneAssessment(this, '{{ a.id }}', '{{ a.name }}', '{{ a.description }}')"> -->
-          <button type="button" class="btn btn-primary py-0" title="Clone" onclick="cloneAssessment(this, '{{ a.id }}', '{{ a.name }}', '{{ a.description }}', `{{ percentages['pending_percent'] }}`)">
-            <i class="bi-files">&zwnj;</i>
-          </button>
-          <!-- </a> -->
-          <button type="button" class="btn btn-primary py-0" title="Edit" onclick="updateAssessmentModal(this, '{{ a.id }}', '{{ a.name }}', '{{ a.description }}', '{{ a.industry }}', '{{ a.techmaturity }}', '{{ a.opmaturity }}', '{{ a.socmodel }}', '{{ a.socprovider }}', '{{ a.webhook }}')">
-              <i class="bi-pencil">&zwnj;</i>
-          </button>
-          <!-- <button type="button" class="btn btn-warning py-0" title="Export">
-              <i class="bi-table">&zwnj;</i>
-          </button> -->
-        </div>
-      </td>
+      <td>75</td>
+      <td></td>
     </tr>
     {% endif %}
     {% endfor %}
