@@ -207,6 +207,8 @@ Technique.objects.delete()
 Sigma.objects.delete()
 TestCaseTemplate.objects.delete()
 KnowlegeBase.objects.delete()
+# Role.objects.delete()
+# User.objects.delete()
 
 print("Pulling MITRE tactics")
 parseMitreTactics()

@@ -1,32 +1,31 @@
-var $table = $("#user-table")[0]
+var $table = $("#userTable")[0]
 var rowData = null
 
 $(function () {
-	$('#user-table').bootstrapTable()
-	$('#engagement-selector').selectpicker()
+	$('#userTable').bootstrapTable()
 })
 
 function newUserModal(e) {
+	$("#userDetailForm").trigger('reset')
 	$('#userDetailForm').attr('action', '/manage/access/user') 
 	$('#userDetailLabel').text("New User")
 	$('#userDetailButton').text("Create")
-	$('#password-section').show()
-	$('#password').attr('required', 'required');
-	$('#userDetailForm #username').val("")
-	$('#userDetailForm #email').val("")
-	$('#userDetailForm #roles').selectpicker('val', "");
-	$('#userDetailForm #assessments').selectpicker('val', "");
+	$('#password').attr("type", "text")
 	$('#userDetailModal').modal('show')
 }
 
 function editUserModal(e) {
 	let i = $(e).closest("tr").data("index")
-	rowData = $('#user-table').bootstrapTable('getData')[i]
+	rowData = $('#userTable').bootstrapTable('getData')[i]
+	$("#userDetailForm").trigger('reset')
 	$('#userDetailForm').attr('action', '/manage/access/user/' + rowData.id) 
-	$('#userDetailLabel').text("Update Details For " + rowData.username)
+	$('#userDetailLabel').text("Edit User")
 	$('#userDetailButton').text("Update")
-	$('#password-section').hide()
-	$('#password').removeAttr('required');
+	// Make it look like a password is in the form, stops admins getting scared
+	// that altering a user's details will wipe their password whilst still
+	// giving them a chance to change it
+	$('#password').attr("type", "password")
+	$('#password').val(" ".repeat(128))
 	$('#userDetailForm #username').val(rowData.username)
 	$('#userDetailForm #email').val(rowData.email)
 	$('#userDetailForm #roles').selectpicker('val', rowData.roles.split(", "));
@@ -34,28 +33,20 @@ function editUserModal(e) {
 	$('#userDetailModal').modal('show')
 }
 
-function pwdResetModal(e) {
-	let i = $(e).closest("tr").data("index")
-	rowData = $('#user-table').bootstrapTable('getData')[i]
-	$('#pwdResetForm').attr('action', '/manage/access/user/' + rowData.id) 
-	$('#pwdresetModalLabel').text("Reset Password For " + rowData.username)
-	$('#pwdResetModal').modal('show')
-}
-
 function delUserModal(e) {
 	let i = $(e).closest("tr").data("index")
-	rowData = $('#user-table').bootstrapTable('getData')[i]
+	rowData = $('#userTable').bootstrapTable('getData')[i]
 	$('#delUserForm').attr('action', '/manage/access/user/' + rowData.id) 
 	$('#delUserWarning').text("Really Delete " + rowData.username + "?")
 	$('#delUserModal').modal('show')
 }
 
-function delUser(e) {
+$('#delUserButton').click(function() {
 	$.ajax({
 		url: '/manage/access/user/' + rowData.id,
 		type: 'DELETE',
 		success: function(result) {
-			location.reload();
+			// location.reload();
 		}
 	});
-}
+});

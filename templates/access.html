@@ -1,17 +1,14 @@
 {% extends "master.html" %}
 {% block content %}
 
-{% include 'templates/manage.access.modals.html' %}
+{% include 'access_modals.html' %}
 
 <div class="m-2 mt-0">
 	<div id="toolbar">
 		<p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">Access</p>
-		<button id="add" class="btn btn-primary" onclick="newUserModal()">
-			New User
-		</button>
+		<button id="add" class="btn btn-primary" onclick="newUserModal()">New User</button>
 	</div>
-	<table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-search-clear-button="true" id="user-table">
-
+	<table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-search-clear-button="true" id="userTable">
 		<thead>
 			<tr class="tr-class-1">
 				<th data-field="id" data-visible="false">ID</th>
@@ -23,32 +20,25 @@
 				<th data-field="actions" data-sortable="true" class="text-center">Actions</th>
 			</tr>
 		</thead>
-
 		<tbody>
-			<!-- Sample admin read row -->
 			{% for user in users %}
 			<tr data-title="bootstrap table" data-object='{"key": "value"}'>
-				<td>{{ user.id}}</td>
-				<td>{{ user.username}}</td>
-				<td>{{ user.email}}</td>
+				<td>{{ user.id }}</td>
+				<td>{{ user.username }}</td>
+				<td>{{ user.email }}</td>
 				<td>{{ user.roles | map(attribute='name') | join(', ') or "-" }}</td>
-				<td>{{ user.last_login_at or "Never authed"}}</td>
-				<td>{{ user.assessments | map(attribute='name') | join(', ') }}</td>
+				<td>{{ user.last_login_at or "-" }}{% if user.last_login_at %} ({{ user.current_login_ip or user.last_login_ip }}){% endif %}</td>
+				<td>{% if 'Admin' in (user.roles | map(attribute='name')) %}*{% elif user.assessments %}{{ (user.assessments | map(attribute='name') | join(', ')) }}{% else %}-{% endif %}</td>
 				<td>
 					<div class="btn-group btn-group-sm" role="group">
-						<!-- Delete, password reset, rights -->
 						<button type="button" class="btn btn-primary py-0" title="Edit" onclick="editUserModal(this)">
 							<i class="bi-pencil-fill">&zwnj;</i>
 						</button>
-						<button type="button" class="btn btn-warning py-0" title="Password reset" onclick="pwdResetModal(this)">
-							<i class="bi-key-fill">&zwnj;</i>
-						</button>
-						<button type="button" class="btn btn-disabled py-0" title="API Keys" disabled style="cursor: not-allowed; pointer-events: all !important;">
-							<i class="bi-code-slash">&zwnj;</i>
-						</button>
+						{% if user.username != 'admin' %}
 						<button type="button" class="btn btn-danger py-0" title="Delete" onclick="delUserModal(this)">
 							<i class="bi-trash">&zwnj;</i>
 						</button>
+						{% endif %}
 					</div>
 				</td>
 			</tr>
@@ -57,7 +47,7 @@
 	</table>
 </div>
 
-<script src="/static/scripts/manage.access.js"></script>
-<script src="/static/scripts/manage.access.random_pass.js"></script>
+<script src="/static/scripts/access.js"></script>
+<script src="/static/scripts/access.random_pass.js"></script>
 
 {% endblock %}

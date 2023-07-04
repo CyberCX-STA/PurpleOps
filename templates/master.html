@@ -75,6 +75,8 @@
 
     {% include 'master_modals.html' %}
 
+    {% import "macros.html" as macros %}
+
     {% if current_user.initpwd %}
     <div class="alert alert-danger alert-server m-0 border-0 rounded-0" role="alert">
         <strong>Initial password is still in use.</strong> Change it via Settings (Top Right) > Update Password
