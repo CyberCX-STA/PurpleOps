@@ -1,175 +1,87 @@
+// Delay table showing until page is loaded to prevent jumping
 $(function () {
-    $('#assessmentTable').show()
-  })
+  $('#assessmentTable').show()
+})
 
-  // document.querySelector("#name-update").addEventListener("keyup", event => {
-  //   if(event.key !== "Enter") return;
-  //   editAssessment()
-  //   event.preventDefault();
-  // });
+var row = null
+var rowData = null
 
-  // document.querySelector("#description-update").addEventListener("keyup", event => {
-  //   if(event.key !== "Enter") return;
-  //   editAssessment()
-  //   event.preventDefault();
-  // });
+$('#newAssessment').click(function() {
+	$("#newAssessmentForm").trigger('reset')
+    $('#newAssessmentForm').attr('action', '/assessment') 
+	$('#newAssessmentLabel').text("New Assessment")
+	$('#newAssessmentButton').text("Create")
+    $('#newAssessmentModal').modal('show')
+});
 
-  // document.querySelector("#name-new").addEventListener("keyup", event => {
-  //   if(event.key !== "Enter") return;
-  //   newAssessment()
-  //   event.preventDefault();
-  // });
+function editAssessmentModal(e) {
+	// Globally store the clicked row for AJAX operations
+	row = $(e).closest("tr")
+	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
+	$("#newAssessmentForm").trigger('reset')
+    $('#newAssessmentForm').attr('action', `/assessment/${rowData.id}`) 
+	$('#newAssessmentLabel').text("Edit Assessment")
+	$('#newAssessmentButton').text("Update")
+    $('#newAssessmentForm #name').val(rowData.name)
+	$('#newAssessmentForm #description').val(rowData.description)
+    $('#newAssessmentModal').modal('show')
+}
 
-  // document.querySelector("#description-new").addEventListener("keyup", event => {
-  //   if(event.key !== "Enter") return;
-  //   newAssessment()
-  //   event.preventDefault();
-  // });
+function deleteAssessmentModal(e) {
+	// Globally store the clicked row for AJAX operations
+	row = $(e).closest("tr")
+	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
+	$('#deleteAssessmentForm').attr('action', `/assessment/${rowData.id}`) 
+    // TODO XSS
+	$('#deleteAssessmentWarning').html(`Really Delete <code>${rowData.name}</code>?`)
+	$('#deleteAssessmentModal').modal('show')
+}
 
-  function softDeleteAssessment (name, id) {
-    $("#delete-warning").text("Really delete '" + name + "'? This will remove all tests, results, notes and evidence.")
-    $("#hard-delete-button").attr("onclick", "hardDeleteAssessment('" + id + "')")
-    $('#deleteassessmentmodal').modal('show')
-  }
+// Hook the native new/edit assessment HTML form to catch and action the response
+$("#newAssessmentForm").submit(function(e){
+	e.preventDefault();
 
-  function hardDeleteAssessment (id) {
-    $('#deleteassessmentmodal').modal('hide')
+    fetch(e.target.action, {
+        method: 'POST',
+        body: new URLSearchParams(new FormData(e.target))
+    }).then((response) => {
+        return response.json();
+    }).then((body) => {
+		newRow = {
+			id: body.id,
+			name: body.name,
+			description: body.description,
+			progress: body.progress,
+            actions: ""
+		}
+        
+		// This function is shared between new and edit assessment, so do we
+		// need to edit a row or create a new one?
+		if ($('#assessmentTable').bootstrapTable('getRowByUniqueId', body.id)) {
+			$('#assessmentTable').bootstrapTable('updateRow', {
+				index: row.data("index"),
+				row: newRow,
+				replace: true
+			})
+		} else {
+			$('#assessmentTable').bootstrapTable('append', [newRow])
+		}
 
-    $.get("/assessment/delete/" + id, function (data, status) {
-      if (status == "success") {
-        $("#ass-table").bootstrapTable('remove', {field: "id", values: [id]})
-        new bootstrap.Toast(document.querySelector('#deleteToast')).show();
-      }
-    });
-  }
+		$('#newAssessmentModal').modal('hide')
+    })
+});
 
-  function updateAssessmentModal(e, id, name, description, industry="", techmaturity="", opmaturity="", socmodel="", socprovider="", webhook="") {
-		$('#updateassessmentmodal #id').val(id)
-		$('#updateassessmentmodal').data('id', id)
-		$('#updateassessmentmodal #name-update').val(name)
-		$('#updateassessmentmodal').data('name', name)
-		$('#updateassessmentmodal #description-update').val(description)
-		$('#updateassessmentmodal').data('description', description)
-		$('#updateassessmentmodal #industry-update').val(industry)
-		$('#updateassessmentmodal').data('industry', industry)
-		$('#updateassessmentmodal #techmaturity-update').val(techmaturity)
-		$('#updateassessmentmodal').data('techmaturity', techmaturity)
-		$('#updateassessmentmodal #opmaturity-update').val(opmaturity)
-		$('#updateassessmentmodal').data('opmaturity', opmaturity)
-		$('#updateassessmentmodal #socmodel-update').val(socmodel)
-		$('#updateassessmentmodal').data('socmodel', socmodel)
-		$('#updateassessmentmodal #socprovider-update').val(socprovider)
-		$('#updateassessmentmodal').data('socprovider', socprovider)
-		$('#updateassessmentmodal #webhook-update').val(webhook)
-		$('#updateassessmentmodal').data('webhook', webhook)
-		$('#updateassessmentmodal').modal('show')
-	}
-
-  function cloneAssessment (e, id, name, description, pct) {
-    new bootstrap.Toast(document.querySelector('#cloningToast')).show();
-    $.get("/assessment/clone/" + id, function (data, status) {
-      if (status == "success") {
-        orig = $("#ass-table").bootstrapTable('getData').find(row => row.id == id)
-        idx = $("#ass-table").bootstrapTable('getData').findIndex(row => row.id == id)
-        clone = JSON.stringify(orig).replaceAll(id, data.id)
-        clone = clone.replaceAll(name, "Copy of " + name)
-        clone = clone.replaceAll(pct + "%", "0")
-        $("#ass-table").bootstrapTable('insertRow', {index: idx + 1, row: JSON.parse(clone)})
-        new bootstrap.Toast(document.querySelector('#cloneToast')).show();
-      }
-    });
-    
-  }
-
-  function editAssessment () {
-    id = $('#updateassessmentmodal #id').val()
-		newName = $('#updateassessmentmodal #name-update').val()
-		origName = $('#updateassessmentmodal').data('name')
-		newDesc = $('#updateassessmentmodal #description-update').val()
-		origDesc = $('#updateassessmentmodal').data('description')
-		newIndustry = $('#updateassessmentmodal #industry-update').val()
-		origIndustry = $('#updateassessmentmodal').data('industry')
-		newTechMaturity = $('#updateassessmentmodal #techmaturity-update').val()
-		origTechMaturity = $('#updateassessmentmodal').data('techmaturity')
-		newOpMaturity = $('#updateassessmentmodal #opmaturity-update').val()
-		origOpMaturity = $('#updateassessmentmodal').data('opmaturity')
-		newSocModel = $('#updateassessmentmodal #socmodel-update').val()
-		origSocModel = $('#updateassessmentmodal').data('socmodel')
-		newSocProvider = $('#updateassessmentmodal #socprovider-update').val()
-		origSocProvider = $('#updateassessmentmodal').data('socprovider')
-		newWebhook = $('#updateassessmentmodal #webhook-update').val()
-		origWebhook = $('#updateassessmentmodal').data('webhook')
-
-    let dat = {
-      name: newName,
-      description: newDesc,
-      industry: newIndustry,
-      techmaturity: newTechMaturity,
-      opmaturity: newOpMaturity,
-      socmodel: newSocModel,
-      socprovider: newSocProvider,
-      webhook: newWebhook
-    }
-
-    $.post("/assessment/update/" + id, dat, function (data, status) {
-      console.log(status)
-      if (status == "nocontent") {
-        orig = $("#ass-table").bootstrapTable('getData').find(row => row.id == id)
-        idx = $("#ass-table").bootstrapTable('getData').findIndex(row => row.id == id)
-        clone = JSON.stringify(orig).replaceAll(origName, newName)
-        clone = clone.replaceAll(origDesc, newDesc)
-        clone = clone.replaceAll(origIndustry, newIndustry)
-        clone = clone.replaceAll(origTechMaturity, newTechMaturity)
-        clone = clone.replaceAll(origOpMaturity, newOpMaturity)
-        clone = clone.replaceAll(origSocModel, newSocModel)
-        clone = clone.replaceAll(origSocProvider, newSocProvider)
-        clone = clone.replaceAll(origWebhook, newWebhook)
-        $("#ass-table").bootstrapTable('updateRow', {index: idx, row: JSON.parse(clone)})
-      }
-    });
-
-    $('#updateassessmentmodal').modal('hide')
-  }
-
-  function newAssessment () {
-		name = $('#newassessmentmodal #name-new').val()
-		desc = $('#newassessmentmodal #description-new').val()
-		industry = $('#newassessmentmodal #industry-new').val()
-		techmaturity = $('#newassessmentmodal #techmaturity-new').val()
-		opmaturity = $('#newassessmentmodal #opmaturity-new').val()
-		socmodel = $('#newassessmentmodal #socmodel-new').val()
-		socprovider = $('#newassessmentmodal #socprovider-new').val()
-		webhook = $('#newassessmentmodal #webhook-new').val()
-
-    let dat = {
-      name: name,
-      description: desc,
-      industry: industry,
-      techmaturity: techmaturity,
-      opmaturity: opmaturity,
-      socmodel: socmodel,
-      socprovider: socprovider,
-      webhook: webhook
-    }
-
-    $.post("/assessment/new", dat, function (data, status) {
-      console.log(status)
-      if (status == "success") {
-        rowTmpl = $("#ass-table").bootstrapTable('getData')[0]
-        clone = JSON.stringify(rowTmpl).replaceAll("#ID#", data.id)
-        clone = clone.replaceAll("#NAME#", name)
-        clone = clone.replaceAll("#DESC#", desc)
-        clone = clone.replaceAll("#INDUSTRY#", industry)
-        clone = clone.replaceAll("#TECHMATURITY#", techmaturity)
-        clone = clone.replaceAll("#OPMATURITY#", opmaturity)
-        clone = clone.replaceAll("#SOCMODEL#", socmodel)
-        clone = clone.replaceAll("#SOCPROVIDER#", socprovider)
-        clone = clone.replaceAll("#WEBHOOK#", webhook)
-        $("#ass-table").bootstrapTable('append', JSON.parse(clone))
-      }
-    });
-    $('#newassessmentmodal').modal('hide')
-  }
+// AJAX DELETE assessment call
+$('#deleteAssessmentButton').click(function() {
+	$.ajax({
+		url: `/assessment/${rowData.id}`,
+		type: 'DELETE',
+		success: function(result) {
+			$('#assessmentTable').bootstrapTable('removeByUniqueId', rowData.id)
+			$('#deleteAssessmentModal').modal('hide')
+		}
+	});
+});
 
 function nameFormatter(name, row) {
 	return `<a href="/assessment/${row.id}">${name}</a>`
@@ -186,15 +98,18 @@ function progressFormatter(progress) {
 function actionFormatter() {
 	return `
 		<div class="btn-group btn-group-sm" role="group">
-			<button type="button" class="btn btn-danger py-0" title="Delete" onclick="softDeleteAssessment(this)">
-				<i class="bi-trash-fill">&zwnj;</i>
-			</button>
-			<button type="button" class="btn btn-primary py-0" title="Clone" onclick="cloneAssessment(this)">
-				<i class="bi-files">&zwnj;</i>
-			</button>
-			<button type="button" class="btn btn-primary py-0" title="Edit" onclick="updateAssessmentModal(this)">
-				<i class="bi-pencil">&zwnj;</i>
-			</button>
+            <button type="button" class="btn btn-primary py-0" title="Edit" onclick="editAssessmentModal(this)">
+                <i class="bi-pencil">&zwnj;</i>
+            </button>
+            <button type="button" class="btn btn-secondary py-0" title="Clone" onclick="cloneAssessment(this)">
+                <i class="bi-files">&zwnj;</i>
+            </button>
+            <button type="button" class="btn btn-danger py-0" title="Delete" onclick="deleteAssessmentModal(this)">
+                <i class="bi-trash-fill">&zwnj;</i>
+            </button>
 		</div>
 	`
 }
+
+// TODO import assessment form
+// TODO assessment clone

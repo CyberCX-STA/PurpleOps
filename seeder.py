@@ -182,7 +182,7 @@ def prepareRolesAndAdmin ():
         )
         print(f"\tCreated initial admin: U: admin@purpleops.com P: {password}")
 
-def precipitateSecrets ():
+def populateSecrets ():
     dotenv.set_key(
         dotenvFile,
         "FLASK_SECURITY_PASSWORD_SALT",
@@ -231,5 +231,5 @@ parseCustomKBs()
 print("Preparing roles and initial admin")
 prepareRolesAndAdmin()
 
-print("Precipitating (randomising) secrets")
-precipitateSecrets()
+print("Populating (randomising) secrets")
+populateSecrets()

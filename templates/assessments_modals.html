@@ -5,7 +5,7 @@
 {{ macros.toast(title="Cloned") }}
 
 <!-- Create/edit assessment modal -->
-<form action="/assessment" method="POST" class="m-0" id="newAssessmentForm"></form>
+<form action="/assessment" method="POST" class="m-0" id="newAssessmentForm">
 	{{ macros.modalHead(name="newAssessment", title="New Assessment") }}
 	<form>
 		<div class="mb-3">
@@ -21,7 +21,7 @@
 </form>
 
 <!-- Delete assessment confirmation modal -->
-{{ macros.modalHead(name="deleteAssessment", title="Delete User") }}
+{{ macros.modalHead(name="deleteAssessment", title="Delete Assessment") }}
 <div class="mb-3" id="deleteAssessmentWarning">ERROR</div>
 {{ macros.modalTail(name="deleteAssessment", cancelLabel="No", actionLabel="Delete") }}
 

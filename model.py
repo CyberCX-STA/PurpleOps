@@ -224,14 +224,10 @@ class Assessment(db.Document):
 
     def to_json(self):
         return {
+            "id": str(self.id),
             "name": self.name,
             "description": self.description,
-            "created": str(self.created),
-            # "industry": self.industry,
-            # "techmaturity": self.techmaturity,
-            # "opmaturity": self.opmaturity,
-            # "socmodel": self.socmodel,
-            # "socprovider": self.socprovider,
+            "progress": 75
         }
                     
     def to_json_data(self, field):

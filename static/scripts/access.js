@@ -1,3 +1,8 @@
+// Delay table showing until page is loaded to prevent jumping
+$(function () {
+	$('#userTable').show()
+})
+
 var row = null
 var rowData = null
 
@@ -38,7 +43,7 @@ function deleteUserModal(e) {
 	row = $(e).closest("tr")
 	rowData = $('#userTable').bootstrapTable('getData')[row.data("index")]
 	$('#deleteUserForm').attr('action', '/manage/access/user/' + rowData.id) 
-	$('#deleteUserWarning').text("Really Delete " + rowData.username + "?")
+	$('#deleteUserWarning').html(`Really Delete <code>${rowData.username}</code>?`)
 	$('#deleteUserModal').modal('show')
 }
 
@@ -88,6 +93,7 @@ $("#userDetailForm").submit(function(e){
 		} else {
 			$('#userTable').bootstrapTable('append', [newRow])
 		}
+
 		$('#userDetailModal').modal('hide')
     })
 });
