@@ -33,13 +33,13 @@ function editUserModal(e) {
 	$('#userDetailModal').modal('show')
 }
 
-function delUserModal(e) {
+function deleteUserModal(e) {
 	// Globally store the clicked row for AJAX operations
 	row = $(e).closest("tr")
 	rowData = $('#userTable').bootstrapTable('getData')[row.data("index")]
-	$('#delUserForm').attr('action', '/manage/access/user/' + rowData.id) 
-	$('#delUserWarning').text("Really Delete " + rowData.username + "?")
-	$('#delUserModal').modal('show')
+	$('#deleteUserForm').attr('action', '/manage/access/user/' + rowData.id) 
+	$('#deleteUserWarning').text("Really Delete " + rowData.username + "?")
+	$('#deleteUserModal').modal('show')
 }
 
 // Hook the native new/edit user HTML form to catch and action the response
@@ -93,13 +93,13 @@ $("#userDetailForm").submit(function(e){
 });
 
 // AJAX DELETE user call
-$('#delUserButton').click(function() {
+$('#deleteUserButton').click(function() {
 	$.ajax({
 		url: '/manage/access/user/' + rowData.id,
 		type: 'DELETE',
 		success: function(result) {
 			$('#userTable').bootstrapTable('removeByUniqueId', rowData.id)
-			$('#delUserModal').modal('hide')
+			$('#deleteUserModal').modal('hide')
 		}
 	});
 });
@@ -112,7 +112,7 @@ function actionRowFormatter(username, z) {
 				<i class="bi-pencil-fill">&zwnj;</i>
 			</button>
 			${username == "admin" ? "" : `
-				<button type="button" class="btn btn-danger py-0" title="Delete" onclick="delUserModal(this)">
+				<button type="button" class="btn btn-danger py-0" title="Delete" onclick="deleteUserModal(this)">
 					<i class="bi-trash">&zwnj;</i>
 				</button>
 			`}

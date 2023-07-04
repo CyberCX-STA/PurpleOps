@@ -1,8 +1,6 @@
 {% extends "master.html" %}
 {% block content %}
 
-{% include 'assessments_toasts.html' %}
-
 {% include 'assessments_modals.html' %}
 
 <div class="m-2 mt-0">
@@ -10,7 +8,7 @@
   <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">Assessments</p>
   {% if not current_user.has_role("Blue") %}
   <button id="add" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newassessmentmodal">New Assessment</button>
-  <button id="add" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#importassessmentmodal">Import Assessment</button>
+  <button id="import" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#importassessmentmodal">Import Assessment</button>
   {% endif %}
 </div>
 
@@ -97,6 +95,5 @@
 </div>
 
 <script src="/static/scripts/assessments.js"></script>
-
 
 {% endblock %}

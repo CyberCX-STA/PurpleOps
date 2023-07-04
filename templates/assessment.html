@@ -1,8 +1,6 @@
 {% extends "master.html" %}
 {% block content %}
 
-{% include 'assessment_toasts.html' %}
-
 {% include 'assessment_modals.html' %}
 
 <div class="m-2 mt-0">
@@ -220,6 +218,7 @@
 </div>
 
 <script src="/static/scripts/assessment.js"></script> 
-<script>tacticStats = {{ stats | safe }}</script>
+<!-- <script src="/static/scripts/assessment.stats.js"></script>  -->
+<!-- <script>tacticStats = {{ stats | safe }}</script> -->
 
 {% endblock %}

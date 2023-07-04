@@ -1,7 +1,6 @@
 {% extends "master.html" %}
 {% block content %}
 
-{% include 'templates/assessment.toasts.html' %}
 {% include 'templates/assessment.modals.html' %}
 
 <form action="/testcase/{{ testcase.id }}" method="Post" id="ttpform" value="{{ testcase.id }}" style="max-width: 1600px; margin: 0 auto" enctype="multipart/form-data">
