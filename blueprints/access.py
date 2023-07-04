@@ -20,14 +20,14 @@ def users():
 @auth_required()
 @roles_accepted('Admin')
 def createuser():
-    user_datastore.create_user(
+    user = user_datastore.create_user(
         email = request.form['email'],
         username = request.form['username'],
         password = utils.hash_password(request.form['password']),
         roles = [Role.objects(name=role).first() for role in request.form.getlist('roles')],
         assessments = [Assessment.objects(name=assessment).first() for assessment in request.form.getlist('assessments')]
     )
-    return redirect("/manage/access")
+    return user.to_json(), 200
 
 @blueprint_access.route('/manage/access/user/<id>', methods = ['POST', 'DELETE'])
 @auth_required()
@@ -59,7 +59,7 @@ def edituser(id):
             user.assessments = []
 
         user.save()
-        return redirect("/manage/access")
+        return user.to_json(), 200
         
     if request.method == 'DELETE':
         # Prevent inbuilt admin deletion

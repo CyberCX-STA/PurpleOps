@@ -280,5 +280,17 @@ class User(db.Document, UserMixin):
             return [a.id for a in Assessment.objects()]
         else:
             return [a.id for a in self.assessments]
+        
+    def to_json(self):
+        return {
+            "id": str(self.id),
+            "username": self.username,
+            "email": self.email,
+            "roles": [r.name for r in self.roles],
+            "assessments": [a.name for a in self.assessments],
+            "last_login_at": self.last_login_at,
+            "current_login_ip": self.current_login_ip,
+            "last_login_ip": self.last_login_ip
+        }
 
 user_datastore = MongoEngineUserDatastore(db, User, Role)

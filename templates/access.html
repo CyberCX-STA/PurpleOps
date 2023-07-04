@@ -8,7 +8,7 @@
 		<p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">Access</p>
 		<button id="add" class="btn btn-primary" onclick="newUserModal()">New User</button>
 	</div>
-	<table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-search-clear-button="true" id="userTable">
+	<table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-search-clear-button="true" data-unique-id="id" data-id-field="id" id="userTable">
 		<thead>
 			<tr class="tr-class-1">
 				<th data-field="id" data-visible="false">ID</th>
@@ -17,7 +17,7 @@
 				<th data-field="roles" data-sortable="true">Roles</th>
 				<th data-field="last-login" data-sortable="true">Last Login</th>
 				<th data-field="assessments" data-sortable="true">Assessments</th>
-				<th data-field="actions" data-sortable="true" class="text-center">Actions</th>
+				<th data-field="actions" data-sortable="true" data-formatter="actionRowFormatter" class="text-center">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -29,18 +29,7 @@
 				<td>{{ user.roles | map(attribute='name') | join(', ') or "-" }}</td>
 				<td>{{ user.last_login_at or "-" }}{% if user.last_login_at %} ({{ user.current_login_ip or user.last_login_ip }}){% endif %}</td>
 				<td>{% if 'Admin' in (user.roles | map(attribute='name')) %}*{% elif user.assessments %}{{ (user.assessments | map(attribute='name') | join(', ')) }}{% else %}-{% endif %}</td>
-				<td>
-					<div class="btn-group btn-group-sm" role="group">
-						<button type="button" class="btn btn-primary py-0" title="Edit" onclick="editUserModal(this)">
-							<i class="bi-pencil-fill">&zwnj;</i>
-						</button>
-						{% if user.username != 'admin' %}
-						<button type="button" class="btn btn-danger py-0" title="Delete" onclick="delUserModal(this)">
-							<i class="bi-trash">&zwnj;</i>
-						</button>
-						{% endif %}
-					</div>
-				</td>
+				<td>{{ user.username }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
