@@ -16,6 +16,40 @@ from flask import Blueprint, render_template, redirect, request, session, send_f
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 
+@blueprint_testcase.route('/testcase', methods = ['POST'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def newtestcase():
+    # if "name" in request.form:
+    newcase = TestCase()
+    print(request.path)
+    print(request.url)
+    newcase.assessmentid = request.url
+    newcase = applyFormData(newcase, request.form, ["name", "mitreid", "phase"])
+    if KnowlegeBase.objects(mitreid=newcase.mitreid):
+        newcase.kbentry = True
+    newcase.save()
+    return jsonify([{"id": str(newcase.id), "name": newcase.name, "phase": newcase.phase, "mitreid": newcase.mitreid}])
+    # else:
+    #     newtests = []
+    #     for templateID in request.form.getlist('ids[]'):
+    #         tmpl = TestCaseTemplate.objects(id=templateID).first()
+    #         newcase = TestCase()
+    #         newcase.assessmentid = id
+    #         newcase.name = tmpl.name
+    #         newcase.overview = tmpl.overview
+    #         newcase.objective = tmpl.objective
+    #         newcase.rednotes = tmpl.notes
+    #         newcase.actions = tmpl.actions
+    #         newcase.advice = tmpl.advice
+    #         newcase.mitreid = tmpl.mitreid
+    #         newcase.phase = tmpl.phase
+    #         newcase.provider = tmpl.provider
+    #         newcase.kbentry = tmpl.kbentry
+    #         newcase.save()
+    #         newtests.append({"id": str(newcase.id), "name": newcase.name, "phase": newcase.phase, "mitreid": newcase.mitreid})
+    #     return jsonify(newtests)
+
 @blueprint_testcase.route('/testcase/<id>',methods = ['POST'])
 @auth_required()
 def runtestcaseget(id):

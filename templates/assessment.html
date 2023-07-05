@@ -8,20 +8,14 @@
         <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">{{ ass.name }}</p>
         {% if not current_user.has_role("Blue") %}
         <div class="btn-group">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                New...
-            </button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">New...</button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newtestcase">Test Case</a></li>
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#templatesModal">Test Case From Template</a></li>
+                <li><a class="dropdown-item" href="#" id="newTestcase">Testcase</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#templatesModal">Testcase From Template</a></li>
             </ul>
         </div>
         <div class="btn-group">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Import...
-            </button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Import...</button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#mitreImportModal">Mitre ATT&CK Layer</a></li>
                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#templateModal">Testcase Template</a></li>
@@ -29,10 +23,7 @@
         </div>
         {% endif %}
         <div class="btn-group">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Export...
-            </button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Export...</button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/assessment/export/json/{{ ass.id }}">Results as JSON</a></li>
                 <li><a class="dropdown-item" href="/assessment/export/csv/{{ ass.id }}">Results as CSV</a></li>
@@ -52,9 +43,7 @@
         </div>
         {% if not current_user.has_role("Blue") %}
         <div class="btn-group" id="bulk-dropdown" style="display:none">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                Bulk...
-            </button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Bulk...</button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#" onclick="visibleTest(event, selectedIds)">Toggle Testcase Visibility</a></li>
                 <li><a class="dropdown-item" href="#" onclick="deleteTest(event, selectedIds)">Delete Testcases</a></li>
@@ -63,11 +52,11 @@
         </div>
         {% endif %}
         <div class="btn-group">
-            <a type="button" class="btn btn-primary" href="/assessment/stats/{{ ass.id }}">Statistics</a>
+            <a type="button" class="btn btn-secondary" href="/assessment/stats/{{ ass.id }}">Statistics</a>
         </div>
         <span id="selected-count" class="ms-1"></span>
     </div>
-    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="table" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="start" data-sort-order="asc" data-detail-view="true" data-detail-formatter="testcaseFormatter" data-silent-sort="false" style="display:none;" data-cookie="true" data-cookie-id-table="assessmentSave">
+    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="assessmentTable" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="start" data-sort-order="asc" data-detail-view="true" data-detail-formatter="testcaseFormatter" data-silent-sort="false" style="display:none;" data-cookie="true" data-cookie-id-table="assessmentSave">
         <thead>
             <tr class="tr-class-1">
                 <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>

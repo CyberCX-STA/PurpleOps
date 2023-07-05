@@ -40,18 +40,17 @@ def editassessment(id):
 
 @blueprint_assessment.route('/assessment/<id>', methods = ['GET'])
 @auth_required()
+# TODO have perms?
 def loadassessment(id):
-    session["assessmentid"] = id
-
-    # stats = generatestats(tests, ass)
-
     return render_template(
         'assessment.html',
         tests = TestCase.objects(assessmentid=id).all(),
         ass = Assessment.objects(id=id).first(),
         templates = TestCaseTemplate.objects(),
-        mitres = [
-            [m["mitreid"], m["name"]] for m in Technique.objects()
-        ].sort(key=lambda x: x[0]),
+        mitres = sorted(
+            [[m["mitreid"], m["name"]] for m in Technique.objects()],
+            key=lambda m: m[0]
+        ),
+        phases = [phase["name"] for phase in Tactic.objects()]
         # stats=stats
     )

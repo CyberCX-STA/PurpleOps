@@ -1,6 +1,6 @@
 // Delay table showing until page is loaded to prevent jumping
 $(function () {
-  $('#assessmentTable').show()
+  $('#assessmentsTable').show()
 })
 
 var row = null
@@ -17,7 +17,7 @@ $('#newAssessment').click(function() {
 function editAssessmentModal(e) {
 	// Globally store the clicked row for AJAX operations
 	row = $(e).closest("tr")
-	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
+	rowData = $('#assessmentsTable').bootstrapTable('getData')[row.data("index")]
 	$("#newAssessmentForm").trigger('reset')
     $('#newAssessmentForm').attr('action', `/assessment/${rowData.id}`) 
 	$('#newAssessmentLabel').text("Edit Assessment")
@@ -30,7 +30,7 @@ function editAssessmentModal(e) {
 function deleteAssessmentModal(e) {
 	// Globally store the clicked row for AJAX operations
 	row = $(e).closest("tr")
-	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
+	rowData = $('#assessmentsTable').bootstrapTable('getData')[row.data("index")]
 	$('#deleteAssessmentForm').attr('action', `/assessment/${rowData.id}`) 
     // TODO XSS
 	$('#deleteAssessmentWarning').html(`Really Delete <code>${rowData.name}</code>?`)
@@ -57,14 +57,14 @@ $("#newAssessmentForm").submit(function(e){
         
 		// This function is shared between new and edit assessment, so do we
 		// need to edit a row or create a new one?
-		if ($('#assessmentTable').bootstrapTable('getRowByUniqueId', body.id)) {
-			$('#assessmentTable').bootstrapTable('updateRow', {
+		if ($('#assessmentsTable').bootstrapTable('getRowByUniqueId', body.id)) {
+			$('#assessmentsTable').bootstrapTable('updateRow', {
 				index: row.data("index"),
 				row: newRow,
 				replace: true
 			})
 		} else {
-			$('#assessmentTable').bootstrapTable('append', [newRow])
+			$('#assessmentsTable').bootstrapTable('append', [newRow])
 		}
 
 		$('#newAssessmentModal').modal('hide')
@@ -77,7 +77,7 @@ $('#deleteAssessmentButton').click(function() {
 		url: `/assessment/${rowData.id}`,
 		type: 'DELETE',
 		success: function(result) {
-			$('#assessmentTable').bootstrapTable('removeByUniqueId', rowData.id)
+			$('#assessmentsTable').bootstrapTable('removeByUniqueId', rowData.id)
 			$('#deleteAssessmentModal').modal('hide')
 		}
 	});
