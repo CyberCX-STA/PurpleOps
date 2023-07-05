@@ -1,174 +1,44 @@
-<!-- TODO incorporate MASTER -->
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Purpleops</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
-        <link rel="icon" href="/static/images/logo.ico" type="image/x-icon">
-        <meta name="theme-color" content="#7952b3">
+{% extends "master.html" %}
+{% block content %}
 
-        <style>
-            html,
-            body {
-                height: 100%;
-            }
+<style>
+    main {
+        max-width: 400px;
+        margin: 0 auto;
+        margin-top: 100px;
+        text-align: center;
+    }
 
-            body {
-                display: flex;
-                /* align-items: center; */
-                padding-top: 40px;
-                padding-bottom: 40px;
-                background-color: #f5f5f5;
-            }
+    .form-check {
+        margin-top: 10px;
+    }
 
-            .form-mfa {
-                width: 100%;
-                max-width: 680px;
-                padding: 15px;
-                margin: auto;
-            }
+    .form-floating {
+        margin-bottom: 10px;
+    }
+</style>
+<main class="form-mfa">
+    <img class="mb-4" src="/static/images/logo.png" alt="" width="300" height="300">
 
-            .form-mfa .checkbox {
-                font-weight: 400;
-            }
+    {%- with messages = get_flashed_messages(with_categories=true) -%}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+            {{message}}
+        </div>
+        {% endfor %}
+        {% endif %}
+    {%- endwith %}
 
-            .form-mfa .form-floating:focus-within {
-                z-index: 2;
-            }
-
-            .form-mfa input[type="email"] {
-                margin-bottom: -1px;
-                border-bottom-right-radius: 0;
-                border-bottom-left-radius: 0;
-            }
-
-            .form-mfa input[type="password"] {
-                margin-bottom: 10px;
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-            }
-
-            .bd-placeholder-img {
-                font-size: 1.125rem;
-                text-anchor: middle;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                user-select: none;
-            }
-
-            .alert {
-                margin: 10px;
-            }
-
-            .form-floating {
-                margin-bottom: 20px
-            }
-
-            @media (min-width: 768px) {
-                .bd-placeholder-img-lg {
-                    font-size: 3.5rem;
-                }
-            }
-        </style>
-    </head>
-
-    <body class="text-center">
-        <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
-            crossorigin="anonymous"></script>
-        <main class="form-mfa">
-            <!-- <img class="mb-4" src="/static/images/logo.png" alt="" width="300" height="300"> -->
-            <!-- <form method="POST" action="{{ url_for_security('login') }}" name="login_user_form">
-                <img class="mb-4" src="/static/images/logo.png" alt="" width="300" height="300">
-                <h1 class="h3 mb-3 fw-normal">Sign in</h1>
-
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="username" name="email" placeholder="username" required>
-                    <label for="username">Username</label>
-                </div>
-                <div class="form-floating">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="password" required>
-                    <label for="password">Password</label>
-                </div>
-
-                <button class="w-100 btn btn-lg btn-primary" type="submit" name="submit">Sign in</button>
-                <p class="mt-5 mb-3 text-muted">Version 0.0-WIP</p>
-            </form> -->
-            
-            <img class="mb-4" src="/static/images/logo.png" alt="" width="300" height="300">
-
-
-            {% macro render_field_with_errors(field) %}
-            <!-- <p> -->
-                {{ field.label }} {{ field(**kwargs)|safe }}
-                {% if field.errors %}
-                <!-- <ul> -->
-                {% for error in field.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{error}}
-                  </div>
-                {% endfor %}
-                <!-- </ul> -->
-                {% endif %}
-            <!-- </p> -->
-            {% endmacro %}
-
-            {% macro render_field(field) %}
-            <p>{{ field(**kwargs)|safe }}</p>
-            {% endmacro %}
-
-            {% macro render_field_errors(field) %}
-            <!-- <p> -->
-                {% if field and field.errors %}
-                <!-- <ul> -->
-                {% for error in field.errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{error}}
-                  </div>
-                {% endfor %}
-                <!-- </ul> -->
-                {% endif %}
-            <!-- </p> -->
-            {% endmacro %}
-
-                
-                <style type="text/css">
-                    .center { text-align: center }
-                    .important { font-size: larger; font-weight: bold }
-                </style>
-
-            {%- with messages = get_flashed_messages(with_categories=true) -%}
-                {% if messages %}
-                <!-- <ul class="flashes"> -->
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }}" role="alert">
-                    {{message}}
-                </div>
-                {% endfor %}
-                <!-- </ul> -->
-                {% endif %}
-            {%- endwith %}
-
-            <h1 class="h3 mb-3 fw-normal">Multi-Factor Authentication</h1>
-            <form action="{{ url_for_security("two_factor_token_validation") }}" method="POST"
-                  name="two_factor_verify_code_form">
-                {{ two_factor_verify_code_form.hidden_tag() }}
-                {{ render_field_errors(two_factor_verify_code_form.code) }}
-                <div class="form-floating">
-                    <input id="code" name="code" placeholder="XXXXXX" type="text" value="" required class="form-control">
-                    <label for="code">Authentication Code</label> 
-                </div>
-                <input id="submit" name="submit" type="submit" value="Submit Code" class="btn btn-primary w-100 " >
-            </form>
-
-
-
-        </main>
-    </body>
-</html>
+    <h1 class="h3 mb-3 fw-normal">Multi-Factor Authentication</h1>
+    <form action="{{ url_for_security("two_factor_token_validation") }}" method="POST" name="two_factor_verify_code_form">
+        {{ two_factor_verify_code_form.hidden_tag() }}
+        {{ macros.render_field_errors(two_factor_verify_code_form.code) }}
+        <div class="form-floating">
+            <input id="code" name="code" placeholder="XXXXXX" type="text" value="" required class="form-control">
+            <label for="code">Authentication Code</label> 
+        </div>
+        <input id="submit" name="submit" type="submit" value="Submit Code" class="btn btn-primary w-100 " >
+    </form>
+</main>
+{% endblock %}

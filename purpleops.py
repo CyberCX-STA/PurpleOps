@@ -1,8 +1,8 @@
 import os
 from model import *
 from dotenv import load_dotenv
-from flask import Flask, render_template
-from flask_security import Security, auth_required
+from flask import Flask, render_template, redirect
+from flask_security import Security, auth_required, current_user
 
 from blueprints import access, assessment, assessment_utils, assessment_import, assessment_export, testcase, testcase_utils
 
@@ -27,6 +27,8 @@ security = Security(app, user_datastore)
 @app.route('/index')
 @auth_required()
 def index():
+    if current_user.initpwd:
+        return redirect("/password/change")
     assessments = Assessment.objects().all()
     return render_template('assessments.html', assessments=assessments)
 

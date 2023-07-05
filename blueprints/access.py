@@ -5,6 +5,13 @@ from flask_security import auth_required, utils, current_user, roles_accepted
 
 blueprint_access = Blueprint('blueprint_access', __name__)
 
+@blueprint_access.route('/password/changed', methods = ['GET'])
+@auth_required()
+def passwordchanged():
+    current_user.initpwd = False
+    current_user.save()
+    return redirect("/")
+
 @blueprint_access.route('/manage/access', methods = ['GET'])
 @auth_required()
 @roles_accepted('Admin')

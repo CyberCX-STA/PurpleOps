@@ -74,7 +74,7 @@
 
     {% import "macros.html" as macros %}
 
-    {% if current_user.initpwd %}
+    {% if current_user.initpwd and request.path not in ["/login", "/mfa/register", "/mfa/verify", "/password/change"] %}
     <div class="alert alert-danger alert-server m-0 border-0 rounded-0" role="alert">
         <strong>Initial password is still in use.</strong> Change it via Settings (Top Right) > Update Password
     </div>
@@ -83,6 +83,7 @@
     <nav class="navbar sticky-top navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><img class="mx-2" src="/static/images/logo.png" width="28px">Purpleops</a>
+            {% if not request.path in ["/login", "/mfa/register", "/mfa/verify"] %}
             <a role="button" class="btn btn-primary" title="Back" id="assessment-crumb-button" style="display:none">
                 <i class="bi-arrow-left-circle-fill">&zwnj;</i>
                 &nbsp;
@@ -103,6 +104,7 @@
                     <i class="bi-box-arrow-right">&zwnj;</i>
                 </a>
             </div>
+            {% endif %}
         </div>
     </nav>
 

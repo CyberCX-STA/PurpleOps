@@ -1,163 +1,53 @@
-<!-- TODO incorporate MASTER -->
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Purpleops</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
-        <link rel="icon" href="/static/images/logo.ico" type="image/x-icon">
-        <meta name="theme-color" content="#7952b3">
+{% extends "master.html" %}
+{% block content %}
 
-        <style>
-            html,
-            body {
-                height: 100%;
-            }
+<style>
+    main {
+        max-width: 300px;
+        margin: 0 auto;
+        margin-top: 100px;
+        text-align: center;
+    }
 
-            body {
-                display: flex;
-                align-items: center;
-                padding-top: 40px;
-                padding-bottom: 40px;
-                background-color: #f5f5f5;
-            }
+    .form-check {
+        margin-top: 10px;
+    }
 
-            .form-signin {
-                width: 100%;
-                max-width: 330px;
-                padding: 15px;
-                margin: auto;
-            }
+    .form-floating {
+        margin-top: 10px;
+    }
+</style>
+<main>
+    <img class="mb-4" src="/static/images/logo.png" alt="" width="300" height="300">
+    {%- with messages = get_flashed_messages(with_categories=true) -%}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+            {{message}}
+        </div>
+        {% endfor %}
+    {% endif %}
+    {%- endwith %}
+    <h1 class="h3 mb-3 fw-normal">Sign in</h1>
+    <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+        {{ login_user_form.hidden_tag() }}
+        <div class="form-floating">
+            <input id="email" name="email" required type="email" value="" class="form-control" >
+            <label for="email">Email Address</label> 
+        </div>
+        <div class="form-floating">
+            <input id="password" name="password" required type="password" value="" class="form-control" >
+            <label for="password">Password</label>
+        </div>
+        <div class="form-check">
+            <input id="remember" name="remember" type="checkbox" value="y" class="form-check-input" >
+            <label for="remember" class="form-check-label" >Remember Me</label> 
+        </div>
+        {{ macros.render_field_errors(login_user_form.email) }}
+        {{ macros.render_field_errors(login_user_form.password) }}
+        {{ macros.render_field_errors(login_user_form.csrf_token) }}
+        <input id="submit" name="submit" type="submit" value="Login" class="btn btn-primary w-100 " >
+    </form>
+</main>
 
-            /* .form-signin .checkbox {
-                font-weight: 400;
-            }
-
-            .form-signin .form-floating:focus-within {
-                z-index: 2;
-            } */
-
-            form input {
-                /* margin-bottom: -1px; */
-                border-bottom-right-radius: 0;
-                border-bottom-left-radius: 0;
-            }
-
-            .form input {
-                /* margin-bottom: 10px; */
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-            }
-
-            .form-floating {
-                margin-bottom: 20px
-            }
-
-            .bd-placeholder-img {
-                font-size: 1.125rem;
-                text-anchor: middle;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                user-select: none;
-            }
-
-            @media (min-width: 768px) {
-                .bd-placeholder-img-lg {
-                    font-size: 3.5rem;
-                }
-            }
-        </style>
-    </head>
-
-    <body>
-        <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
-            crossorigin="anonymous"></script>
-        <main class="form-signin">
-            <img class="mb-4" src="/static/images/logo.png" alt="" width="300" height="300">
-            <!-- <form method="POST" action="{{ url_for_security('login') }}" name="login_user_form">
-                {{ login_user_form.hidden_tag() }}
-                <img class="mb-4" src="/static/images/logo.png" alt="" width="300" height="300">
-                <h1 class="h3 mb-3 fw-normal">Sign in</h1>
-
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="username" name="email" placeholder="username" required>
-                    <label for="username">Username</label>
-                </div>
-                <div class="form-floating">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="password" required>
-                    <label for="password">Password</label>
-                </div>
-
-                <button class="w-100 btn btn-lg btn-primary" type="submit" name="submit">Sign in</button>
-                <p class="mt-5 mb-3 text-muted">Version 0.0-WIP</p>
-            </form> -->
-            {% macro render_field_with_errors(field) %}
-            <p>
-                {{ field.label }} {{ field(**kwargs)|safe }}
-                {% if field.errors %}
-                <ul>
-                {% for error in field.errors %}
-                    <li style="color: #ff0000">{{ error }}</li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-            </p>
-            {% endmacro %}
-
-            {% macro render_field(field) %}
-            <p>{{ field(**kwargs)|safe }}</p>
-            {% endmacro %}
-
-            {% macro render_field_errors(field) %}
-            <p>
-                {% if field and field.errors %}
-                <ul>
-                {% for error in field.errors %}
-                    <li style="color: #ff0000">{{ error }}</li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-            </p>
-            {% endmacro %}
-
-            {%- with messages = get_flashed_messages(with_categories=true) -%}
-            {% if messages %}
-                <!-- <ul class="flashes"> -->
-                {% for category, message in messages %}
-                <!-- <li class="{{ category }}">{{category}}{{ message }}</li> -->
-                <div class="alert alert-{{ category }}" role="alert">
-                    {{message}}
-                </div>
-                {% endfor %}
-                <!-- </ul> -->
-            {% endif %}
-            {%- endwith %}
-            <h1 class="h3 mb-3 fw-normal">Sign in</h1>
-            <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
-            {{ login_user_form.hidden_tag() }}
-            <div class="form-floating">
-                <input id="email" name="email" required type="email" value="" class="form-control" >
-                <label for="email">Email Address</label> 
-            </div>
-            <div class="form-floating">
-                 <input id="password" name="password" required type="password" value="" class="form-control" >
-                 <label for="password">Password</label>
-            </div>
-            <div class="form-check">
-                <input id="remember" name="remember" type="checkbox" value="y" class="form-check-input" >
-                <label for="remember" class="form-check-label" >Remember Me</label> 
-              </div>
-            {{ render_field_errors(login_user_form.email) }}
-            {{ render_field_errors(login_user_form.password) }}
-            {{ render_field_errors(login_user_form.csrf_token) }}
-            <input id="submit" name="submit" type="submit" value="Login" class="btn btn-primary w-100 " >
-            </form>
-        </main>
-    </body>
-</html>
+{% endblock %}
