@@ -8,7 +8,7 @@
 {{ macros.toast(title="Testcase Deleted") }}
 
 <!-- New Test Modal-->
-<form action="/testcase" method="POST" class="m-0" id="newTestcaseForm"></form>
+<form action="/testcase" method="POST" class="m-0" id="newTestcaseForm">
     {{ macros.modalHead(name="newTestcase", title="New Testcase") }}
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>
@@ -24,16 +24,16 @@
         </select>
     </div>
     <div class="mb-3">
-        <label for="phase" class="form-label">Phase / Tactic</label>
-        <select id="phase" name="phase" class="form-label form-select" required>
+        <label for="tactic" class="form-label">Tactic</label>
+        <select id="tactic" name="tactic" class="form-label form-select" required>
             <option value="none" selected disabled hidden>Select...</option>
-            {% for phase in phases %}
-            <option value="{{ phase }}">{{ phase }}</option>
+            {% for tactic in tactics %}
+            <option value="{{ tactic }}">{{ tactic }}</option>
             {% endfor %}
         </select>
     </div>
+    {{ macros.modalTail(name="newTestcase", cancelLabel="Close", actionLabel="Create") }}
 </form>
-{{ macros.modalTail(name="newTestcase", cancelLabel="Close", actionLabel="Create") }}
 
 <!-- Select testcases from templates modal -->
 <div class="modal fade" id="templatesModal" tabindex="-1" aria-hidden="true">
@@ -50,7 +50,7 @@
                             <tr>
                                 <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>
                                 <th data-field="src" id="nameField" data-filter-control="select">Src</th>
-                                <th data-field="phase" data-sortable="true" data-filter-control="select">Phase</th>
+                                <th data-field="tactic" data-sortable="true" data-filter-control="select">Tactic</th>
                                 <th data-field="technique">Technique</th>
                                 <th data-field="title">Title</th>
                                 <th data-field="html" data-visible="false">Details</th>
@@ -62,7 +62,7 @@
                             <tr data-title="bootstrap table" data-object='{"key": "value"}' data-uniqueid="{{ template.id }}">
                                 <td></td>
                                 <td>{{ template.provider }}</td>
-                                <td>{{ template.phase }}</td>
+                                <td>{{ template.tactic }}</td>
                                 <td>{{ template.mitreid }} - {{ template.mitretitle }}</td>
                                 <td>{{ template.name }}</td>
                                 <td>{{ template.html|safe }}</td>

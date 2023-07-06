@@ -129,8 +129,8 @@ def parseAtomicRedTeam ():
                 TestCaseTemplate(
                     name = artTestcase["name"],
                     mitreid = yml["attack_technique"],
-                    # Infer the relevant phase from the first match from MITRE techniques
-                    phase = Technique.objects(mitreid=yml["attack_technique"]).first()["tactics"][0],
+                    # Infer the relevant tactic from the first match from MITRE techniques
+                    tactic = Technique.objects(mitreid=yml["attack_technique"]).first()["tactics"][0],
                     objective = artTestcase["description"],
                     actions = baseCommand,
                     provider = "ART"
@@ -144,7 +144,7 @@ def parseCustomTestcases ():
         TestCaseTemplate(
             name = yml["name"],
             mitreid = yml["mitreid"],
-            phase = yml["phase"],
+            tactic = yml["tactic"],
             objective = yml["objective"],
             actions = yml["actions"],
             rednotes = yml["rednotes"],

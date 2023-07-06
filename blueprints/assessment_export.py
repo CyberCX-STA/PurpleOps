@@ -32,7 +32,7 @@ def exportassessment(filetype, id):
         df = {
             "Mitre ID": test["mitreid"],
             "Name": test["name"],
-            "Phase": test["phase"],
+            "Tactic": test["tactic"],
             "State": test["state"],
             "Modified Time": str(test["modifytime"]),
             "Start Time": str(test["starttime"]),
@@ -101,7 +101,7 @@ def exporttemplate(id):
 
     rowsJSON = []
 
-    fields = ["mitreid", "phase", "name", "objective", "actions", "tools", "tags"]
+    fields = ["mitreid", "tactic", "name", "objective", "actions", "tools", "tags"]
 
     for test in tests:
         df = {}

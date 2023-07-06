@@ -121,7 +121,7 @@ class Sigma(db.Document):
 class TestCaseTemplate(db.Document):
     name = db.StringField()
     mitreid = db.StringField(default="")
-    phase = db.StringField(default="")
+    tactic = db.StringField(default="")
     objective = db.StringField(default="")
     actions = db.StringField(default="")
     rednotes = db.StringField(default="")
@@ -143,7 +143,7 @@ class TestCase(db.Document):
     rednotes = db.StringField(default="")
     bluenotes = db.StringField(default="")
     mitreid = db.StringField()
-    phase = db.StringField()
+    tactic = db.StringField()
     sources = db.ListField(db.StringField())
     targets = db.ListField(db.StringField())
     tools = db.ListField(db.StringField())
@@ -173,8 +173,20 @@ class TestCase(db.Document):
     # kbentry = db.BooleanField(default=False)
 
     def to_json(self):
-        return {"name": self.name,
-                "description": self.description}
+        return {
+            "name": self.name,
+            "mitreid": self.mitreid,
+            "tactic": self.tactic,
+            "state": self.state,
+            "tags": self.assessment_refs_to_str("tags"),
+        }
+    
+    def assessment_refs_to_str(self, field):
+        assessment = Assessment.objects(id=self.assessmentid).first()
+        strs = []
+        for i in self[field]:
+            strs.append([j.name for j in assessment[field] if str(j.id) == i][0])
+        return strs
 
     def starttime_tostring(self):
         if not self.starttime:

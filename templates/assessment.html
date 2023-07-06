@@ -56,7 +56,7 @@
         </div>
         <span id="selected-count" class="ms-1"></span>
     </div>
-    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="assessmentTable" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="start" data-sort-order="asc" data-detail-view="true" data-detail-formatter="testcaseFormatter" data-silent-sort="false" style="display:none;" data-cookie="true" data-cookie-id-table="assessmentSave">
+    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="assessmentTable" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="start" data-sort-order="asc" data-silent-sort="false" style="display:none;" data-cookie="true" data-cookie-id-table="assessmentSave">
         <thead>
             <tr class="tr-class-1">
                 <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>
@@ -76,125 +76,22 @@
         </thead>
 
         <tbody>
-            <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-#ID#">
-                <td></td>
-                <td>#ID#</td>
-                <td>#MITREID#</td>
-                <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
-                    <span style="display:none">#NAME#</span>
-                    <a href="/testcase/#ID#">#NAME#</a>
-                </td>
-                <td>#PHASE#</td>
-                <td class="bg-light">Pending (Hidden)</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-info py-0" onclick="visibleTest(event, [`#ID#`])" title="Toggle Visiblity">
-                            <i class="bi-eye">&zwnj;</i>
-                        </button>
-                        <button type="button" class="btn btn-warning py-0" onclick="cloneTest(event, '#ID#')" title="Clone">
-                            <i class="bi-files">&zwnj;</i>
-                        </button>
-                        <button type="button" class="btn btn-warning py-0"  title="Reset" onclick="resetTest(event, `#ID#`)">
-                            <i class="bi-arrow-clockwise">&zwnj;</i>
-                        </button>
-                        <button type="button" class="btn btn-danger py-0" onclick="new bootstrap.Toast(document.querySelector('#deleteToast')).show();" oncontextmenu="deleteTest(event, [`#ID#`])" title="Delete">
-                            <i class="bi-trash-fill">&zwnj;</i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
             {% for t in tests %}
             {% if not (current_user.has_role("Blue") and t.visible == false) %}
-            <tr data-title="bootstrap table" data-object='{"key": "value"}' id="row-{{t.id}}">
+            <tr data-title="bootstrap table" data-object='{"key": "value"}' id="{{ t.id }}">
                 <td></td>
                 <td>{{ t.id }}</td>
                 <td>{{ t.mitreid }}</td>
-                <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
-                    <span style="display:none">{{ t.name }}</span>
-                    <a href="/testcase/{{t.id}}">{{ t.name }}</a>
-                    
-                    {% if not t.kbentry and not current_user.has_role("Blue") %}
-                    <span class="badge bg-danger" onclick="filterBadge(event, this)" style="cursor: pointer">No KB</span>
-                    {% endif %}
-                    {% if t.state == "Complete" %}
-                        {% if not current_user.has_role("Blue") %}
-                        <!-- Badges for RED -->
-                            {% if t.visible == false %}
-                            <span class="badge bg-danger" onclick="filterBadge(event, this)" style="cursor: pointer">Hidden</span>
-                            {% endif %}
-                            {% if not t.blockedrating and not t.detectionrating %}
-                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Score(s)</span>
-                            {% endif %}
-                            {% if not t.actions %}
-                            <span class="badge bg-danger" onclick="filterBadge(event, this)" style="cursor: pointer">No Command</span>
-                            {% endif %}
-                            {% if not t.redfiles %}
-                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Red Files</span>
-                            {% endif %}
-                            {% if not t.sources %}
-                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Source</span>
-                            {% endif %}
-                            {% if not t.targets %}
-                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Target</span>
-                            {% endif %}
-                            {% if not t.tools %}
-                            <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Tools</span>
-                            {% endif %}
-                        {% endif %}
-                        <!-- Badges for ALL -->
-                        {% if not t.bluefiles %}
-                        <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Blue Files</span>
-                        {% endif %}
-                        {% if not t.controls %}
-                        <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Controls</span>
-                        {% endif %}
-                        {% if not t.bluenotes %}
-                        <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">No Observations</span>
-                        {% endif %}
-                        {% if t.logged == "" or t.blocked == "" %}
-                        <span class="badge bg-warning" onclick="filterBadge(event, this)" style="cursor: pointer">Incomplete Scoring</span>
-                        {% endif %}
-                    {% endif %}
-                </td>
-                <td>{{ t.phase }}</td>
-                <td class="{% if t.state == 'Pending' %}bg-light{% endif %}{% if t.state == 'In progress' %}bg-warning{% endif %}{% if t.state == 'Complete' %}bg-primary{% endif %}">{{ t.state }}{% if not t.visible == true %} (Hidden){% endif %}</td>
-                <td>
-                {% for tag in t.tags %}
-                    {% for t in ass.tags if t.id|string == tag %}
-                    <span class='badge rounded-pill' style="background:{{ t.colour }}; cursor:pointer" onclick="filterTag(event, this)">{{ t.name }}</span>
-                    {% endfor %}
-                {% endfor %}
-                </td>
-
-                <!-- Optionals -->
+                <td>{{ t.name }}</td>
+                <td>{{ t.tactic }}</td>
+                <td>{{ t.state }}</td>
+                <td>{{ t.tags }}</td>
                 <td>{{ t.starttime or "-" }}</td>
                 <td>{{ t.modifytime or "-" }}</td>
-                <td style='background-color: {{ {"0.0": "#FB6B64", "0.5": "#FB6B64", "1.0": "#FCC000", "1.5": "#FCC000", "2.0": "#FDD964", "2.5": "#FDD964", "3.0": "#B8DF43", "3.5": "#B8DF43", "4.0": "#C8DFFF", "4.5": "#C8DFFF", "5.0": "#C8DFFF", "N/A": "#fff", "-": "#fff"}[t.blockedrating or "-"] }}'>{{ t.blockedrating or "-" }}</td>
-                <td style='background-color: {{ {"0.0": "#FB6B64", "0.5": "#FB6B64", "1.0": "#FCC000", "1.5": "#FCC000", "2.0": "#FDD964", "2.5": "#FDD964", "3.0": "#B8DF43", "3.5": "#B8DF43", "4.0": "#C8DFFF", "4.5": "#C8DFFF", "5.0": "#C8DFFF", "N/A": "#fff", "-": "#fff"}[t.detectionrating or "-"] }}'>{{ t.detectionrating or "-" }}</td>
-                <td style='background-color: {% if t.blocked == "Yes" %}#C8DFFF{% elif t.alerted == "Yes" %}#C8DFFF{% elif t.logged == "Yes" %}#B8DF43{% elif t.state == "Complete" %}#FB6B64{% else %}#fff{% endif %}'>{% if t.blocked == "Yes" %}Blocked{% elif t.alerted == "Yes" %}Alerted{% elif t.logged == "Yes" %}Logged{% elif t.state == "Complete" %}Blind{% else %}Pending{% endif %}</td>
-
-                <td>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-info py-0" onclick="visibleTest(event, [`{{t.id}}`])" title="Toggle Visiblity">
-                            <i class="bi-eye">&zwnj;</i>
-                        </button>
-                        <button type="button" class="btn btn-warning py-0" onclick="cloneTest(event, '{{t.id}}')" title="Clone">
-                            <i class="bi-files">&zwnj;</i>
-                        </button>
-                        <button type="button" class="btn btn-warning py-0"  title="Reset" onclick="resetTest(event, `{{t.id}}`)">
-                            <i class="bi-arrow-clockwise">&zwnj;</i>
-                        </button>
-                        <button type="button" class="btn btn-danger py-0" onclick="new bootstrap.Toast(document.querySelector('#deleteToast')).show();" oncontextmenu="deleteTest(event, [`{{t.id}}`]); return false;" title="Delete">
-                            <i class="bi-trash-fill">&zwnj;</i>
-                        </button>
-                    </div>
-                </td>
+                <td>{{ t.blockedrating or "-" }}</td>
+                <td>{{ t.detectionrating or "-" }}</td>
+                <td>{% if t.blocked == "Yes" %}Blocked{% elif t.alerted == "Yes" %}Alerted{% elif t.logged == "Yes" %}Logged{% elif t.state == "Complete" %}Blind{% else %}Pending{% endif %}</td>
+                <td></td>
             </tr>
             {% endif %}
             {% endfor %}

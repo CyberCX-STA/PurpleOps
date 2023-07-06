@@ -202,7 +202,7 @@ $("#newTestcaseForm").submit(function(e){
 // 		idx = $("#table").bootstrapTable('getData').findIndex(row => row.id == id)
 // 		clone = JSON.stringify(orig).replaceAll("#ID#", data.id)
 // 		clone = clone.replaceAll("#NAME#", data.name)
-// 		clone = clone.replaceAll("#PHASE#", data.phase)
+// 		clone = clone.replaceAll("#TACTIC#", data.tactic)
 // 		clone = clone.replaceAll("#MITREID#", data.mitreid)
 // 		$("#table").bootstrapTable('insertRow', {index: idx + 1, row: JSON.parse(clone)})
 // 		new bootstrap.Toast(document.querySelector('#cloneToast')).show();
@@ -218,8 +218,8 @@ $("#newTestcaseForm").submit(function(e){
 // 	else {
 // 		name = $('#name').val()
 // 		mitreid = $('#mitreid').val()
-// 		phase = $('#phase').val()
-// 		dat = {name: name, mitreid: mitreid, phase: phase}
+// 		tactic = $('#tactic').val()
+// 		dat = {name: name, mitreid: mitreid, tactic: tactic}
 // 	}
 // 	$.post("/testcase/add", dat, function (data, status) {
 // 	if (status == "success") {
@@ -227,7 +227,7 @@ $("#newTestcaseForm").submit(function(e){
 // 			orig = $("#table").bootstrapTable('getData').find(row => row.id == "#ID#")
 // 			clone = JSON.stringify(orig).replaceAll("#ID#", test.id)
 // 			clone = clone.replaceAll("#NAME#", test.name)
-// 			clone = clone.replaceAll("#PHASE#", test.phase)
+// 			clone = clone.replaceAll("#TACTIC#", test.tactic)
 // 			clone = clone.replaceAll("#MITREID#", test.mitreid)
 // 			$("#table").bootstrapTable('insertRow', {index: 0, row: JSON.parse(clone)})
 // 		});     
@@ -247,7 +247,7 @@ $("#newTestcaseForm").submit(function(e){
 // 		idx = $("#table").bootstrapTable('getData').findIndex(row => row.id == id)
 // 		clone = JSON.stringify(orig).replaceAll("#ID#", data.id)
 // 		clone = clone.replaceAll("#NAME#", data.name)
-// 		clone = clone.replaceAll("#PHASE#", data.phase)
+// 		clone = clone.replaceAll("#TACTIC#", data.tactic)
 // 		clone = clone.replaceAll("#MITREID#", data.mitreid)
 // 		$("#table").bootstrapTable('remove', {field: "id", values: [id]})
 // 		$("#table").bootstrapTable('insertRow', {index: idx, row: JSON.parse(clone)})

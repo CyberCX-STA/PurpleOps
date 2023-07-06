@@ -16,7 +16,7 @@ def importtemplate(id):
     f = request.files['file']
     tests = json.loads(f.read())
 
-    fields = ["mitreid", "phase", "name", "objective", "actions", "tools", "tags"]
+    fields = ["mitreid", "tactic", "name", "objective", "actions", "tools", "tags"]
 
     for test in tests:
         tc = TestCase()
@@ -78,7 +78,7 @@ def importentire():
     directs = {
         "Mitre ID": "mitreid",
         "Name": "name",
-        "Phase": "phase",
+        "Tactic": "tactic",
         "Name": "name",
         "State": "state",
         "Objective": "objective",

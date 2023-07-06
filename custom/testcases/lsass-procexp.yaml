@@ -1,6 +1,6 @@
 name: Extract LSASS Memory with Process Explorer
 mitreid: T1003.001
-phase: Credential Access
+tactic: Credential Access
 objective: Dump LSASS ProcExp
 actions: procexp.exe
 rednotes: Be local admin dummy

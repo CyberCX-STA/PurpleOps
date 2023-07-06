@@ -22,14 +22,11 @@ blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 def newtestcase():
     # if "name" in request.form:
     newcase = TestCase()
-    print(request.path)
-    print(request.url)
-    newcase.assessmentid = request.url
-    newcase = applyFormData(newcase, request.form, ["name", "mitreid", "phase"])
-    if KnowlegeBase.objects(mitreid=newcase.mitreid):
-        newcase.kbentry = True
+    # TODO prevent cross-ass tampering on user supplied input
+    newcase.assessmentid = request.referrer.split("/")[-1]
+    newcase = applyFormData(newcase, request.form, ["name", "mitreid", "tactic"])
     newcase.save()
-    return jsonify([{"id": str(newcase.id), "name": newcase.name, "phase": newcase.phase, "mitreid": newcase.mitreid}])
+    return newcase.to_json()
     # else:
     #     newtests = []
     #     for templateID in request.form.getlist('ids[]'):
@@ -43,11 +40,11 @@ def newtestcase():
     #         newcase.actions = tmpl.actions
     #         newcase.advice = tmpl.advice
     #         newcase.mitreid = tmpl.mitreid
-    #         newcase.phase = tmpl.phase
+    #         newcase.tactic = tmpl.tactic
     #         newcase.provider = tmpl.provider
     #         newcase.kbentry = tmpl.kbentry
     #         newcase.save()
-    #         newtests.append({"id": str(newcase.id), "name": newcase.name, "phase": newcase.phase, "mitreid": newcase.mitreid})
+    #         newtests.append({"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid})
     #     return jsonify(newtests)
 
 @blueprint_testcase.route('/testcase/<id>',methods = ['POST'])
@@ -62,7 +59,7 @@ def runtestcaseget(id):
     if not testcase.assessmentid:
         testcase.assessmentid=assessmentid
     blue = current_user.has_role("Blue")
-    fields = ["name", "overview", "objective", "actions", "rednotes", "bluenotes", "advice", "mitreid", "phase", "state", "location", "blocked", "blockedrating", "alerted", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"]
+    fields = ["name", "overview", "objective", "actions", "rednotes", "bluenotes", "advice", "mitreid", "tactic", "state", "location", "blocked", "blockedrating", "alerted", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"]
     checkFields = ["visible"]
     multiFields = ["sources", "targets", "tools", "controls", "tags"]
     timeFields = ["starttime", "endtime", "detecttime"]

@@ -51,6 +51,6 @@ def loadassessment(id):
             [[m["mitreid"], m["name"]] for m in Technique.objects()],
             key=lambda m: m[0]
         ),
-        phases = [phase["name"] for phase in Tactic.objects()]
+        tactics = [tactic["name"] for tactic in Tactic.objects()]
         # stats=stats
     )

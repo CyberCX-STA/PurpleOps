@@ -19,11 +19,11 @@ def newtestcase():
         if "name" in request.form:
             newcase = TestCase()
             newcase.assessmentid=id
-            newcase = applyFormData(newcase, request.form, ["name", "mitreid", "phase"])
+            newcase = applyFormData(newcase, request.form, ["name", "mitreid", "tactic"])
             if KnowlegeBase.objects(mitreid=newcase.mitreid):
                 newcase.kbentry = True
             newcase.save()
-            return jsonify([{"id": str(newcase.id), "name": newcase.name, "phase": newcase.phase, "mitreid": newcase.mitreid}])
+            return jsonify([{"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid}])
         else:
             newtests = []
             for templateID in request.form.getlist('ids[]'):
@@ -37,11 +37,11 @@ def newtestcase():
                 newcase.actions = tmpl.actions
                 newcase.advice = tmpl.advice
                 newcase.mitreid = tmpl.mitreid
-                newcase.phase = tmpl.phase
+                newcase.tactic = tmpl.tactic
                 newcase.provider = tmpl.provider
                 newcase.kbentry = tmpl.kbentry
                 newcase.save()
-                newtests.append({"id": str(newcase.id), "name": newcase.name, "phase": newcase.phase, "mitreid": newcase.mitreid})
+                newtests.append({"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid})
             return jsonify(newtests)
 
 
@@ -63,13 +63,13 @@ def duplicatetestcase(id):
     if request.method == 'GET':
         orig = TestCase.objects(id=id).first()
         newcase = TestCase()
-        copy = ["name", "assessmentid", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "phase", "tools", "references", "kbentry", "tags"]
+        copy = ["name", "assessmentid", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "tactic", "tools", "references", "kbentry", "tags"]
         for field in copy:
             newcase[field] = orig[field]
         newcase.name = orig["name"] + " (Copy)"
         newcase.save()
 
-        return jsonify({"id": str(newcase.id), "name": newcase.name, "phase": newcase.phase, "mitreid": newcase.mitreid})
+        return jsonify({"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid})
 
 @blueprint_testcase_utils.route('/testcase/reset/<id>', methods = ['GET'])
 @auth_required()
@@ -77,13 +77,13 @@ def duplicatetestcase(id):
 def resettestcase(id):
     if request.method == 'GET':
         orig = TestCase.objects(id=id).first()
-        copy = ["id", "name", "assessmentid", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "phase", "tools", "references", "kbentry"]
+        copy = ["id", "name", "assessmentid", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "tactic", "tools", "references", "kbentry"]
         for field in orig:
             if field not in copy:
                 orig[field] = None
         orig.save()
 
-        return jsonify({"id": str(orig.id), "name": orig.name, "phase": orig.phase, "mitreid": orig.mitreid})
+        return jsonify({"id": str(orig.id), "name": orig.name, "tactic": orig.tactic, "mitreid": orig.mitreid})
 
 @blueprint_testcase_utils.route('/testcase/visible', methods = ['GET'])
 @auth_required()
@@ -153,7 +153,7 @@ def postTestcaseReleaseCard(testcase, ass, url):
         cardJSON = cardJSON.replace("#STARTTIME#", str(testcase.starttime))
         cardJSON = cardJSON.replace("#ENDTIME#", str(testcase.endtime))
         cardJSON = cardJSON.replace("#MITREID#", testcase.mitreid)
-        cardJSON = cardJSON.replace("#PHASE#", testcase.phase)
+        cardJSON = cardJSON.replace("#TACTIC#", testcase.tactic)
         cardJSON = cardJSON.replace("#NAME#", testcase.name)
         cardJSON = cardJSON.replace("#OBJECTIVE#", testcase.objective)
         sources = ", ".join([[k["name"] for k in ass["sources"] if str(k["id"]) == i][0] for i in testcase["sources"]])
@@ -194,7 +194,7 @@ def importmitrelayer():
                 newcase.actions = tmpl.actions
                 newcase.advice = tmpl.advice
                 newcase.mitreid = mitreid
-                newcase.phase = tactic
+                newcase.tactic = tactic
                 newcase.kbentry = tmpl.kbentry
                 newcase.provider = tmpl.provider
                 newcase.save()
@@ -210,7 +210,7 @@ def importmitrelayer():
             newcase.actions = ""
             
             newcase.mitreid = mitreid
-            newcase.phase = tactic
+            newcase.tactic = tactic
             newcase.save()
     return redirect(f"/assessment/{assessmentid}")
 

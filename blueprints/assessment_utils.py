@@ -35,7 +35,7 @@ def duplicateassessment(id):
             newcase = TestCase()
             newcase.assessmentid=str(newAss.id)
 
-            copy = ["name", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "phase", "tools", "references", "kbentry"]
+            copy = ["name", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "tactic", "tools", "references", "kbentry"]
             for field in copy:
                 newcase[field] = test[field]
 
@@ -144,43 +144,43 @@ def generatestats(tests, ass):
     }
 
     # What MITRE tactics do we currently have data for?
-    activeTactics = list(set([t["phase"] for t in tests if t["state"] == "Complete"]))
+    activeTactics = list(set([t["tactic"] for t in tests if t["state"] == "Complete"]))
 
     for testcase in tests:
-        if testcase["phase"] in activeTactics:
-            # Initalise phase if not in the dataframe yet
-            if testcase["phase"] not in stats:
-                stats[testcase["phase"]] = deepcopy(stats["All"])
+        if testcase["tactic"] in activeTactics:
+            # Initalise tactic if not in the dataframe yet
+            if testcase["tactic"] not in stats:
+                stats[testcase["tactic"]] = deepcopy(stats["All"])
 
             # Populate blocked/alerted/logged/missed stats
             # NOTE: If a testcase is both alerted and blocked, it will be
             # counted twice
             if testcase["blocked"] == "Yes" or testcase["blocked"] == "Partial":
-                stats[testcase["phase"]]["blocked"] += 1
+                stats[testcase["tactic"]]["blocked"] += 1
 
             if testcase["alerted"] == "Yes":
-                stats[testcase["phase"]]["alerted"] += 1
+                stats[testcase["tactic"]]["alerted"] += 1
                 if testcase["alertseverity"]:
-                    stats[testcase["phase"]][testcase["alertseverity"].lower()] += 1
+                    stats[testcase["tactic"]][testcase["alertseverity"].lower()] += 1
 
             if testcase["logged"] == "Yes":
-                stats[testcase["phase"]]["logged"] += 1
+                stats[testcase["tactic"]]["logged"] += 1
 
             if testcase["blocked"] == "No" and testcase["alerted"] == "No" and testcase["logged"] == "No":
-                stats[testcase["phase"]]["missed"] += 1
+                stats[testcase["tactic"]]["missed"] += 1
 
             # Store scores to later average with
-            stats[testcase["phase"]]["scoresPrevent"].append(float(testcase["blockedrating"] or "0.0"))
-            stats[testcase["phase"]]["scoresDetect"].append(float(testcase["detectionrating"] or "0.0"))
+            stats[testcase["tactic"]]["scoresPrevent"].append(float(testcase["blockedrating"] or "0.0"))
+            stats[testcase["tactic"]]["scoresDetect"].append(float(testcase["detectionrating"] or "0.0"))
 
             # Collate priorities, ratings and blue tools
             if testcase["priority"]:
-                stats[testcase["phase"]]["priorityType"].append(testcase["priority"])
+                stats[testcase["tactic"]]["priorityType"].append(testcase["priority"])
             if testcase["priorityurgency"]:
-                stats[testcase["phase"]]["priorityUrgency"].append(testcase["priorityurgency"])
+                stats[testcase["tactic"]]["priorityUrgency"].append(testcase["priorityurgency"])
             if testcase["controls"]:
                 names = [[k["name"] for k in ass["controls"] if str(k["id"]) == i][0] for i in testcase["controls"]]
-                stats[testcase["phase"]]["controls"].extend(names)
+                stats[testcase["tactic"]]["controls"].extend(names)
 
     # We've populated per-tactic data, this function adds it all together for
     # an "All" tactic
