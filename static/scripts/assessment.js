@@ -23,28 +23,100 @@ $("#newTestcaseForm").submit(function(e){
 		newRow = {
 			add: body.add,
 			id: body.id,
+			mitreid: body.mitreid,
 			name: body.name,
 			tactic: body.tactic,
 			state: body.state,
-			tags: body.tags,
+			tags: body.tags.join(","),
 			actions: ""
 		}
-		
-		// This function is shared between new and edit assessment, so do we
-		// need to edit a row or create a new one?
-		if ($('#assessmentTable').bootstrapTable('getRowByUniqueId', body.id)) {
-			$('#assessmentTable').bootstrapTable('updateRow', {
-				index: row.data("index"),
-				row: newRow,
-				replace: true
-			})
-		} else {
-			$('#assessmentTable').bootstrapTable('append', [newRow])
-		}
-
+		$('#assessmentTable').bootstrapTable('append', [newRow])
 		$('#newTestcaseModal').modal('hide')
 	})
 });
+
+$('#testcaseTemplatesButton').click(function() {
+	console.log("test")
+	$.ajax({
+		url: `/testcase/import/template`,
+		type: 'POST',
+		
+		data: JSON.stringify({
+			ids: $('#testcaseTemplateTable').bootstrapTable('getSelections').map(row => row.id)
+		}),
+		dataType: 'json',
+		contentType: "application/json; charset=utf-8",
+		success: function(result) {
+			result.forEach(result => {
+				newRow = {
+					add: result.add,
+					id: result.id,
+					mitreid: result.mitreid,
+					name: result.name,
+					tactic: result.tactic,
+					state: result.state,
+					tags: result.tags.join(","),
+					actions: ""
+				}
+				$('#assessmentTable').bootstrapTable('append', [newRow])
+			})
+			$('#testcaseTemplatesModal').modal('hide')
+		}
+	});
+});
+
+$("#navigatorTemplateForm").submit(function(e){
+	e.preventDefault();
+
+	fetch(e.target.action, {
+		method: 'POST',
+		body: new FormData(e.target)
+	}).then((response) => {
+		return response.json();
+	}).then((body) => {
+		body.forEach(result => {
+			newRow = {
+				add: result.add,
+				id: result.id,
+				mitreid: result.mitreid,
+				name: result.name,
+				tactic: result.tactic,
+				state: result.state,
+				tags: result.tags.join(","),
+				actions: ""
+			}
+			$('#assessmentTable').bootstrapTable('append', [newRow])
+		})
+		$('#testcaseNavigatorModal').modal('hide')
+	})
+});
+
+$("#campaignTemplateForm").submit(function(e){
+	e.preventDefault();
+
+	fetch(e.target.action, {
+		method: 'POST',
+		body: new FormData(e.target)
+	}).then((response) => {
+		return response.json();
+	}).then((body) => {
+		body.forEach(result => {
+			newRow = {
+				add: result.add,
+				id: result.id,
+				mitreid: result.mitreid,
+				name: result.name,
+				tactic: result.tactic,
+				state: result.state,
+				tags: result.tags.join(","),
+				actions: ""
+			}
+			$('#assessmentTable').bootstrapTable('append', [newRow])
+		})
+		$('#testcaseCampaignModal').modal('hide')
+	})
+});
+
 
 // function editAssessmentModal(e) {
 // 	// Globally store the clicked row for AJAX operations
@@ -115,33 +187,36 @@ $("#newTestcaseForm").submit(function(e){
 // 	});
 // });
 
-// function nameFormatter(name, row) {
-// 	return `<a href="/assessment/${row.id}">${name}</a>`
-// }
+function nameFormatter(name, row) {
+	return `<a href="/testcase/${row.id}">${name}</a>`
+}
 
-// function progressFormatter(progress) {
-// 	return `
-// 		<div class="progress">
-// 			<div class="progress-bar" role="progressbar" style="width: ${progress}%;" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
-// 		</div>
-// 	`
-// }
+function tagFormatter(tags) {
+	html = ""
+	tags.split(",").forEach(tag => {
+		html += `<span class='badge rounded-pill' style="background:#ff0000; cursor:pointer" onclick="filterTag(this)">${tag}</span>`
+	})
+	return html
+}
 
-// function actionFormatter() {
-// 	return `
-// 		<div class="btn-group btn-group-sm" role="group">
-// 			<button type="button" class="btn btn-primary py-0" title="Edit" onclick="editAssessmentModal(this)">
-// 				<i class="bi-pencil">&zwnj;</i>
-// 			</button>
-// 			<button type="button" class="btn btn-secondary py-0" title="Clone" onclick="cloneAssessment(this)">
-// 				<i class="bi-files">&zwnj;</i>
-// 			</button>
-// 			<button type="button" class="btn btn-danger py-0" title="Delete" onclick="deleteAssessmentModal(this)">
-// 				<i class="bi-trash-fill">&zwnj;</i>
-// 			</button>
-// 		</div>
-// 	`
-// }
+function actionFormatter() {
+	return `
+		<div class="btn-group btn-group-sm" role="group">
+			<button type="button" class="btn btn-info py-0" onclick="visibleTest(this)" title="Toggle Visiblity">
+				<i class="bi-eye">&zwnj;</i>
+			</button>
+			<button type="button" class="btn btn-warning py-0" onclick="cloneTest(this)" title="Clone">
+				<i class="bi-files">&zwnj;</i>
+			</button>
+			<button type="button" class="btn btn-warning py-0"  title="Reset" onclick="resetTest(this)">
+				<i class="bi-arrow-clockwise">&zwnj;</i>
+			</button>
+			<button type="button" class="btn btn-danger py-0" onclick="deleteTest(this)" title="Delete">
+				<i class="bi-trash-fill">&zwnj;</i>
+			</button>
+		</div>
+	`
+}
 
 
 

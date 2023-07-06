@@ -7,18 +7,13 @@
     <div id="toolbar">
         <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">{{ ass.name }}</p>
         {% if not current_user.has_role("Blue") %}
-        <div class="btn-group">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">New...</button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" id="newTestcase">Testcase</a></li>
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#templatesModal">Testcase From Template</a></li>
-            </ul>
-        </div>
+        <button id="newTestcase" class="btn btn-primary">New</button>
         <div class="btn-group">
             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Import...</button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#mitreImportModal">Mitre ATT&CK Layer</a></li>
-                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#templateModal">Testcase Template</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#testcaseTemplatesModal">Testcase(s) From Template</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#testcaseNavigatorModal">Mitre ATT&CK Navigator Layer</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#testcaseCampaignModal">Campaign Template</a></li>
             </ul>
         </div>
         {% endif %}
@@ -62,16 +57,16 @@
                 <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>
                 <th data-field="id" data-visible="false" data-switchable="false">ID</th>
                 <th data-field="mitreid" data-sortable="true" data-width="10" data-width-unit="%" data-filter-control="input">Mitre ID</th>
-                <th data-field="name" data-sortable="true" data-filter-control="input">Name</th>
+                <th data-field="name" data-sortable="true" data-filter-control="input" data-formatter="nameFormatter">Name</th>
                 <th data-field="tactic" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select">Tactic</th>
                 <th data-field="state" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select">State</th>
-                <th data-field="tags" data-width="15" data-width-unit="%" data-filter-control="input">Tags</th>
+                <th data-field="tags" data-width="15" data-width-unit="%" data-filter-control="input" data-formatter="tagFormatter">Tags</th>
                 <th data-field="start" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Start</th>
                 <th data-field="modify" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Modified</th>
                 <th data-field="preventscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Prevention</th>
                 <th data-field="detectscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Detection</th>
                 <th data-field="outcome" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Outcome</th>
-                <th data-field="actions" class="text-center" data-width="10" data-width-unit="%" data-switchable="false"{% if current_user.has_role("Blue") %} data-visible="false"{% endif %}>Actions</th>
+                <th data-field="actions" class="text-center" data-width="10" data-width-unit="%" data-switchable="false"{% if current_user.has_role("Blue") %} data-visible="false"{% endif %} data-formatter="actionFormatter">Actions</th>
             </tr>
         </thead>
 
@@ -85,7 +80,7 @@
                 <td>{{ t.name }}</td>
                 <td>{{ t.tactic }}</td>
                 <td>{{ t.state }}</td>
-                <td>{{ t.tags }}</td>
+                <td>{{ t.tags | join(",") }}</td>
                 <td>{{ t.starttime or "-" }}</td>
                 <td>{{ t.modifytime or "-" }}</td>
                 <td>{{ t.blockedrating or "-" }}</td>

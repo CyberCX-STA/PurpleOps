@@ -8,7 +8,7 @@
 {{ macros.toast(title="Testcase Deleted") }}
 
 <!-- New Test Modal-->
-<form action="/testcase" method="POST" class="m-0" id="newTestcaseForm">
+<form action="/testcase/single" method="POST" class="m-0" id="newTestcaseForm">
     {{ macros.modalHead(name="newTestcase", title="New Testcase") }}
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>
@@ -36,99 +36,55 @@
 </form>
 
 <!-- Select testcases from templates modal -->
-<div class="modal fade" id="templatesModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Select Testcases</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <table id="template-table" data-search="true" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="add" data-sort-order="desc" data-detail-view="true" data-detail-formatter="detailFormatter" data-filter-control="true" data-show-search-clear-button="true" data-height="600" data-silent-sort="false" data-pagination="true">
-                        <thead>
-                            <tr>
-                                <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>
-                                <th data-field="src" id="nameField" data-filter-control="select">Src</th>
-                                <th data-field="tactic" data-sortable="true" data-filter-control="select">Tactic</th>
-                                <th data-field="technique">Technique</th>
-                                <th data-field="title">Title</th>
-                                <th data-field="html" data-visible="false">Details</th>
-                                <th data-field="id" data-visible="false">ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for template in templates %}
-                            <tr data-title="bootstrap table" data-object='{"key": "value"}' data-uniqueid="{{ template.id }}">
-                                <td></td>
-                                <td>{{ template.provider }}</td>
-                                <td>{{ template.tactic }}</td>
-                                <td>{{ template.mitreid }} - {{ template.mitretitle }}</td>
-                                <td>{{ template.name }}</td>
-                                <td>{{ template.html|safe }}</td>
-                                <td>{{ template.id }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary" onclick="newTest(true)" id="add-templates" style="display: none">Add Selected</button>
-            </div>
-        </div>
-    </div>
+{{ macros.modalHead(name="testcaseTemplates", title="Select Testcase", xl=True) }}
+<div class="mb-3">
+    <table id="testcaseTemplateTable" data-toggle="table" data-search="true" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="add" data-sort-order="desc" data-filter-control="true" data-show-search-clear-button="true" data-height="600" data-silent-sort="false" data-pagination="true">
+        <thead>
+            <tr>
+                <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>
+                <th data-field="src" id="nameField" data-filter-control="select">Src</th>
+                <th data-field="tactic" data-sortable="true" data-filter-control="select">Tactic</th>
+                <th data-field="technique">Technique</th>
+                <th data-field="title">Title</th>
+                <th data-field="html" data-visible="false">Details</th>
+                <th data-field="id" data-visible="false">ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for template in templates %}
+            <tr data-title="bootstrap table" data-object='{"key": "value"}' data-uniqueid="{{ template.id }}">
+                <td></td>
+                <td>{{ template.provider }}</td>
+                <td>{{ template.tactic }}</td>
+                <td>{{ template.mitreid }}<!-- TODO mitre tactic name --></td>
+                <td>{{ template.name }}</td>
+                <td>{{ template.html|safe }}</td>
+                <td>{{ template.id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
+{{ macros.modalTail(name="testcaseTemplates", cancelLabel="Cancel", actionLabel="Add Selected") }}
 
 <!-- MITRE Modal -->
-<form action="/testcase/import/mitre" enctype="multipart/form-data" method="POST" class="m-0">
-    <div class="modal fade" id="mitreImportModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="mitreImportModalLabel">Import MITRE Layer</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <p>Select your threat actor / ad-hoc TTP at <a href="https://mitre-attack.github.io/attack-navigator/" target="_blank">the Mitre ATT&CK Navigator</a> &gt; <code>Download Controls</code> &gt; <code>Download Layer as JSON</code>.</p>
-                        <label for="formFile" class="form-label">MITRE Layer .json</label>
-                        <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json">
-
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Import</button>
-                </div>
-            </div>
-        </div>
+<form action="/testcase/import/navigator" enctype="multipart/form-data" method="POST" class="m-0" id="navigatorTemplateForm">
+    {{ macros.modalHead(name="testcaseNavigator", title="Import MITRE Layer") }}
+    <div class="mb-3">
+        <p>Select your threat actor / ad-hoc TTP at <a href="https://mitre-attack.github.io/attack-navigator/" target="_blank">the Mitre ATT&CK Navigator</a> &gt; <code>Download Controls</code> &gt; <code>Download Layer as JSON</code>.</p>
+        <label for="formFile" class="form-label">MITRE Layer .json</label>
+        <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json">
     </div>
+    {{ macros.modalTail(name="testcaseNavigator", cancelLabel="Close", actionLabel="Import") }}
 </form>
 
 <!-- Template Modal -->
-<form action="/assessment/import/template/{{ ass.id }}" enctype="multipart/form-data" method="POST" class="m-0">
-    <div class="modal fade" id="templateModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Import Testcase Template</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <p>Select the <code>template.json</code> file output from <code>Export > Testcase Template</code>.</p>
-                        <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json" autocomplete="false">
 
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Import</button>
-                </div>
-            </div>
-        </div>
+<form action="/testcase/import/campaign" enctype="multipart/form-data" method="POST" class="m-0" id="campaignTemplateForm">
+    {{ macros.modalHead(name="testcaseCampaign", title="Import Testcase Campaign") }}
+    <div class="mb-3">
+        <p>Select the <code>template.json</code> file output from <code>Export > Testcase Template</code>.</p>
+        <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json" autocomplete="false">
     </div>
+    {{ macros.modalTail(name="testcaseCampaign", cancelLabel="Close", actionLabel="Import") }}
 </form>

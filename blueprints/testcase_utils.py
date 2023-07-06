@@ -10,39 +10,39 @@ from flask import Blueprint, redirect, request, session, send_from_directory, js
 
 blueprint_testcase_utils = Blueprint('blueprint_testcase_utils', __name__)
 
-@blueprint_testcase_utils.route('/testcase/add',methods = ['POST'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def newtestcase():
-    id = session["assessmentid"]
-    if request.method == 'POST':
-        if "name" in request.form:
-            newcase = TestCase()
-            newcase.assessmentid=id
-            newcase = applyFormData(newcase, request.form, ["name", "mitreid", "tactic"])
-            if KnowlegeBase.objects(mitreid=newcase.mitreid):
-                newcase.kbentry = True
-            newcase.save()
-            return jsonify([{"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid}])
-        else:
-            newtests = []
-            for templateID in request.form.getlist('ids[]'):
-                tmpl = TestCaseTemplate.objects(id=templateID).first()
-                newcase = TestCase()
-                newcase.assessmentid = id
-                newcase.name = tmpl.name
-                newcase.overview = tmpl.overview
-                newcase.objective = tmpl.objective
-                newcase.rednotes = tmpl.notes
-                newcase.actions = tmpl.actions
-                newcase.advice = tmpl.advice
-                newcase.mitreid = tmpl.mitreid
-                newcase.tactic = tmpl.tactic
-                newcase.provider = tmpl.provider
-                newcase.kbentry = tmpl.kbentry
-                newcase.save()
-                newtests.append({"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid})
-            return jsonify(newtests)
+# @blueprint_testcase_utils.route('/testcase/add',methods = ['POST'])
+# @auth_required()
+# @roles_accepted('Admin', 'Red')
+# def newtestcase():
+#     id = session["assessmentid"]
+#     if request.method == 'POST':
+#         if "name" in request.form:
+#             newcase = TestCase()
+#             newcase.assessmentid=id
+#             newcase = applyFormData(newcase, request.form, ["name", "mitreid", "tactic"])
+#             if KnowlegeBase.objects(mitreid=newcase.mitreid):
+#                 newcase.kbentry = True
+#             newcase.save()
+#             return jsonify([{"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid}])
+#         else:
+#             newtests = []
+#             for templateID in request.form.getlist('ids[]'):
+#                 tmpl = TestCaseTemplate.objects(id=templateID).first()
+#                 newcase = TestCase()
+#                 newcase.assessmentid = id
+#                 newcase.name = tmpl.name
+#                 newcase.overview = tmpl.overview
+#                 newcase.objective = tmpl.objective
+#                 newcase.rednotes = tmpl.notes
+#                 newcase.actions = tmpl.actions
+#                 newcase.advice = tmpl.advice
+#                 newcase.mitreid = tmpl.mitreid
+#                 newcase.tactic = tmpl.tactic
+#                 newcase.provider = tmpl.provider
+#                 newcase.kbentry = tmpl.kbentry
+#                 newcase.save()
+#                 newtests.append({"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid})
+#             return jsonify(newtests)
 
 
 @blueprint_testcase_utils.route('/testcase/delete', methods = ['GET'])
@@ -168,51 +168,51 @@ def postTestcaseReleaseCard(testcase, ass, url):
     except:
         pass
 
-@blueprint_testcase_utils.route('/testcase/import/mitre', methods = ['POST'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def importmitrelayer():
-    assessmentid = session["assessmentid"]
-    f = request.files['file']
-    jsonstring = f.read()
-    mitredata = json.loads(jsonstring)
-    for t in mitredata["techniques"]:
-        mitreid = t["techniqueID"]
-        print(f"{assessmentid}")
-        tactic = t["tactic"]
-        technique = Technique.objects(mitreid=mitreid).first()
-        hastmpl = (TestCaseTemplate.objects(mitreid=mitreid).first() != None)
-        if hastmpl:
-            for tmpl in TestCaseTemplate.objects(mitreid=mitreid).all():
-                if TestCase.objects(assessmentid=assessmentid, mitreid=mitreid, name=tmpl.name):
-                    continue
-                newcase  = TestCase()
-                newcase.assessmentid=assessmentid
-                newcase.name = tmpl.name
-                newcase.overview = tmpl.overview
-                newcase.objective = tmpl.objective
-                newcase.actions = tmpl.actions
-                newcase.advice = tmpl.advice
-                newcase.mitreid = mitreid
-                newcase.tactic = tactic
-                newcase.kbentry = tmpl.kbentry
-                newcase.provider = tmpl.provider
-                newcase.save()
+# @blueprint_testcase_utils.route('/testcase/import/mitre', methods = ['POST'])
+# @auth_required()
+# @roles_accepted('Admin', 'Red')
+# def importmitrelayer():
+#     assessmentid = session["assessmentid"]
+#     f = request.files['file']
+#     jsonstring = f.read()
+#     mitredata = json.loads(jsonstring)
+#     for t in mitredata["techniques"]:
+#         mitreid = t["techniqueID"]
+#         print(f"{assessmentid}")
+#         tactic = t["tactic"]
+#         technique = Technique.objects(mitreid=mitreid).first()
+#         hastmpl = (TestCaseTemplate.objects(mitreid=mitreid).first() != None)
+#         if hastmpl:
+#             for tmpl in TestCaseTemplate.objects(mitreid=mitreid).all():
+#                 if TestCase.objects(assessmentid=assessmentid, mitreid=mitreid, name=tmpl.name):
+#                     continue
+#                 newcase  = TestCase()
+#                 newcase.assessmentid=assessmentid
+#                 newcase.name = tmpl.name
+#                 newcase.overview = tmpl.overview
+#                 newcase.objective = tmpl.objective
+#                 newcase.actions = tmpl.actions
+#                 newcase.advice = tmpl.advice
+#                 newcase.mitreid = mitreid
+#                 newcase.tactic = tactic
+#                 newcase.kbentry = tmpl.kbentry
+#                 newcase.provider = tmpl.provider
+#                 newcase.save()
 
-        else:
-            if TestCase.objects(mitreid=mitreid, name=technique.name):
-                continue
-            newcase = TestCase()
-            newcase.assessmentid=assessmentid
-            newcase.name = f"{technique.name}"
-            newcase.overview = technique.description
-            newcase.objective = ""
-            newcase.actions = ""
+#         else:
+#             if TestCase.objects(mitreid=mitreid, name=technique.name):
+#                 continue
+#             newcase = TestCase()
+#             newcase.assessmentid=assessmentid
+#             newcase.name = f"{technique.name}"
+#             newcase.overview = technique.description
+#             newcase.objective = ""
+#             newcase.actions = ""
             
-            newcase.mitreid = mitreid
-            newcase.tactic = tactic
-            newcase.save()
-    return redirect(f"/assessment/{assessmentid}")
+#             newcase.mitreid = mitreid
+#             newcase.tactic = tactic
+#             newcase.save()
+#     return redirect(f"/assessment/{assessmentid}")
 
 @blueprint_testcase_utils.route('/testcase/file/<color>/<id>/<file>',methods = ['DELETE'])
 @auth_required()

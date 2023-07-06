@@ -183,21 +183,22 @@ def prepareRolesAndAdmin ():
         print(f"\tCreated initial admin: U: admin@purpleops.com P: {password}")
 
 def populateSecrets ():
-    dotenv.set_key(
-        dotenvFile,
-        "FLASK_SECURITY_PASSWORD_SALT",
-        str(secrets.SystemRandom().getrandbits(128))
-    )
-    dotenv.set_key(
-        dotenvFile,
-        "FLASK_SECRET_KEY",
-        secrets.token_urlsafe()
-    )
-    dotenv.set_key(
-        dotenvFile,
-        "FLASK_SECURITY_TOTP_SECRETS",
-        f"{{1: {passlib.totp.generate_secret()}}}"
-    )
+    if Role.objects().count() == 0:
+        dotenv.set_key(
+            dotenvFile,
+            "FLASK_SECURITY_PASSWORD_SALT",
+            str(secrets.SystemRandom().getrandbits(128))
+        )
+        dotenv.set_key(
+            dotenvFile,
+            "FLASK_SECRET_KEY",
+            secrets.token_urlsafe()
+        )
+        dotenv.set_key(
+            dotenvFile,
+            "FLASK_SECURITY_TOTP_SECRETS",
+            f"{{1: {passlib.totp.generate_secret()}}}"
+        )
 
 #####
 
@@ -207,8 +208,8 @@ Technique.objects.delete()
 Sigma.objects.delete()
 TestCaseTemplate.objects.delete()
 KnowlegeBase.objects.delete()
-# Role.objects.delete()
-# User.objects.delete()
+Role.objects.delete()
+User.objects.delete()
 
 print("Pulling MITRE tactics")
 parseMitreTactics()
@@ -228,8 +229,8 @@ parseCustomTestcases()
 print("Parsing Custom KBs")
 parseCustomKBs()
 
-print("Preparing roles and initial admin")
-prepareRolesAndAdmin()
-
 print("Populating (randomising) secrets")
 populateSecrets()
+
+print("Preparing roles and initial admin")
+prepareRolesAndAdmin()

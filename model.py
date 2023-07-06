@@ -174,6 +174,7 @@ class TestCase(db.Document):
 
     def to_json(self):
         return {
+            "id": str(self.id),
             "name": self.name,
             "mitreid": self.mitreid,
             "tactic": self.tactic,

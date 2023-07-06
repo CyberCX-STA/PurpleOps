@@ -1,6 +1,6 @@
 import os
 import json
-import requests
+import string
 from model import *
 from utils import applyFormData
 from sqlite3 import Date
@@ -20,32 +20,78 @@ blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 @auth_required()
 @roles_accepted('Admin', 'Red')
 def newtestcase():
-    # if "name" in request.form:
     newcase = TestCase()
     # TODO prevent cross-ass tampering on user supplied input
     newcase.assessmentid = request.referrer.split("/")[-1]
     newcase = applyFormData(newcase, request.form, ["name", "mitreid", "tactic"])
     newcase.save()
     return newcase.to_json()
-    # else:
-    #     newtests = []
-    #     for templateID in request.form.getlist('ids[]'):
-    #         tmpl = TestCaseTemplate.objects(id=templateID).first()
-    #         newcase = TestCase()
-    #         newcase.assessmentid = id
-    #         newcase.name = tmpl.name
-    #         newcase.overview = tmpl.overview
-    #         newcase.objective = tmpl.objective
-    #         newcase.rednotes = tmpl.notes
-    #         newcase.actions = tmpl.actions
-    #         newcase.advice = tmpl.advice
-    #         newcase.mitreid = tmpl.mitreid
-    #         newcase.tactic = tmpl.tactic
-    #         newcase.provider = tmpl.provider
-    #         newcase.kbentry = tmpl.kbentry
-    #         newcase.save()
-    #         newtests.append({"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid})
-    #     return jsonify(newtests)
+
+@blueprint_testcase.route('/testcase/import/template', methods = ['POST'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def testcasetemplates():
+    newcases = []
+    for id in request.json["ids"]:
+        template = TestCaseTemplate.objects(id=id).first()
+        # TODO prevent cross-ass tampering on user supplied input
+        newcase = TestCase(
+            name = template.name,
+            mitreid = template.mitreid,
+            tactic = template.tactic,
+            objective = template.objective,
+            actions = template.actions,
+            rednotes = template.rednotes,
+            assessmentid = request.referrer.split("/")[-1]
+        ).save()
+        newcases.append(newcase.to_json())
+        
+    return newcases, 200
+
+@blueprint_testcase.route('/testcase/import/navigator', methods = ['POST'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def testcasenavigator():
+    newcases = []
+    navigatorTestcases = json.loads(request.files['file'].read())
+    for testcase in navigatorTestcases["techniques"]:
+        # TODO prevent cross-ass tampering on user supplied input
+        newcase = TestCase(
+            name = Technique.objects(mitreid=testcase["techniqueID"]).first().name,
+            mitreid = testcase["techniqueID"],
+            tactic = string.capwords(testcase["tactic"].replace("-", " ")),
+            assessmentid = request.referrer.split("/")[-1]
+        ).save()
+        newcases.append(newcase.to_json())
+        
+    return newcases, 200
+
+@blueprint_testcase.route('/testcase/import/campaign', methods = ['POST'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def testcasecampaign():
+    newcases = []
+    campaignTestcases = json.loads(request.files['file'].read())
+    for testcase in campaignTestcases:
+        # TODO prevent cross-ass tampering on user supplied input
+        newcase = TestCase()
+        newcase.assessmentid = request.referrer.split("/")[-1]
+        for field in ["name", "mitreid", "tactic", "objective", "actions"]: # TODO: "tools", "tags"
+            if field in testcase:
+                newcase[field] = testcase[field]
+        newcase.save()
+        newcases.append(newcase.to_json())
+        
+    return newcases, 200
+
+
+
+
+
+
+
+
+
 
 @blueprint_testcase.route('/testcase/<id>',methods = ['POST'])
 @auth_required()
