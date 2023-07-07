@@ -11,6 +11,24 @@ $('#newTestcase').click(function() {
 	$('#newTestcaseModal').modal('show')
 });
 
+function formatRow(response) {
+	return {
+		add: response.add,
+		id: response.id,
+		mitreid: response.mitreid,
+		name: response.name,
+		tactic: response.tactic,
+		state: `${response.state} - ${response.visible}`,
+		tags: response.tags.join(","),
+		start: "-",
+		modified: "",
+		preventscore: "",
+		detectscore: "",
+		outcome: "",
+		actions: "",
+	}
+}
+
 $("#newTestcaseForm").submit(function(e){
 	e.preventDefault();
 
@@ -20,17 +38,7 @@ $("#newTestcaseForm").submit(function(e){
 	}).then((response) => {
 		return response.json();
 	}).then((body) => {
-		newRow = {
-			add: body.add,
-			id: body.id,
-			mitreid: body.mitreid,
-			name: body.name,
-			tactic: body.tactic,
-			state: body.state,
-			tags: body.tags.join(","),
-			actions: ""
-		}
-		$('#assessmentTable').bootstrapTable('append', [newRow])
+		$('#assessmentTable').bootstrapTable('append', [formatRow(body)])
 		$('#newTestcaseModal').modal('hide')
 	})
 });
@@ -48,17 +56,7 @@ $('#testcaseTemplatesButton').click(function() {
 		contentType: "application/json; charset=utf-8",
 		success: function(result) {
 			result.forEach(result => {
-				newRow = {
-					add: result.add,
-					id: result.id,
-					mitreid: result.mitreid,
-					name: result.name,
-					tactic: result.tactic,
-					state: result.state,
-					tags: result.tags.join(","),
-					actions: ""
-				}
-				$('#assessmentTable').bootstrapTable('append', [newRow])
+				$('#assessmentTable').bootstrapTable('append', [formatRow(result)])
 			})
 			$('#testcaseTemplatesModal').modal('hide')
 		}
@@ -75,17 +73,7 @@ $("#navigatorTemplateForm").submit(function(e){
 		return response.json();
 	}).then((body) => {
 		body.forEach(result => {
-			newRow = {
-				add: result.add,
-				id: result.id,
-				mitreid: result.mitreid,
-				name: result.name,
-				tactic: result.tactic,
-				state: result.state,
-				tags: result.tags.join(","),
-				actions: ""
-			}
-			$('#assessmentTable').bootstrapTable('append', [newRow])
+			$('#assessmentTable').bootstrapTable('append', [formatRow(result)])
 		})
 		$('#testcaseNavigatorModal').modal('hide')
 	})
@@ -101,22 +89,58 @@ $("#campaignTemplateForm").submit(function(e){
 		return response.json();
 	}).then((body) => {
 		body.forEach(result => {
-			newRow = {
-				add: result.add,
-				id: result.id,
-				mitreid: result.mitreid,
-				name: result.name,
-				tactic: result.tactic,
-				state: result.state,
-				tags: result.tags.join(","),
-				actions: ""
-			}
-			$('#assessmentTable').bootstrapTable('append', [newRow])
+			$('#assessmentTable').bootstrapTable('append', [formatRow(result)])
 		})
 		$('#testcaseCampaignModal').modal('hide')
 	})
 });
 
+function visibleTest(event) {
+	event.stopPropagation();
+	row = $(event.target).closest("tr")
+	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
+	$.ajax({
+		url: `/testcase/toggle-visibility/${rowData.id}`,
+		type: 'GET',
+		success: function(body) {
+			$('#assessmentTable').bootstrapTable('updateRow', {
+				index: row.data("index"),
+				row: formatRow(body),
+				replace: true
+			})
+		}
+	});
+};
+
+function cloneTest(event) {
+	event.stopPropagation();
+	row = $(event.target).closest("tr")
+	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
+	$.ajax({
+		url: `/testcase/clone/${rowData.id}`,
+		type: 'GET',
+		success: function(body) {
+			$('#assessmentTable').bootstrapTable('insertRow', {
+				index: row.data("index") + 1,
+				row: formatRow(body)
+			})
+		}
+	});
+};
+
+function deleteTest(event) {
+	event.stopPropagation();
+	row = $(event.target).closest("tr")
+	console.log(row)
+	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
+	$.ajax({
+		url: `/testcase/delete/${rowData.id}`,
+		type: 'GET',
+		success: function(body) {
+			$('#assessmentTable').bootstrapTable('removeByUniqueId', rowData.id)
+		}
+	});
+};
 
 // function editAssessmentModal(e) {
 // 	// Globally store the clicked row for AJAX operations
@@ -202,16 +226,13 @@ function tagFormatter(tags) {
 function actionFormatter() {
 	return `
 		<div class="btn-group btn-group-sm" role="group">
-			<button type="button" class="btn btn-info py-0" onclick="visibleTest(this)" title="Toggle Visiblity">
+			<button type="button" class="btn btn-info py-0" onclick="visibleTest(event)" title="Toggle Visiblity">
 				<i class="bi-eye">&zwnj;</i>
 			</button>
-			<button type="button" class="btn btn-warning py-0" onclick="cloneTest(this)" title="Clone">
+			<button type="button" class="btn btn-warning py-0" onclick="cloneTest(event)" title="Clone">
 				<i class="bi-files">&zwnj;</i>
 			</button>
-			<button type="button" class="btn btn-warning py-0"  title="Reset" onclick="resetTest(this)">
-				<i class="bi-arrow-clockwise">&zwnj;</i>
-			</button>
-			<button type="button" class="btn btn-danger py-0" onclick="deleteTest(this)" title="Delete">
+			<button type="button" class="btn btn-danger py-0" onclick="deleteTest(event)" title="Delete">
 				<i class="bi-trash-fill">&zwnj;</i>
 			</button>
 		</div>

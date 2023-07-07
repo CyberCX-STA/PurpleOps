@@ -45,31 +45,31 @@ blueprint_testcase_utils = Blueprint('blueprint_testcase_utils', __name__)
 #             return jsonify(newtests)
 
 
-@blueprint_testcase_utils.route('/testcase/delete', methods = ['GET'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def deletetestcase():
-    assessmentid = session["assessmentid"]
-    if "ids" in request.args:
-        for id in request.args.get("ids").split(","):
-            testcase = TestCase.objects(id=id).first()
-            testcase.delete()
-    return redirect(f"/assessment/{assessmentid}") 
+# @blueprint_testcase_utils.route('/testcase/delete', methods = ['GET'])
+# @auth_required()
+# @roles_accepted('Admin', 'Red')
+# def deletetestcase():
+#     assessmentid = session["assessmentid"]
+#     if "ids" in request.args:
+#         for id in request.args.get("ids").split(","):
+#             testcase = TestCase.objects(id=id).first()
+#             testcase.delete()
+#     return redirect(f"/assessment/{assessmentid}") 
 
-@blueprint_testcase_utils.route('/testcase/clone/<id>', methods = ['GET'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def duplicatetestcase(id):
-    if request.method == 'GET':
-        orig = TestCase.objects(id=id).first()
-        newcase = TestCase()
-        copy = ["name", "assessmentid", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "tactic", "tools", "references", "kbentry", "tags"]
-        for field in copy:
-            newcase[field] = orig[field]
-        newcase.name = orig["name"] + " (Copy)"
-        newcase.save()
+# @blueprint_testcase_utils.route('/testcase/clone/<id>', methods = ['GET'])
+# @auth_required()
+# @roles_accepted('Admin', 'Red')
+# def duplicatetestcase(id):
+#     if request.method == 'GET':
+#         orig = TestCase.objects(id=id).first()
+#         newcase = TestCase()
+#         copy = ["name", "assessmentid", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "tactic", "tools", "references", "kbentry", "tags"]
+#         for field in copy:
+#             newcase[field] = orig[field]
+#         newcase.name = orig["name"] + " (Copy)"
+#         newcase.save()
 
-        return jsonify({"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid})
+#         return jsonify({"id": str(newcase.id), "name": newcase.name, "tactic": newcase.tactic, "mitreid": newcase.mitreid})
 
 @blueprint_testcase_utils.route('/testcase/reset/<id>', methods = ['GET'])
 @auth_required()

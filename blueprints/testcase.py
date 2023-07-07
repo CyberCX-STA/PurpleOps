@@ -16,7 +16,7 @@ from flask import Blueprint, render_template, redirect, request, session, send_f
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 
-@blueprint_testcase.route('/testcase', methods = ['POST'])
+@blueprint_testcase.route('/testcase/single', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
 def newtestcase():
@@ -84,8 +84,38 @@ def testcasecampaign():
         
     return newcases, 200
 
+@blueprint_testcase.route('/testcase/toggle-visibility/<id>', methods = ['GET'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def testcasevisibility(id):
+    newcase = TestCase.objects(id=id).first()
+    print(newcase.visible)
+    newcase.visible = not newcase.visible
+    newcase.save()
+        
+    return newcase.to_json(), 200
 
+@blueprint_testcase.route('/testcase/clone/<id>', methods = ['GET'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def testcaseclone(id):
+    orig = TestCase.objects(id=id).first()
+    newcase = TestCase()
+    copy = ["name", "assessmentid", "objective", "actions", "rednotes", "mitreid", "tactic", "tools", "tags"]
+    for field in copy:
+        newcase[field] = orig[field]
+    newcase.name = orig["name"] + " (Copy)"
+    newcase.save()
 
+    return newcase.to_json(), 200
+
+@blueprint_testcase.route('/testcase/delete/<id>', methods = ['GET'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def testcasedelete(id):
+    # TODO has writes to deltee?
+    TestCase.objects(id=id).first().delete()
+    return "", 200
 
 
 

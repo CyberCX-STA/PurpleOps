@@ -180,6 +180,7 @@ class TestCase(db.Document):
             "tactic": self.tactic,
             "state": self.state,
             "tags": self.assessment_refs_to_str("tags"),
+            "visible": str(self.visible).lower()
         }
     
     def assessment_refs_to_str(self, field):
