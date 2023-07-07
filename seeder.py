@@ -99,7 +99,7 @@ def parseSigma ():
         for ttp in associatedTTP:
             Sigma(
                 mitreid = ttp,
-                title = yml["title"],
+                name = yml["title"],
                 description = yml["description"],
                 url=url
             ).save()

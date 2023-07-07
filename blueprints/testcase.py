@@ -199,29 +199,17 @@ def runtestcaseget(id):
 @blueprint_testcase.route('/testcase/<id>',methods = ['GET'])
 @auth_required()
 def runtestcasepost(id):
-    assessmentid = session["assessmentid"]
-    ass = Assessment.objects(id=assessmentid).first()
-    assessmentname = ass.name
     testcase = TestCase.objects(id=id).first()
-    tactics = Tactic.objects().all()
-    if testcase.detecttime == None:
-        testcase.detecttime = ""
-    templates = TestCaseTemplate.objects(mitreid=testcase["mitreid"])
-    if Technique.objects(mitreid=testcase["mitreid"]).first():
-        mitrename = Technique.objects(mitreid=testcase["mitreid"]).first()["name"]
-    else:
-        mitrename = ""
-    kb = KnowlegeBase.objects(mitreid=testcase["mitreid"]).first()
-    mitres = [[m["mitreid"], m["name"]] for m in Technique.objects()]
-    mitres.sort(key=lambda x: x[0])
-    sigmas = Sigma.objects(mitreid=testcase["mitreid"])
-    testcases = []
-    asstests = TestCase.objects(assessmentid=assessmentid).all()
-    for test in asstests:
-        testcases.append({
-            "name": test.name,
-            "id": test.id,
-            "visible": test.visible,
-            "state": test.state
-        })
-    return render_template('testcase.run_testcase.html', testcase=testcase, tactics=tactics, assessmentid=assessmentid, assessmentname=assessmentname, templates=templates, kb=kb, mitrename=mitrename, mitres=mitres, sigmas=sigmas, testcases=testcases)
+    assessment = Assessment.objects(id=testcase.assessmentid).first()
+    return render_template('testcase.html',
+        testcase = testcase,
+        tactics = Tactic.objects().all(),
+        assessment = assessment,
+        kb = KnowlegeBase.objects(mitreid=testcase.mitreid).first(),
+        templates = TestCaseTemplate.objects(mitreid=testcase["mitreid"]),
+        mitres = [[m["mitreid"], m["name"]] for m in Technique.objects()],
+        sigmas = Sigma.objects(mitreid=testcase["mitreid"]),
+        multi = {
+            "sources": assessment.sources
+        }
+    )

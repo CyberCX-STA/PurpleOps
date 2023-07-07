@@ -29,7 +29,7 @@
 					<input class="form-check-input" type="radio" id="blocked-null" name="blocked" value=""{% if testcase.blocked==none %} checked{% endif%} hidden>
 				</div>
 				<div id="blockedrating-container" class="row m-0 p-0 my-1">
-					<label for="blockedrating" class="col-6 col-form-label">Block Rating <a href="/static/images/prevention_scoring.png" target="_blank" class="bi-question-circle">&zwnj;</a></label>
+					<label for="blockedrating" class="col-6 col-form-label">Block Rating</label>
 					<div class="col-6">
 						<select class="form-select p-1" id="blockedrating" name="blockedrating" value="{{testcase.blockedrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
@@ -43,7 +43,7 @@
 			</div>
 			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Priority</span>
 			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ced4da">
-				<label class="col-6 col-form-label">Focus <a href="/static/images/priority_scoring.png" target="_blank" class="bi-question-circle">&zwnj;</a></label>
+				<label class="col-6 col-form-label">Focus</label>
 				<div class="col-6">
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-prevent" name="priority" value="Prevent"
@@ -121,7 +121,7 @@
 					</div>
 				</div>
 				<div id="detection-container" class="row m-0 p-0 my-1">
-					<label for="colFormLabel" class="col-6 col-form-label">Detection Rating <a href="/static/images/detection_scoring.png" target="_blank" class="bi-question-circle">&zwnj;</a></label>
+					<label for="colFormLabel" class="col-6 col-form-label">Detection Rating</label>
 					<div class="col-6">
 						<select class="form-select p-1" id="detection-quality" name="detectionrating" value="{{testcase.detectionrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>

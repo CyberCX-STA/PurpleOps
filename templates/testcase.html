@@ -1,7 +1,7 @@
 {% extends "master.html" %}
 {% block content %}
 
-{% include 'templates/assessment.modals.html' %}
+{% include 'testcase_modals.html' %}
 
 <form action="/testcase/{{ testcase.id }}" method="Post" id="ttpform" value="{{ testcase.id }}" style="max-width: 1600px; margin: 0 auto" enctype="multipart/form-data">
     <div class="container-fluid">
@@ -16,11 +16,9 @@
                         {% endfor %}
                     </select>
                     <input type="text" name="name" id="name" class="form-control" value="{{ testcase.name }}" required{% if current_user.has_role("Blue") %} disabled{% endif %}>
-                    {% if mitrename %}
-                    <button class="btn btn-secondary" type="button" title="Info" onclick="$('#ttpInfo').modal('show')">
+                    <button class="btn btn-secondary" type="button" title="Info" data-bs-toggle="modal" data-bs-target="#ttpInfoModal">
                         <i class="bi-info-square-fill">&zwnj;</i>
                     </button>
-                    {% endif %}
                 </div>
             </div>
             <div class="col-2">
@@ -28,7 +26,7 @@
                     <span class="input-group-text">Tactic</span>
                     <select id="tactic" name="tactic" class="form-select"{% if current_user.has_role("Blue") %} disabled{% endif %}>
                         {% for tactic in tactics %}
-                        <option value="{{ tactic.name }}" {% if testcase.tactic==tactic.name %} selected{% endif%}>
+                        <option value="{{ tactic.name }}" {% if testcase.tactic==tactic.name %} selected{% endif %}>
                             {{ tactic.name }}
                         </option>
                         {% endfor %}
@@ -57,11 +55,11 @@
         <hr class="m-0" />
         <div class="row">
             <!-- RED -->
-            {% include 'templates/testcase.red.html' %}
+            {% include 'testcase_red.html' %}
             <!-- BLUE -->
-            {% include 'templates/testcase.blue.html' %}
+            {% include 'testcase_blue.html' %}
         </div>
     </div>
 </form>
-<script src="/static/scripts/testcase.run_testcase.js"></script> 
+<script src="/static/scripts/testcase2.js"></script> 
 {% endblock %}

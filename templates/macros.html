@@ -9,11 +9,13 @@
 			<div class="modal-body">
 {%- endmacro %}
 
-{% macro modalTail(name, cancelLabel, actionLabel) -%}
+{% macro modalTail(name, cancelLabel, actionLabel="") -%}
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ cancelLabel }}</button>
+				{% if actionLabel %}
 				<button type="submit" class="btn btn-primary" id="{{ name }}Button">{{ actionLabel }}</button>
+				{% endif %}
 			</div>
 		</div>
 	</div>
