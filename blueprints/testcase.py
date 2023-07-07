@@ -3,16 +3,10 @@ import json
 import string
 from model import *
 from utils import applyFormData
-from sqlite3 import Date
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask_security import auth_required, roles_accepted, current_user
-from flask import Blueprint, render_template, redirect, request, session, send_from_directory, jsonify
-
-# TODO, reuse from MAIN purplebench.py
-# Couldn't be bothered to figure out the dependancy hiararchy and
-# cross ref :)
-# mitreimportmapping = {"defense-evasion": "Defense Evasion", "collection": "Collection", "exfiltration": "Exfiltration", "command-and-control": "Command and Control", "impact": "Impact", "discovery": "Discovery", "execution": "Execution", "credential-access": "Credential Access", "persistence": "Persistence", "initial-access": "Initial Access", "lateral-movement": "Lateral Movement", "exfiltration": "Exfiltration", "privilege-escalation": "Privilege Escalation", "resource-development": "Resource Development", "reconnaissance": "Reconnaissance"}
+from flask import Blueprint, render_template, redirect, request, session
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 
@@ -25,7 +19,7 @@ def newtestcase():
     newcase.assessmentid = request.referrer.split("/")[-1]
     newcase = applyFormData(newcase, request.form, ["name", "mitreid", "tactic"])
     newcase.save()
-    return newcase.to_json()
+    return newcase.to_json(), 200
 
 @blueprint_testcase.route('/testcase/import/template', methods = ['POST'])
 @auth_required()
@@ -89,7 +83,6 @@ def testcasecampaign():
 @roles_accepted('Admin', 'Red')
 def testcasevisibility(id):
     newcase = TestCase.objects(id=id).first()
-    print(newcase.visible)
     newcase.visible = not newcase.visible
     newcase.save()
         
@@ -210,6 +203,10 @@ def runtestcasepost(id):
         mitres = [[m["mitreid"], m["name"]] for m in Technique.objects()],
         sigmas = Sigma.objects(mitreid=testcase["mitreid"]),
         multi = {
-            "sources": assessment.sources
+            "sources": assessment.sources,
+            "targets": assessment.targets,
+            "tools": assessment.tools,
+            "controls": assessment.controls,
+            "tags": assessment.tags
         }
     )

@@ -58,7 +58,7 @@
 		</div>
 		<div class="col" style="max-width: 33.3%;">
 			<div class="input-group input-group-sm">
-				<span class="input-group-text text-danger" id="target-label" onclick="manageMulti(this)"
+				<span class="input-group-text text-danger" id="target-label" data-bs-toggle="modal" data-bs-target="#multiTargetModal"
 					style="cursor:pointer;" title="Manage targets">
 					<i class="bi-bullseye">&zwnj;</i>
 				</span>
@@ -76,7 +76,7 @@
 		</div>
 		<div class="col" style="max-width: 33.3%;">
 			<div class="input-group input-group-sm">
-				<span class="input-group-text text-danger" id="tool-label" onclick="manageMulti(this)"
+				<span class="input-group-text text-danger" id="tool-label" data-bs-toggle="modal" data-bs-target="#multiToolModal"
 					style="cursor:pointer;" title="Manage Tools">
 					<i class="bi-tools">&zwnj;</i>
 				</span>
@@ -104,27 +104,8 @@
 				<div class="input-group my-3" id="red-actions">
 					<span class="input-group-text px-1 text-danger"
 						style="writing-mode: vertical-lr;">Actions</span>
-					{% if not current_user.has_role("Blue") %}
-					<div class="flex-grow-1 border rounded">
-						<div class="input-group input-group-sm ref">
-							<select class="form-select p-1" id="templateselect" autocomplete="off" onchange="templateChange(this)">
-								<option selected hidden value="">Current</option>
-								{% for template in templates %}
-								<option value="template{{ template.id }}">{{ template.provider }} - {{ template.name }}</option>
-								{% endfor %}
-							</select>
-							<button type="button"
-								class="btn btn-light input-group-text border border-top-0 rounded-0"
-								title="Command Info" onclick="templateModal()" id="template-info" style="display: none">
-								<i class="bi-info-square">&zwnj;</i>
-							</button>
-						</div>
-					{% endif %}
-						<textarea class="form-control" name="actions" id="actions" oninput="templateClear()"
-							style="min-height: {% if not current_user.has_role("Blue") %}3{% else %}4.5{% endif %}em;font-family: monospace;font-size:0.94em;"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.actions }}</textarea>
-					{% if not current_user.has_role("Blue") %}
-					</div>
-					{% endif %}
+					<textarea class="form-control" name="actions" id="actions"
+						style="min-height: {% if not current_user.has_role("Blue") %}3{% else %}4.5{% endif %}em;font-family: monospace;font-size:0.94em;"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.actions }}</textarea>
 				</div>
 				<div class="input-group my-2" id="red-notes">
 					<span class="input-group-text px-1 text-danger"

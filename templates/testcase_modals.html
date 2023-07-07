@@ -4,23 +4,23 @@
 {% macro multiContent(type, description="description") -%}
 <div class="mb-3">
     <div id="{{ type }}Toolbar">
-        <button id="{{ type }}NewButton" class="btn btn-primary">New</button>
+        <button id="{{ type }}NewButton" class="btn btn-primary multiNew">New</button>
     </div>
-    <table data-toggle="table" id="{{type}}Table" data-unique-id="id" data-id-field="id" data-toolbar="#{{ type }}Toolbar" >
+    <table data-toggle="table" id="{{type}}Table" class="multiTable" data-unique-id="id" data-id-field="id" data-toolbar="#{{ type }}Toolbar" >
         <thead>
             <tr>
                 <th data-field="id" data-visible="false">ID</th>
                 <th data-field="name" data-formatter="nameFormatter" id="nameField">Name</th>
-                <th data-field="{{ description }}" data-formatter="{{ description }}Formatter">Description</th>
-                <th data-field="delete" data-events="window.manageEvents" data-align="center" data-formatter="deleteFormatter">Delete</th>
+                <th data-field="{{ description }}" data-formatter="{{ description }}Formatter">{{ description | capitalize }}</th>
+                <th data-field="delete" data-align="center" data-formatter="deleteFormatter">Delete</th>
             </tr>
         </thead>
         <tbody>
             {% for multi in multi[type] %}
-            <tr data-title="bootstrap table" data-object='{"key": "value"}' id="{{ t.id }}">
+            <tr data-title="bootstrap table" data-object='{"key": "value"}' id="{{ multi.id }}">
                 <td>{{ multi.id }}</td>
                 <td>{{ multi.name }}</td>
-                <td>{{ multi.description }}</td>
+                <td>{{ multi[description] }}</td>
                 <td></td>
             </tr>
             {% endfor %}
@@ -29,9 +29,15 @@
 </div>
 {%- endmacro %}
 
-{{ macros.modalHead(name="multiSource", title="Manage Sources", xl=True) }}
-{{ multiContent(type="source") }}
-{{ macros.modalTail(name="multiSource", cancelLabel="Cancel", actionLabel="Save") }}
+{% for i in ["Source", "Target", "Tool", "Control", "Tag"] %}
+    {{ macros.modalHead(name="multi" ~ i, title="Manage " ~ i ~ "s", xl=True) }}
+        {% if i != "Tag" %}
+            {{ multiContent(type=i | lower ~ "s") }}
+        {% else %}
+            {{ multiContent(type=i | lower ~ "s", description="colour") }}
+        {% endif %}
+    {{ macros.modalTail(name="multi" ~ i, cancelLabel="Cancel", actionLabel="Save", buttonClass="multiButton") }}
+{% endfor %}
 
 {{ macros.modalHead(name="ttpInfo", title=testcase.mitreid ~ " TTP Information", xl=True) }}
 <h3>Description</h3>

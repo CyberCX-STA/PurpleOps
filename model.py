@@ -47,9 +47,11 @@ class Source(db.EmbeddedDocument):
     description = db.StringField()
 
     def to_json(self):
-        return {"id": str(self.id),
-                "name": self.name,
-                "description": self.description}
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "description": self.description
+        }
 
 class Target(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
@@ -57,9 +59,11 @@ class Target(db.EmbeddedDocument):
     description = db.StringField()
 
     def to_json(self):
-        return {"id": str(self.id),
-                "name": self.name,
-                "description": self.description}
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "description": self.description
+        }
 
 class Tool(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
@@ -67,9 +71,11 @@ class Tool(db.EmbeddedDocument):
     description = db.StringField()
 
     def to_json(self):
-        return {"id": str(self.id),
-                "name": self.name,
-                "description": self.description}
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "description": self.description
+        }
 
 class Control(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
@@ -77,9 +83,11 @@ class Control(db.EmbeddedDocument):
     description = db.StringField()
 
     def to_json(self):
-        return {"id": str(self.id),
-                "name": self.name,
-                "description": self.description}
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "description": self.description
+        }
 
 class Tag(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
@@ -87,9 +95,11 @@ class Tag(db.EmbeddedDocument):
     colour = db.StringField()
 
     def to_json(self):
-        return {"id": str(self.id),
-                "name": self.name,
-                "colour": self.colour}
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "colour": self.colour
+        }
 
 
 # class Reference(db.EmbeddedDocument):
@@ -112,7 +122,7 @@ class KnowlegeBase(db.Document):
 
 class Sigma(db.Document):
     mitreid = db.StringField()
-    title = db.StringField()
+    name = db.StringField()
     description = db.StringField()
     url = db.StringField()
     # filename = db.StringField()
@@ -179,7 +189,7 @@ class TestCase(db.Document):
             "mitreid": self.mitreid,
             "tactic": self.tactic,
             "state": self.state,
-            "tags": self.assessment_refs_to_str("tags"),
+            "tags": [], #self.assessment_refs_to_str("tags"),
             "visible": str(self.visible).lower()
         }
     
@@ -244,22 +254,8 @@ class Assessment(db.Document):
             "progress": 75
         }
                     
-    def to_json_data(self, field):
-        data = self[field]
-        if not data:
-            if field == "sources":
-                data.append(Source(name="", description=""))
-            if field == "targets":
-                data.append(Target(name="", description=""))
-            if field == "tools":
-                data.append(Tool(name="", description=""))
-            if field == "controls":
-                data.append(Control(name="", description=""))
-            if field == "tags":
-                data.append(Tag(name="", colour="#00ff00"))
-            data.save()
-        data = [item.to_json() for item in data]
-        return jsonify(data)
+    def multi_to_json(self, field):
+        return [item.to_json() for item in self[field]]
 
 
 class Role(db.Document, RoleMixin):
