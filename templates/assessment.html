@@ -83,9 +83,9 @@
                 <td>{{ t.tags | join(",") }}</td>
                 <td>{{ t.starttime or "-" }}</td>
                 <td>{{ t.modifytime or "-" }}</td>
-                <td>{{ t.blockedrating or "-" }}</td>
+                <td>{{ t.preventedrating or "-" }}</td>
                 <td>{{ t.detectionrating or "-" }}</td>
-                <td>{% if t.blocked == "Yes" %}Blocked{% elif t.alerted == "Yes" %}Alerted{% elif t.logged == "Yes" %}Logged{% elif t.state == "Complete" %}Blind{% else %}Pending{% endif %}</td>
+                <td>{% if t.prevented == "Yes" %}Prevented{% elif t.alerted == "Yes" %}Alerted{% elif t.logged == "Yes" %}Logged{% elif t.state == "Complete" %}Blind{% else %}Pending{% endif %}</td>
                 <td></td>
             </tr>
             {% endif %}

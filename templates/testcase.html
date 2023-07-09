@@ -1,8 +1,14 @@
 {% extends "master.html" %}
+
+{% block navpill %}
+    <a role="button" class="btn btn-primary" title="Back" id="assessment-crumb-button" href="/assessments/{{ assessment.name }}">
+        <i class="bi-arrow-left-circle-fill">&zwnj;</i>&nbsp;
+        <span id="assessment-crumb">{{ assessment.name }}</span>
+    </a>
+{% endblock %}
+
 {% block content %}
-
 {% include 'testcase_modals.html' %}
-
 <form action="/testcase/{{ testcase.id }}" method="Post" id="ttpform" value="{{ testcase.id }}" style="max-width: 1600px; margin: 0 auto" enctype="multipart/form-data">
     <div class="container-fluid">
         <div class="row mt-3" style="margin: 0 -1px 0 -2px">

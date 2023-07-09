@@ -87,11 +87,7 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><img class="mx-2" src="/static/images/logo.png" width="28px">Purpleops</a>
             {% if not request.path in ["/login", "/mfa/register", "/mfa/verify"] %}
-            <a role="button" class="btn btn-primary" title="Back" id="assessment-crumb-button" style="display:none">
-                <i class="bi-arrow-left-circle-fill">&zwnj;</i>
-                &nbsp;
-                <span id="assessment-crumb"></span>
-            </a>    
+            {% block navpill %}{% endblock %}
             <div class="btn-group navbar-right" role="group">
                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="dropdown" aria-expanded="false" title="Settings">
                     <i class="bi-gear-fill">&zwnj;</i>

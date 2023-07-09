@@ -97,3 +97,11 @@ $('#objective, #actions, #rednotes, #bluenotes').on('input', function(event) {
 	event.target.style.height = 0;
 	event.target.style.height = event.target.scrollHeight + 5 + 'px';
 }).trigger('input')
+
+
+document.querySelector('input[name="genderS"]:checked').value;
+$('input[name="prevented"]').on('change', function(event) {
+	event.target.style.height = 0;
+	event.target.style.height = event.target.scrollHeight + 5 + 'px';
+}).trigger('input')
+

@@ -71,7 +71,7 @@ def generatestats(testcases, ass):
     # Initalise metrics that are captured
     stats = {
         "All": {
-            "blocked": 0,
+            "prevented": 0,
             "alerted": 0,
             "logged": 0,
             "missed": 0,
@@ -101,11 +101,11 @@ def generatestats(testcases, ass):
             if testcase["tactic"] not in stats:
                 stats[testcase["tactic"]] = deepcopy(stats["All"])
 
-            # Populate blocked/alerted/logged/missed stats
-            # NOTE: If a testcase is both alerted and blocked, it will be
+            # Populate prevented/alerted/logged/missed stats
+            # NOTE: If a testcase is both alerted and prevented, it will be
             # counted twice
-            if testcase["blocked"] == "Yes" or testcase["blocked"] == "Partial":
-                stats[testcase["tactic"]]["blocked"] += 1
+            if testcase["prevented"] == "Yes" or testcase["prevented"] == "Partial":
+                stats[testcase["tactic"]]["prevented"] += 1
 
             if testcase["alerted"] == "Yes":
                 stats[testcase["tactic"]]["alerted"] += 1
@@ -115,11 +115,11 @@ def generatestats(testcases, ass):
             if testcase["logged"] == "Yes":
                 stats[testcase["tactic"]]["logged"] += 1
 
-            if testcase["blocked"] == "No" and testcase["alerted"] == "No" and testcase["logged"] == "No":
+            if testcase["prevented"] == "No" and testcase["alerted"] == "No" and testcase["logged"] == "No":
                 stats[testcase["tactic"]]["missed"] += 1
 
             # Store scores to later average with
-            stats[testcase["tactic"]]["scoresPrevent"].append(float(testcase["blockedrating"] or "0.0"))
+            stats[testcase["tactic"]]["scoresPrevent"].append(float(testcase["preventedrating"] or "0.0"))
             stats[testcase["tactic"]]["scoresDetect"].append(float(testcase["detectionrating"] or "0.0"))
 
             # Collate priorities, ratings and blue tools
@@ -136,7 +136,7 @@ def generatestats(testcases, ass):
     for tactic in stats:
         if tactic == "All":
             continue
-        for key in ["blocked", "alerted", "logged", "missed", "critical", "high", "medium", "low", "informational"]:
+        for key in ["prevented", "alerted", "logged", "missed", "critical", "high", "medium", "low", "informational"]:
             stats["All"][key] += stats[tactic][key]
         for key in ["scoresPrevent", "scoresDetect", "priorityType", "priorityUrgency", "controls"]:
             stats["All"][key].extend(stats[tactic][key])

@@ -437,7 +437,7 @@ function actionFormatter() {
 // 	tactics.forEach(tactic => {
 // 		if (Object.keys(tacticStats).includes(tactic)) {
 // 			// Calculate the score
-// 			total = tacticStats[tactic].blocked + tacticStats[tactic].alerted - tacticStats[tactic].missed
+// 			total = tacticStats[tactic].prevented + tacticStats[tactic].alerted - tacticStats[tactic].missed
 // 			if (total > 1) color = "#B8DF43"
 // 			else if (total < -1) color = "#FB6B64"
 // 			else color = "#FFC000"

@@ -1,41 +1,41 @@
 <div class="col m-2 ms-0 blue">
 	<div class="row my-2">
 		<div class="col input-group-sm">
-			<!-- BLOCKED -->
-			<span class="input-group-text text-primary rounded-0 rounded-top border-bottom-0">Blocked</span>
+			<!-- PREVENTED -->
+			<span class="input-group-text text-primary rounded-0 rounded-top border-bottom-0">Prevented</span>
 			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ced4da">
-				<label class="col-6 col-form-label">Blocked</label>
+				<label class="col-6 col-form-label">Prevented</label>
 				<div class="col-6">
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="blocked-yes" name="blocked" value="Yes"
-							{% if testcase.blocked=="Yes" %} checked{% endif%}>
-						<label class="form-check-label" for="blocked-yes">Yes</label>
+						<input class="form-check-input" type="radio" id="prevented-yes" name="prevented" value="Yes"
+							{% if testcase.prevented=="Yes" %} checked{% endif%}>
+						<label class="form-check-label" for="prevented-yes">Yes</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="blocked-partial" name="blocked" value="Partial"
-							{% if testcase.blocked=="Partial" %} checked{% endif%}>
-						<label class="form-check-label" for="blocked-partial">Partial</label>
+						<input class="form-check-input" type="radio" id="prevented-partial" name="prevented" value="Partial"
+							{% if testcase.prevented=="Partial" %} checked{% endif%}>
+						<label class="form-check-label" for="prevented-partial">Partial</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="blocked-no" name="blocked" value="No"
-							{% if testcase.blocked=="No" %} checked{% endif%}>
-						<label class="form-check-label" for="blocked-no">No</label>
+						<input class="form-check-input" type="radio" id="prevented-no" name="prevented" value="No"
+							{% if testcase.prevented=="No" %} checked{% endif%}>
+						<label class="form-check-label" for="prevented-no">No</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="blocked-na" name="blocked" value="N/A"
-							{% if testcase.blocked=="N/A" %} checked{% endif%}>
-						<label class="form-check-label" for="blocked-na">N/A</label>
+						<input class="form-check-input" type="radio" id="prevented-na" name="prevented" value="N/A"
+							{% if testcase.prevented=="N/A" %} checked{% endif%}>
+						<label class="form-check-label" for="prevented-na">N/A</label>
 					</div>
-					<input class="form-check-input" type="radio" id="blocked-null" name="blocked" value=""{% if testcase.blocked==none %} checked{% endif%} hidden>
+					<input class="form-check-input" type="radio" id="prevented-null" name="prevented" value=""{% if testcase.prevented==none %} checked{% endif%} hidden>
 				</div>
-				<div id="blockedrating-container" class="row m-0 p-0 my-1">
-					<label for="blockedrating" class="col-6 col-form-label">Block Rating</label>
+				<div id="preventedrating-container" class="row m-0 p-0 my-1">
+					<label for="preventedrating" class="col-6 col-form-label">Prevention Rating</label>
 					<div class="col-6">
-						<select class="form-select p-1" id="blockedrating" name="blockedrating" value="{{testcase.blockedrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<select class="form-select p-1" id="preventedrating" name="preventedrating" value="{{testcase.preventedrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
 							<option value="N/A" hidden>N/A</option>
 							{% for val in ["0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"] %}
-							<option value="{{ val }}" {% if testcase.blockedrating==val %} selected{% endif%}>{{ val }}</option>
+							<option value="{{ val }}" {% if testcase.preventedrating==val %} selected{% endif%}>{{ val }}</option>
 							{% endfor %}
 						</select>
 					</div>

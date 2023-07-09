@@ -367,7 +367,7 @@ $('#manage-table').bootstrapTable();
 		dynamicScores()
 	});
 
-	$('#blocked-yes, #blocked-no, #blocked-partial, #blocked-na, #alert-yes, #alert-no, #alert, #log-yes, #log-no, #detection-quality, #time-detect, #priority-prevent, #priority-detect, #priority-na').change(function() {
+	$('#prevented-yes, #prevented-no, #prevented-partial, #prevented-na, #alert-yes, #alert-no, #alert, #log-yes, #log-no, #detection-quality, #time-detect, #priority-prevent, #priority-detect, #priority-na').change(function() {
 		dynamicScores()
 	})
 

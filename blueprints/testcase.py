@@ -127,11 +127,11 @@ def runtestcaseget(id):
     if not testcase.assessmentid:
         testcase.assessmentid=assessmentid
     blue = current_user.has_role("Blue")
-    fields = ["name", "overview", "objective", "actions", "rednotes", "bluenotes", "advice", "mitreid", "tactic", "state", "location", "blocked", "blockedrating", "alertseverity", "detectionrating", "priority", "priorityurgency"] #, "alerted", "logged"
+    fields = ["name", "overview", "objective", "actions", "rednotes", "bluenotes", "advice", "mitreid", "tactic", "state", "location", "prevented", "preventedrating", "alertseverity", "detectionrating", "priority", "priorityurgency"] #, "alerted", "logged"
     checkFields = ["visible"]
     multiFields = ["sources", "targets", "tools", "controls", "tags"]
     timeFields = ["starttime", "endtime", "detecttime"]
-    blueFields = ["bluenotes", "blocked", "alerted", "alertseverity", "logged", "controls", "tags", "detecttime"]
+    blueFields = ["bluenotes", "prevented", "alerted", "alertseverity", "logged", "controls", "tags", "detecttime"]
     for field in fields:
         if field in request.form and not (blue and field not in blueFields):
             testcase[field] = request.form[field]
@@ -156,9 +156,9 @@ def runtestcaseget(id):
     # if "alerted" in request.form and "logged" in request.form:
     #     if not blue and request.form["alerted"] == "No" and request.form["logged"] == "No":
     #         testcase["detectionrating"] = "0.0"
-    # if "blocked" in request.form:
-    #     if not blue and request.form["blocked"] == "No":
-    #         testcase["blockedrating"] = "0.0"
+    # if "prevented" in request.form:
+    #     if not blue and request.form["prevented"] == "No":
+    #         testcase["preventedrating"] = "0.0"
     if not os.path.exists(f"files/{assessmentid}/{id}"):
         os.makedirs(f"files/{assessmentid}/{id}")
     files = []

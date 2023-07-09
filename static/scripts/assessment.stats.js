@@ -104,7 +104,7 @@ function boxPlotVals(data) {
 // Outcome pie chart
 var resultsPie = JSON.parse(JSON.stringify(pieChartOptions));
 resultsPie.title.text = "Outcomes"
-keys = ["Blocked", "Alerted", "Logged", "Missed"]
+keys = ["Prevented", "Alerted", "Logged", "Missed"]
 resultsPie.series = keys.map((t) => {
 	return tacticStats["All"][t.toLowerCase()]
 })
@@ -115,7 +115,7 @@ chart.render();
 // Outcome bar chart
 var results = JSON.parse(JSON.stringify(barChartOptions));
 results.title.text = "Outcome per Tactic"
-results.series = ["Blocked", "Alerted", "Logged", "Missed"].map((t) => {
+results.series = ["Prevented", "Alerted", "Logged", "Missed"].map((t) => {
 	return {
 		name: t,
 		data: Object.keys(tacticStats).map((i) => {
@@ -195,7 +195,7 @@ $(window).on('load', function(){
 	tactics.forEach(tactic => {
 		if (Object.keys(tacticStats).includes(tactic)) {
 			// Calculate the score
-			total = tacticStats[tactic].blocked + tacticStats[tactic].alerted - tacticStats[tactic].missed
+			total = tacticStats[tactic].prevented + tacticStats[tactic].alerted - tacticStats[tactic].missed
 			if (total > 1) color = "#B8DF43"
 			else if (total < -1) color = "#FB6B64"
 			else color = "#FFC000"
