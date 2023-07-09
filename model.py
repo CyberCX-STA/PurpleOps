@@ -98,7 +98,7 @@ class Tag(db.EmbeddedDocument):
         return {
             "id": str(self.id),
             "name": self.name,
-            "colour": self.colour
+            "colour": self.colour # AU spelling is non-negotiable xx
         }
 
 

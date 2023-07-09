@@ -148,11 +148,11 @@
 				<select class="selectpicker form-control" multiple data-live-search="true" title="Control(s)"
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="controls"
-					name="controls" onchange="manageMulti(this)" autocomplete="off" data-size="10">
+					name="controls" autocomplete="off" data-size="10">
 					<option data-icon="bi-gear">Manage</option>
 					<option data-divider="true"></option>
-					{% for control in testcase.controls %}
-						<option selected class="dynopt-controls" value="{{ control }}"></option>
+					{% for control in multi.controls %}
+						<option {% if control.id|string in testcase.controls %}selected{% endif %} class="dynopt-controls" value="{{ control.id }}">{{ control.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
@@ -164,11 +164,11 @@
 				<select class="selectpicker form-control" multiple data-live-search="true" title="Tag(s)"
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="tags"
-					name="tags" onchange="manageTags(this)" autocomplete="off">
+					name="tags" autocomplete="off">
 					<option data-icon="bi-gear">Manage</option>
 					<option data-divider="true"></option>
-					{% for tag in testcase.tags %}
-						<option selected class="dynopt-tags" value="{{ tag }}"></option>
+					{% for tag in multi.tags %}
+						<option {% if tag.id|string in testcase.tags %}selected{% endif %} class="dynopt-tags" value="{{ tag.id }}" data-content="<span class='badge rounded-pill' style='background:{{ tag.colour }}'>{{ tag.name }}</span>">{{ tag.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
@@ -177,17 +177,16 @@
 	<div class="row my-3">
 		<div class="input-group">
 			<span class="input-group-text px-1 text-primary"
-				style="writing-mode: vertical-lr;">Observations</span>
+				style="writing-mode: vertical-lr;">Notes</span>
 			<textarea class="form-control" name="bluenotes" id="bluenotes"
-				style="min-height: 7em">{{ testcase.bluenotes }}</textarea>
+				style="min-height: 4em">{{ testcase.bluenotes }}</textarea>
 		</div>
 	</div>
 	<div class="row m-0">
 		<ul class="list-group p-0">
 			<li class="list-group-item">
 				<div class="input-group input-group-sm">
-					<label class="input-group-text text-primary" for="bluefiles">Upload
-						Evidence</label>
+					<label class="input-group-text text-primary" for="bluefiles">Upload Evidence</label>
 					<input type="file" class="form-control" id="bluefiles" name="bluefiles" multiple="multiple">
 				</div>
 			</li>

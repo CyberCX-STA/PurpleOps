@@ -71,7 +71,7 @@
         </thead>
 
         <tbody>
-            {% for t in tests %}
+            {% for t in testcases %}
             {% if not (current_user.has_role("Blue") and t.visible == false) %}
             <tr data-title="bootstrap table" data-object='{"key": "value"}' id="{{ t.id }}">
                 <td></td>

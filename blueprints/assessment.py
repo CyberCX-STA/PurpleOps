@@ -42,7 +42,7 @@ def editassessment(id):
 def loadassessment(id):
     return render_template(
         'assessment.html',
-        tests = TestCase.objects(assessmentid=id).all(),
+        testcases = TestCase.objects(assessmentid=id).all(),
         ass = Assessment.objects(id=id).first(),
         templates = TestCaseTemplate.objects(),
         mitres = sorted(
@@ -65,8 +65,7 @@ def assessmentmulti(field):
     testcase = TestCase.objects(id=request.referrer.split("/")[-1]).first()
     assessment = Assessment.objects(id=testcase.assessmentid).first()
 
-    # Wipe it in case we've deleted one, we go back and add the remainders
-    assessment[field] = []
+    newObjs = []
     for row in request.json["data"]:
         obj = {
             "sources": Source(),
@@ -78,13 +77,14 @@ def assessmentmulti(field):
 
         # If pre-existing, then edit pre-existing to preserve ID
         if row["id"] in [str(o.id) for o in assessment[field]]:
-            obj = obj.objects(id=row["id"]).first()
+            obj = assessment[field].filter(id=row["id"]).first()
         obj.name = row["name"]
         if field == "tags":
             obj.colour = row["colour"]
         else:
             obj.description = row["description"]
-        assessment[field].append(obj)
+        newObjs.append(obj)
+    assessment[field] = newObjs
     assessment[field].save()
 
     return assessment.multi_to_json(field), 200

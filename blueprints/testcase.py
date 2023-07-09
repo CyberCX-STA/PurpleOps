@@ -119,16 +119,15 @@ def testcasedelete(id):
 @blueprint_testcase.route('/testcase/<id>',methods = ['POST'])
 @auth_required()
 def runtestcaseget(id):
-    assessmentid = session["assessmentid"]
+    testcase = TestCase.objects(id=id).first()
+    assessmentid = testcase.assessmentid
     ass = Assessment.objects(id=assessmentid).first()
-    assessmentname = ass.name
     if current_user.has_role("Spectator"):
             return redirect(f"/assessment/{assessmentid}")
-    testcase = TestCase.objects(id=id).first()
     if not testcase.assessmentid:
         testcase.assessmentid=assessmentid
     blue = current_user.has_role("Blue")
-    fields = ["name", "overview", "objective", "actions", "rednotes", "bluenotes", "advice", "mitreid", "tactic", "state", "location", "blocked", "blockedrating", "alerted", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"]
+    fields = ["name", "overview", "objective", "actions", "rednotes", "bluenotes", "advice", "mitreid", "tactic", "state", "location", "blocked", "blockedrating", "alertseverity", "detectionrating", "priority", "priorityurgency"] #, "alerted", "logged"
     checkFields = ["visible"]
     multiFields = ["sources", "targets", "tools", "controls", "tags"]
     timeFields = ["starttime", "endtime", "detecttime"]
@@ -138,27 +137,28 @@ def runtestcaseget(id):
             testcase[field] = request.form[field]
     for field in checkFields:
         if not (blue and field not in blueFields):
-            if field == "visible" and field in request.form and testcase[field] == False:
-                postTestcaseReleaseCard(testcase, ass, request.url)
+            # if field == "visible" and field in request.form and testcase[field] == False:
+            #     postTestcaseReleaseCard(testcase, ass, request.url)
             testcase[field] = field in request.form
     for field in multiFields:
         if field in request.form and not (blue and field not in blueFields):
+            print(request.form.getlist(field))
             testcase[field] = request.form.getlist(field)
         if field not in request.form and (not blue or field in blueFields):
             testcase[field] = None
-    for field in timeFields:
-        if field in request.form and not (blue and field not in blueFields):
-            if request.form[field] != "":
-                try:
-                    testcase[field] = datetime.strptime(request.form[field], "%d/%m/%Y, %I:%M %p")
-                except:
-                    testcase[field] = datetime.strptime(request.form[field], "%d/%m/%Y, %I:%M:%p")
-    if "alerted" in request.form and "logged" in request.form:
-        if not blue and request.form["alerted"] == "No" and request.form["logged"] == "No":
-            testcase["detectionrating"] = "0.0"
-    if "blocked" in request.form:
-        if not blue and request.form["blocked"] == "No":
-            testcase["blockedrating"] = "0.0"
+    # for field in timeFields:
+    #     if field in request.form and not (blue and field not in blueFields):
+    #         if request.form[field] != "":
+    #             try:
+    #                 testcase[field] = datetime.strptime(request.form[field], "%d/%m/%Y, %I:%M %p")
+    #             except:
+    #                 testcase[field] = datetime.strptime(request.form[field], "%d/%m/%Y, %I:%M:%p")
+    # if "alerted" in request.form and "logged" in request.form:
+    #     if not blue and request.form["alerted"] == "No" and request.form["logged"] == "No":
+    #         testcase["detectionrating"] = "0.0"
+    # if "blocked" in request.form:
+    #     if not blue and request.form["blocked"] == "No":
+    #         testcase["blockedrating"] = "0.0"
     if not os.path.exists(f"files/{assessmentid}/{id}"):
         os.makedirs(f"files/{assessmentid}/{id}")
     files = []
@@ -196,6 +196,7 @@ def runtestcasepost(id):
     assessment = Assessment.objects(id=testcase.assessmentid).first()
     return render_template('testcase.html',
         testcase = testcase,
+        testcases = TestCase.objects(assessmentid=str(assessment.id)).all(),
         tactics = Tactic.objects().all(),
         assessment = assessment,
         kb = KnowlegeBase.objects(mitreid=testcase.mitreid).first(),

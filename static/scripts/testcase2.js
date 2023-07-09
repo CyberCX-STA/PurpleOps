@@ -27,8 +27,30 @@ $('.multiButton').click(function(event) {
 			result.map(row => row.delete = "")
 			$(`#${type}Table`).bootstrapTable("load", result)
 			$(event.target).closest(".modal").modal("hide")
+
+			// Selectpicker plugin doesn't support populating a dropdown with
+			// values and names seperately so we need to populate the HTML
+			// manually and force it to refresh
+			selectedIDs = $(`#${type}`).val()
+			$(".dynopt-" + type).remove();
+			result.forEach(function(i) {
+				selected = selectedIDs.includes(i.id) ? "selected" : ""
+				pill = type == "tags" ? `data-content="<span class='badge rounded-pill' style='background:${i.colour}'>${i.name}</span>"` : ""
+				$(`#${type}`).append(`<option ${selected} class="dynopt-${type}" value="${i.id}" ${pill}>${i.name}</option>`);
+			})
+			$(`#${type}`).selectpicker('refresh');
 		}
 	});
+})
+
+// If "manage" is selected in a multi dropdown, remove the selection and pop manage modal
+$('.selectpicker').change(function(event) {
+	type = event.target.id
+	if ($(`#${type}`).val().includes("Manage")) {
+		$(event.target).selectpicker('val', $(`#${type}`).val().filter(item => item !== "Manage"))
+		$(event.target).selectpicker('toggle');
+		$(`#multi${type[0].toUpperCase() + type.slice(1, -1)}Modal`).modal('show')
+	}
 })
 
 // When source/target etc. names/descriptions are changed, update table value ready for POST
@@ -49,6 +71,7 @@ function deleteMultiRow(event) {
 	)
 }
 
+// Multi modal formatters
 function nameFormatter(val) {
 	return `<input type="text" name="name" value="${val}" class="multi" placeholder="Name..."/>`
 }
@@ -68,3 +91,9 @@ function deleteFormatter() {
 		</button>
 	`
 }
+
+// Dynamic <textarea> height (no native HTML/CSS way :( )
+$('#objective, #actions, #rednotes, #bluenotes').on('input', function(event) {
+	event.target.style.height = 0;
+	event.target.style.height = event.target.scrollHeight + 5 + 'px';
+}).trigger('input')

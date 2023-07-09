@@ -30,14 +30,14 @@ def duplicateassessment(id):
         newAss.name = "Copy of " + ass.name
         newAss.save()
 
-        tests = TestCase.objects(assessmentid=id)
-        for test in tests:
+        testcases = TestCase.objects(assessmentid=id)
+        for testcase in testcases:
             newcase = TestCase()
             newcase.assessmentid=str(newAss.id)
 
             copy = ["name", "overview", "objective", "actions", "advice", "rednotes", "mitreid", "tactic", "tools", "references", "kbentry"]
             for field in copy:
-                newcase[field] = test[field]
+                newcase[field] = testcase[field]
 
             newcase.save()
 
@@ -57,68 +57,17 @@ def deleteassessment(id):
 @auth_required()
 def assessmentstats(id):
     session["assessmentid"] = id
-    tests = TestCase.objects(assessmentid=id).all()
+    testcases = TestCase.objects(assessmentid=id).all()
     ass = Assessment.objects(id=id).first()
     mitres = [[m["mitreid"], m["name"]] for m in Technique.objects()]
     mitres.sort(key=lambda x: x[0])
     
-    stats = generatestats(tests, ass)
+    stats = generatestats(testcases, ass)
 
     return render_template('assessment.stats.html', stats=stats, assid=id) 
 
-@blueprint_assessment_utils.route('/assessment/<field>/<id>',methods = ['POST', 'GET'])
-@auth_required()
-def manageengagmentdata(field, id):
-    assessment = Assessment.objects(id=id).first()
-    if field not in ["sources", "targets", "tools", "controls", "tags"]:
-        return ('', 418)
-    if request.method == 'POST':
-        if current_user.has_role("Spectator"):
-            return ('', 204)
-        delFieldIDs = [str(item.id) for item in assessment[field]]
-        for item in request.json:
-            # New item
-            if str(item["id"]) == "0":
-                if field == "sources":
-                    newObj = Source(name=item["name"], description=item["description"])
-                elif field == "targets":
-                    newObj = Target(name=item["name"], description=item["description"])
-                elif field == "tools":
-                    newObj = Tool(name=item["name"], description=item["description"])
-                elif field == "controls":
-                    newObj = Control(name=item["name"], description=item["description"])
-                elif field == "tags":
-                    if "colour" not in item:
-                        item["colour"] = "#ff0000"
-                    newObj = Tag(name=item["name"], colour=item["colour"])
-                assessment[field].append(newObj)
-                assessment[field].save()
-            # Update old
-            else:
-                delFieldIDs.remove(item["id"])
-                oldObj = assessment[field].filter(id=item["id"]).first()
-                oldObj.name = item["name"]
-                if field != "tags":
-                    oldObj.description = item["description"]
-                else:
-                    oldObj.colour = item["colour"] or "#000"
-                assessment[field].save()
-        for delID in delFieldIDs:
-            if field == "sources":
-                assessment.update(pull__sources__id=delID)
-            elif field == "targets":
-                assessment.update(pull__targets__id=delID)
-            elif field == "tools":
-                assessment.update(pull__tools__id=delID)
-            elif field == "controls":
-                assessment.update(pull__controls__id=delID)
-            elif field == "tags":
-                assessment.update(pull__tags__id=delID)
-        return ('', 204)
-    else:
-        return assessment.to_json_data(field)
 
-def generatestats(tests, ass):
+def generatestats(testcases, ass):
     # Initalise metrics that are captured
     stats = {
         "All": {
@@ -144,9 +93,9 @@ def generatestats(tests, ass):
     }
 
     # What MITRE tactics do we currently have data for?
-    activeTactics = list(set([t["tactic"] for t in tests if t["state"] == "Complete"]))
+    activeTactics = list(set([t["tactic"] for t in testcases if t["state"] == "Complete"]))
 
-    for testcase in tests:
+    for testcase in testcases:
         if testcase["tactic"] in activeTactics:
             # Initalise tactic if not in the dataframe yet
             if testcase["tactic"] not in stats:

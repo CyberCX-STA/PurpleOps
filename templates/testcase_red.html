@@ -30,7 +30,7 @@
 					{% endif %}
 					{% endfor %}
 				</select>
-				{% if not current_user.has_role("Blue") %}
+				{% if current_user.has_role("Admin") or current_user.has_role("Red") %}
 					<input type="checkbox" class="btn-check" name="visible" id="visible" autocomplete="off"{% if testcase.visible %} checked{% endif %}>
 					<label class="btn btn-outline-primary" for="visible"><i class="bi-eye">&zwnj;</i></label>
 				{% endif %}
@@ -47,11 +47,11 @@
 				<select class="selectpicker form-control" multiple data-live-search="true" title="Source(s)"
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="sources"
-					name="sources" onchange="manageMulti(this)" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+					name="sources" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 					<option data-icon="bi-gear">Manage</option>
 					<option data-divider="true"></option>
-					{% for source in testcase.sources %}
-						<option selected class="dynopt-sources" value="{{ source }}"></option>
+					{% for source in multi.sources %}
+						<option {% if source.id|string in testcase.sources %}selected{% endif %} class="dynopt-sources" value="{{ source.id }}">{{ source.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
@@ -65,11 +65,11 @@
 				<select class="selectpicker form-control" multiple data-live-search="true" title="Target(s)"
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="targets"
-					name="targets" onchange="manageMulti(this)" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+					name="targets" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 					<option data-icon="bi-gear">Manage</option>
 					<option data-divider="true"></option>
-					{% for target in testcase.targets %}
-						<option selected class="dynopt-targets" value="{{ target }}"></option>
+					{% for target in multi.targets %}
+						<option {% if target.id|string in testcase.targets %}selected{% endif %} class="dynopt-targets" value="{{ target.id }}">{{ target.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
@@ -83,11 +83,11 @@
 				<select class="selectpicker form-control" multiple data-live-search="true" title="Tools(s)"
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="tools"
-					name="tools" onchange="manageMulti(this)" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+					name="tools" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 					<option data-icon="bi-gear">Manage</option>
 					<option data-divider="true"></option>
-					{% for tool in testcase.tools %}
-						<option selected class="dynopt-tools" value="{{ tool }}"></option>
+					{% for tool in multi.tools %}
+						<option {% if tool.id|string in testcase.tools %}selected{% endif %} class="dynopt-tools" value="{{ tool.id }}">{{ tool.name }}</option>
 					{% endfor %}
 				</select>
 			</div>
@@ -105,12 +105,12 @@
 					<span class="input-group-text px-1 text-danger"
 						style="writing-mode: vertical-lr;">Actions</span>
 					<textarea class="form-control" name="actions" id="actions"
-						style="min-height: {% if not current_user.has_role("Blue") %}3{% else %}4.5{% endif %}em;font-family: monospace;font-size:0.94em;"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.actions }}</textarea>
+						style="min-height: 4.5em;font-family: monospace;font-size:0.94em;"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.actions }}</textarea>
 				</div>
 				<div class="input-group my-2" id="red-notes">
 					<span class="input-group-text px-1 text-danger"
 						style="writing-mode: vertical-lr;">Notes</span>
-					<textarea class="form-control" name="rednotes" id="notes"
+					<textarea class="form-control" name="rednotes" id="rednotes"
 						style="min-height: 4em"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.rednotes }}</textarea>
 				</div>
 		</div>

@@ -1,14 +1,14 @@
 let assID = $("#multiForm")[0].dataset.assid
 let assName = $("#multiForm")[0].dataset.assname
 
-// Show saved toast if just saved
+	// Show saved toast if just saved
 
-$(function () {
-	if (window.location.hash.includes("saved")) {
-		new bootstrap.Toast(document.querySelector('#saveToast')).show();
-		history.replaceState({}, document.title, window.location.href.split('#')[0]);		
-	}
-})
+	$(function () {
+		if (window.location.hash.includes("saved")) {
+			new bootstrap.Toast(document.querySelector('#saveToast')).show();
+			history.replaceState({}, document.title, window.location.href.split('#')[0]);		
+		}
+	})
 
 // Dynamic text area sizing seeing as there's no native HTML way
 
@@ -22,37 +22,37 @@ function textAreaDynamicHeight(e) {
 	textAreaDynamicHeight($(elem)[0])
 });
 
-// Date-time picker init
+	// Date-time picker init
 
-$(function () {
-	if (window.location.hash.includes("saved")) {
-		new bootstrap.Toast(document.querySelector('#saveToast')).show();
-		history.replaceState({}, document.title, window.location.href.split('#')[0]);		
-	}
+	$(function () {
+		if (window.location.hash.includes("saved")) {
+			new bootstrap.Toast(document.querySelector('#saveToast')).show();
+			history.replaceState({}, document.title, window.location.href.split('#')[0]);		
+		}
 
-	["time-start", "time-end", "time-detect"].forEach(function (id) {
-		new tempusDominus.TempusDominus(document.getElementById(id), {
-			display: {
-				icons: {
-					time: 'bi bi-clock',
-					date: 'bi bi-calendar',
-					up: 'bi bi-arrow-up',
-					down: 'bi bi-arrow-down',
-					previous: 'bi bi-chevron-left',
-					next: 'bi bi-chevron-right',
-					today: 'bi bi-calendar-check',
-					clear: 'bi bi-trash',
-					close: 'bi bi-x',
+		["time-start", "time-end", "time-detect"].forEach(function (id) {
+			new tempusDominus.TempusDominus(document.getElementById(id), {
+				display: {
+					icons: {
+						time: 'bi bi-clock',
+						date: 'bi bi-calendar',
+						up: 'bi bi-arrow-up',
+						down: 'bi bi-arrow-down',
+						previous: 'bi bi-chevron-left',
+						next: 'bi bi-chevron-right',
+						today: 'bi bi-calendar-check',
+						clear: 'bi bi-trash',
+						close: 'bi bi-x',
+					},
+					sideBySide: true
 				},
-				sideBySide: true
-			},
-			localization: {
-				locale: "en-AU"
-			},
-			useCurrent: false
-		});
-	});  
-})
+				localization: {
+					locale: "en-AU"
+				},
+				useCurrent: false
+			});
+		});  
+	})
 
 // Intercept manage submit interface (source/target/tools)
 
@@ -362,80 +362,80 @@ populateDropdown("controls", 1)
 $('#tag-table').bootstrapTable();
 $('#manage-table').bootstrapTable();
 
-// Score management
-$(function() {
-	dynamicScores()
-});
+	// Score management
+	$(function() {
+		dynamicScores()
+	});
 
-$('#blocked-yes, #blocked-no, #blocked-partial, #blocked-na, #alert-yes, #alert-no, #alert, #log-yes, #log-no, #detection-quality, #time-detect, #priority-prevent, #priority-detect, #priority-na').change(function() {
-	dynamicScores()
-  })
+	$('#blocked-yes, #blocked-no, #blocked-partial, #blocked-na, #alert-yes, #alert-no, #alert, #log-yes, #log-no, #detection-quality, #time-detect, #priority-prevent, #priority-detect, #priority-na').change(function() {
+		dynamicScores()
+	})
 
-function dynamicScores() {
-	blocked = null
-	if ($("#blocked-yes").prop('checked')) blocked = "yes"
-	if ($("#blocked-partial").prop('checked')) blocked = "partial"
-	if ($("#blocked-no").prop('checked')) blocked = "no"
-	if ($("#blocked-na").prop('checked')) blocked = "na"
+	function dynamicScores() {
+		blocked = null
+		if ($("#blocked-yes").prop('checked')) blocked = "yes"
+		if ($("#blocked-partial").prop('checked')) blocked = "partial"
+		if ($("#blocked-no").prop('checked')) blocked = "no"
+		if ($("#blocked-na").prop('checked')) blocked = "na"
 
-	if (blocked == "yes" || blocked == "partial") {
-		$("#blockedrating-container").show()
-	}
-	if (blocked == "no") {
-		$("#blockedrating-container").hide()
-	}
-	if (blocked == "na") {
-		$("#blockedrating-container").hide()
-	}
-	if (blocked == null) {
-		$("#blockedrating-container").hide()
-	}
-
-	alerted = null
-	if ($("#alert-yes").prop("checked")) alerted = true
-	if ($("#alert-no").prop("checked")) alerted = false
-
-	if (alerted) {
-		$("#alert-container").show()
-		$("#logged-container").hide()
-		$("#log-yes").click()
-
-		if (!$("#time-detect").val()) {
-			cur = new Date().toLocaleString('en-AU').split(":")
-			cur = cur[0] + ":" + cur[1] + " " + cur[2].slice(-2)
-			$("#time-detect").val(cur)
+		if (blocked == "yes" || blocked == "partial") {
+			$("#blockedrating-container").show()
 		}
-	}
-	if (!alerted && alerted != null) {
-		$("#alert-container").hide()
-		$("#logged-container").show()
-	}
-	if (alerted == null) {
-		$("#alert-container").hide()
-		$("#logged-container").hide()
-		$("#detection-container").hide()
-	}
+		if (blocked == "no") {
+			$("#blockedrating-container").hide()
+		}
+		if (blocked == "na") {
+			$("#blockedrating-container").hide()
+		}
+		if (blocked == null) {
+			$("#blockedrating-container").hide()
+		}
 
-	logged = null
-	if ($("#log-yes").prop("checked")) logged = true
-	if ($("#log-no").prop("checked")) logged = false
+		alerted = null
+		if ($("#alert-yes").prop("checked")) alerted = true
+		if ($("#alert-no").prop("checked")) alerted = false
 
-	if (!alerted && !logged) {
-		$("#detection-container").hide()
+		if (alerted) {
+			$("#alert-container").show()
+			$("#logged-container").hide()
+			$("#log-yes").click()
+
+			if (!$("#time-detect").val()) {
+				cur = new Date().toLocaleString('en-AU').split(":")
+				cur = cur[0] + ":" + cur[1] + " " + cur[2].slice(-2)
+				$("#time-detect").val(cur)
+			}
+		}
+		if (!alerted && alerted != null) {
+			$("#alert-container").hide()
+			$("#logged-container").show()
+		}
+		if (alerted == null) {
+			$("#alert-container").hide()
+			$("#logged-container").hide()
+			$("#detection-container").hide()
+		}
+
+		logged = null
+		if ($("#log-yes").prop("checked")) logged = true
+		if ($("#log-no").prop("checked")) logged = false
+
+		if (!alerted && !logged) {
+			$("#detection-container").hide()
+		}
+		else if (logged != null && alerted != null) {
+			$("#detection-container").show()
+		}
+		if (alerted) $("#detection-container").show()
+
+		priority = null
+		if ($("#priority-prevent").prop("checked")) priority = true
+		if ($("#priority-detect").prop("checked")) priority = true
+		if ($("#priority-na").prop("checked")) priority = false
+
+		if (priority) $("#urgency-container").show()
+		else $("#urgency-container").hide()
 	}
-	else if (logged != null && alerted != null) {
-		$("#detection-container").show()
-	}
-	if (alerted) $("#detection-container").show()
-
-	priority = null
-	if ($("#priority-prevent").prop("checked")) priority = true
-	if ($("#priority-detect").prop("checked")) priority = true
-	if ($("#priority-na").prop("checked")) priority = false
-
-	if (priority) $("#urgency-container").show()
-	else $("#urgency-container").hide()
-}
 
 // State management
 
@@ -482,28 +482,28 @@ function updateState() {
     });
 }
 
-// File management
+	// File management
 
-function deleteFile(e, color, id, file) {
-	$(e).parent().remove()
-	$.ajax({
-		url: '/testcase/file/' + color + "/" + id + "/" + file,
-		type: 'DELETE',
-		success: function(result) {
-			
-		}
-	});
-}
+	function deleteFile(e, color, id, file) {
+		$(e).parent().remove()
+		$.ajax({
+			url: '/testcase/file/' + color + "/" + id + "/" + file,
+			type: 'DELETE',
+			success: function(result) {
+				
+			}
+		});
+	}
 
-function downloadFile(e, id, file) {
-	window.location.href = '/testcase/download/' + id + '/' + file;
-}
+	function downloadFile(e, id, file) {
+		window.location.href = '/testcase/download/' + id + '/' + file;
+	}
 
-// Breadcrumb back button
+	// Breadcrumb back button
 
-$("#assessment-crumb-button").css("display", "block");
-$("#assessment-crumb").text(assName)
-$("#assessment-crumb-button").attr("href", "/assessment/" + assID)
+	$("#assessment-crumb-button").css("display", "block");
+	$("#assessment-crumb").text(assName)
+	$("#assessment-crumb-button").attr("href", "/assessment/" + assID)
 
 // Template select
 
