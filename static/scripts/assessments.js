@@ -101,9 +101,6 @@ function actionFormatter() {
             <button type="button" class="btn btn-primary py-0" title="Edit" onclick="editAssessmentModal(this)">
                 <i class="bi-pencil">&zwnj;</i>
             </button>
-            <button type="button" class="btn btn-secondary py-0" title="Clone" onclick="cloneAssessment(this)">
-                <i class="bi-files">&zwnj;</i>
-            </button>
             <button type="button" class="btn btn-danger py-0" title="Delete" onclick="deleteAssessmentModal(this)">
                 <i class="bi-trash-fill">&zwnj;</i>
             </button>
