@@ -6,7 +6,7 @@ from utils import *
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask_security import auth_required, roles_accepted, current_user
-from flask import Blueprint, render_template, redirect, request, session
+from flask import Blueprint, render_template, redirect, request, session, send_from_directory
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 
@@ -127,37 +127,98 @@ def testcasesave(id):
     boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]
     timeFields = ["starttime", "endtime"]
     fileFields = ["redfiles", "bluefiles"] if not isBlue else ["bluefiles"]
+
     testcase = applyFormData(testcase, request.form, directFields)
     testcase = applyFormListData(testcase, request.form, listFields)
     testcase = applyFormBoolData(testcase, request.form, boolFields)
     testcase = applyFormTimeData(testcase, request.form, timeFields)
-#     if not os.path.exists(f"files/{assessmentid}/{id}"):
-#         os.makedirs(f"files/{assessmentid}/{id}")
-#     files = []
-#     for file in testcase.redfiles:
-#         files.append({"name": file.name, "path": file.path, "caption": request.form["RED" + file.path]})
-#     for file in request.files.getlist('redfiles'):
-#         if request.files.getlist('redfiles')[0].filename and not blue:
-#             filename = secure_filename(file.filename)
-#             path = f"files/{assessmentid}/{id}/{filename}"
-#             file.save(path)
-#             files.append({"name": filename, "path": path, "caption": ""})
-#     testcase.update(set__redfiles=files)
-#     files = []
-#     for file in testcase.bluefiles:
-#         files.append({"name": file.name, "path": file.path, "caption": request.form["BLUE" + file.path]})
-#     for file in request.files.getlist('bluefiles'):
-#         if request.files.getlist('bluefiles')[0].filename:
-#             filename = secure_filename(file.filename)
-#             path = f"files/{assessmentid}/{id}/{filename}"
-#             file.save(path)
-#             files.append({"name": filename, "path": path, "caption": ""})
-#     testcase.update(set__bluefiles=files)
+
+    if not os.path.exists(f"files/{testcase.assessmentid}/{str(testcase.id)}"):
+        os.makedirs(f"files/{testcase.assessmentid}/{str(testcase.id)}")
+
+    for field in fileFields:
+        files = []
+        for file in testcase[field]:
+            if file.name.lower().split(".")[-1] in ["png", "jpg", "jpeg"]:
+                caption = request.form[field.replace("files", "").upper() + file.name]
+            else:
+                caption = ""
+            files.append({
+                "name": file.name,
+                "path": file.path,
+                "caption": caption
+            })
+        for file in request.files.getlist(field):
+            if request.files.getlist(field)[0].filename:
+                filename = secure_filename(file.filename)
+                path = f"files/{testcase.assessmentid}/{str(testcase.id)}/{filename}"
+                file.save(path)
+                files.append({"name": filename, "path": path, "caption": ""})
+        if field == "redfiles":
+            testcase.update(set__redfiles=files)
+        else:
+            testcase.update(set__bluefiles=files)
+
     testcase.modifytime = datetime.now()
-    if request.form["logged"] == "Yes" and not testcase.detecttime:
+    if "logged" in request.form and request.form["logged"] == "Yes" and not testcase.detecttime:
         testcase.detecttime = datetime.now()
     testcase.save()
+
     return "", 200
+
+
+
+
+
+
+
+@blueprint_testcase.route('/testcase/<id>/evidence/<colour>/<file>', methods = ['DELETE'])
+@auth_required()
+@roles_accepted('Admin', 'Red', 'Blue')
+def deletefile(id, colour, file):
+    if colour not in ["red", "blue"] or colour == "red" and current_user.has_role("Blue"):
+        return 401
+    
+    testcase = TestCase.objects(id=id).first()
+    os.remove(f"files/{testcase.assessmentid}/{testcase.id}/{file}")
+
+    files = []
+    for f in testcase["redfiles" if colour == "red" else "bluefiles"]:
+        if f.name != file:
+            files.append(f)
+            
+    if colour == "red":
+        testcase.update(set__redfiles=files)
+    else:
+        testcase.update(set__bluefiles=files)
+
+    return ('', 204)
+
+@blueprint_testcase.route('/testcase/<id>/evidence/<file>', methods = ['GET'])
+@auth_required()
+def fetchFile(id, file):
+    testcase = TestCase.objects(id=id).first()
+    return send_from_directory(
+        'files',
+        f"{testcase.assessmentid}/{str(testcase.id)}/{file}",
+        as_attachment = True if "download" in request.args else False
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @blueprint_testcase.route('/testcase/<id>',methods = ['GET'])
 @auth_required()

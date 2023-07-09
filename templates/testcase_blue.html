@@ -180,25 +180,29 @@
 		</div>
 	</div>
 	<div class="row m-0">
-		<ul class="list-group p-0">
+		<ul class="list-group p-0" id="evidence-blue">
 			<li class="list-group-item">
 				<div class="input-group input-group-sm">
-					<label class="input-group-text text-primary" for="bluefiles">Upload Evidence</label>
-					<input type="file" class="form-control" id="bluefiles" name="bluefiles" multiple="multiple">
+					<label class="input-group-text text-danger" for="bluefiles">Upload Evidence</label>
+					<input type="file" class="form-control" id="bluefiles" name="bluefiles" multiple="multiple" autocomplete="off">
 				</div>
 			</li>
-			{% for file in testcase.bluefiles %}                                    
+			{% for file in testcase.bluefiles %}
 			<li class="list-group-item">
-				<button type="button" class="btn btn-outline-danger btn-sm me-2" onclick="deleteFile(this, 'blue', '{{ testcase.id }}', '{{ file.name }}')">
+				<button type="button" class="btn btn-outline-danger btn-sm me-2 evidence-delete evidence-blue">
 					<i class="bi-trash small">&zwnj;</i>
 				</button>
-				<button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="downloadFile(this, '{{ testcase.id }}', '{{ file.name }}')">
+				<a href="/testcase/{{ testcase.id }}/evidence/{{ file.name }}?download=true" class="btn btn-outline-primary btn-sm me-2">
 					<i class="bi-download small">&zwnj;</i>
-				</button>
-				<a href="/testcase/display/{{ testcase.id }}/{{ file.name }}" target="_blank" style="display:none;{% if (file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg') %}display:inline;{% endif %}"><img class="img-fluid img-thumbnail" style="max-width: 80%" src="/testcase/display/{{ testcase.id }}/{{ file.name }}"/></a>
-					
-				<input style="margin-left: 6em; width:80%;display:none;{% if ((file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg')) and not current_user.has_role("Blue") %}display:inline;{% endif %}" class="form-control form-control-sm" type="text" placeholder="Caption..." value="{{ file.caption }}" id="BLUE{{ file.path }}" name="BLUE{{ file.path }}"/>
-				<span class="name small" style="display:inline;{% if (file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg') %}display:none;{% endif %}">{{ file.name }}</span>
+				</a>
+				{% if (file.name|lower).endswith('.png') or (file.name|lower).endswith('.jpg') or (file.name|lower).endswith('.jpeg') %}
+					<a href="/testcase/{{ testcase.id }}/evidence/{{ file.name }}" target="_blank">
+						<img class="img-fluid img-thumbnail" style="max-width: 80%" src="/testcase/{{ testcase.id }}/evidence/{{ file.name }}"/>
+					</a>
+					<input style="margin-left: 6em; width:80%;" class="form-control form-control-sm" type="text" placeholder="Caption..." value="{{ file.caption }}" id="BLUE{{ file.name }}" name="BLUE{{ file.name }}"/>
+				{% else %}
+					<span class="name small">{{ file.name }}</span>
+				{% endif %}
 			</li>
 			{% endfor %}
 		</ul>

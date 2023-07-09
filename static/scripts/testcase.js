@@ -169,6 +169,7 @@ $("#ttpform").submit(function(e){
 		body: new FormData(e.target)
 	}).then(response => {
 		if (response.status == 200) {
+			displayNewEvidence(new FormData(e.target))
 			new bootstrap.Toast(document.querySelector('#toast')).show();
 		} else {
 			alert("Testcase save error - contact admin to review log")
@@ -204,3 +205,51 @@ $("#run-button").click(function(){
 		$("#state").addClass("text-white")
 	}
 });
+
+$(document).on("click", ".evidence-delete", function(event) {
+	target = event.target.tagName == "I" ? event.target.parentNode : event.target
+	colour = $(target).attr("class").includes("evidence-red") ? "red" : "blue"
+	url = $(target).next("a").attr("href").split("?")[0]
+	url = url.replace("/evidence/", `/evidence/${colour}/`)
+
+	$.ajax({
+		url: url,
+		type: 'DELETE',
+		success: function(result) {
+			$(target).parent().remove()
+		}
+	});
+});
+
+function displayNewEvidence(form) {
+	["red", "blue"].forEach(colour => {
+		form.getAll(`${colour}files`).forEach(file => {
+			if (file.name == "") {
+				return
+			}
+			testcaseId = window.location.pathname.split("/").slice(-1)[0]
+			html = `
+				<li class="list-group-item">
+					<button type="button" class="btn btn-outline-danger btn-sm me-2 evidence-delete evidence-${colour}">
+						<i class="bi-trash small">&zwnj;</i>
+					</button>
+					<a href="/testcase/${testcaseId}/evidence/${file.name}?download=true" class="btn btn-outline-primary btn-sm me-2">
+						<i class="bi-download small">&zwnj;</i>
+					</a>`
+			if (file.name.toLowerCase().endsWith(".png") || 
+				file.name.toLowerCase().endsWith(".jpg") ||
+				file.name.toLowerCase().endsWith(".jpeg")) {
+					html += `
+						<a href="/testcase/${testcaseId}/evidence/${file.name}" target="_blank">
+							<img class="img-fluid img-thumbnail" style="max-width: 80%" src="/testcase/${testcaseId}/evidence/${file.name}"/>
+						</a>
+						<input style="margin-left: 6em; width:80%;" class="form-control form-control-sm" type="text" placeholder="Caption..." value="" id="${colour.toUpperCase()}${file.name}" name="${colour.toUpperCase()}${file.name}"/>
+					`
+				} else {
+					html += `<span class="name small">${ file.name }</span>`
+				}
+			$(`#evidence-${colour}`).append(html)
+			$(`#${colour}files`).val("")
+		}) 
+	})
+}
