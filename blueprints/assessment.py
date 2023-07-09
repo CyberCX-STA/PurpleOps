@@ -19,22 +19,23 @@ def newassessment():
 
     return assessment.to_json(), 200
 
-@blueprint_assessment.route('/assessment/<id>', methods = ['POST', 'DELETE'])
+@blueprint_assessment.route('/assessment/<id>', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
 def editassessment(id):
     assessment = Assessment.objects(id=id).first()
-    if request.method == 'POST':
-        assessment = applyFormData(assessment, request.form, ["name", "description"])
-        assessment.save()
+    assessment = applyFormData(assessment, request.form, ["name", "description"])
+    assessment.save()
+    return assessment.to_json(), 200
 
-        return assessment.to_json(), 200
-        
-    if request.method == 'DELETE':
-        assessment.delete()
-        assessment.save()
-        
-        return "", 200
+@blueprint_assessment.route('/assessment/<id>', methods = ['DELETE'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def deleteassessment(id):
+    assessment = Assessment.objects(id=id).first()
+    assessment.delete()
+    assessment.save()
+    return "", 200
 
 @blueprint_assessment.route('/assessment/<id>', methods = ['GET'])
 @auth_required()

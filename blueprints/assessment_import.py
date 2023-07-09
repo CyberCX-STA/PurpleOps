@@ -7,48 +7,6 @@ from flask import Blueprint, redirect, request
 
 blueprint_assessment_import = Blueprint('blueprint_assessment_import', __name__)
 
-@blueprint_assessment_import.route('/assessment/import/template/<id>', methods = ['POST'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def importtemplate(id):
-    ass = Assessment.objects(id=id).first()
-
-    f = request.files['file']
-    tests = json.loads(f.read())
-
-    fields = ["mitreid", "tactic", "name", "objective", "actions", "tools", "tags"]
-
-    for test in tests:
-        tc = TestCase()
-        for field in fields:
-            if field in test:
-                if field == "tools":
-                    tc[field] = []
-                    for tool in test[field]:
-                        if not tool in [t["name"] for t in ass["tools"]]:
-                            newTool = Tool(name=tool, description="")
-                            ass.tools.append(newTool)
-                            ass.tools.save()
-                        tc[field].append([str(t["id"]) for t in ass["tools"] if str(t["name"]) == tool][0])
-                elif field == "tags":
-                    tc[field] = []
-                    for tag in test[field]:
-                        if not tag in [t["name"] for t in ass["tags"]]:
-                            newTag = Tag(name=tag, colour="#ff0000")
-                            ass.tags.append(newTag)
-                            ass.tags.save()
-                        tc[field].append([str(t["id"]) for t in ass["tags"] if str(t["name"]) == tag][0])
-                            
-                else:
-                    tc[field] = test[field]
-        tc.assessmentid = str(ass["id"])
-        tc.provider = "TMPL"
-        if KnowlegeBase.objects(mitreid=tc.mitreid):
-                tc.kbentry = True
-        tc.save()
-    
-    return redirect(request.referrer)
-
 @blueprint_assessment_import.route('/assessment/import/entire', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')

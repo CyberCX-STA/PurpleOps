@@ -2,7 +2,7 @@ import os
 import json
 import string
 from model import *
-from utils import applyFormData
+from utils import *
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask_security import auth_required, roles_accepted, current_user
@@ -118,74 +118,44 @@ def testcasedelete(id):
 
 @blueprint_testcase.route('/testcase/<id>',methods = ['POST'])
 @auth_required()
-def runtestcaseget(id):
+@roles_accepted('Admin', 'Red', 'Blue')
+def testcasesave(id):
     testcase = TestCase.objects(id=id).first()
-    assessmentid = testcase.assessmentid
-    ass = Assessment.objects(id=assessmentid).first()
-    if current_user.has_role("Spectator"):
-            return redirect(f"/assessment/{assessmentid}")
-    if not testcase.assessmentid:
-        testcase.assessmentid=assessmentid
-    blue = current_user.has_role("Blue")
-    fields = ["name", "overview", "objective", "actions", "rednotes", "bluenotes", "advice", "mitreid", "tactic", "state", "location", "prevented", "preventedrating", "alertseverity", "detectionrating", "priority", "priorityurgency"] #, "alerted", "logged"
-    checkFields = ["visible"]
-    multiFields = ["sources", "targets", "tools", "controls", "tags"]
-    timeFields = ["starttime", "endtime", "detecttime"]
-    blueFields = ["bluenotes", "prevented", "alerted", "alertseverity", "logged", "controls", "tags", "detecttime"]
-    for field in fields:
-        if field in request.form and not (blue and field not in blueFields):
-            testcase[field] = request.form[field]
-    for field in checkFields:
-        if not (blue and field not in blueFields):
-            # if field == "visible" and field in request.form and testcase[field] == False:
-            #     postTestcaseReleaseCard(testcase, ass, request.url)
-            testcase[field] = field in request.form
-    for field in multiFields:
-        if field in request.form and not (blue and field not in blueFields):
-            print(request.form.getlist(field))
-            testcase[field] = request.form.getlist(field)
-        if field not in request.form and (not blue or field in blueFields):
-            testcase[field] = None
-    # for field in timeFields:
-    #     if field in request.form and not (blue and field not in blueFields):
-    #         if request.form[field] != "":
-    #             try:
-    #                 testcase[field] = datetime.strptime(request.form[field], "%d/%m/%Y, %I:%M %p")
-    #             except:
-    #                 testcase[field] = datetime.strptime(request.form[field], "%d/%m/%Y, %I:%M:%p")
-    # if "alerted" in request.form and "logged" in request.form:
-    #     if not blue and request.form["alerted"] == "No" and request.form["logged"] == "No":
-    #         testcase["detectionrating"] = "0.0"
-    # if "prevented" in request.form:
-    #     if not blue and request.form["prevented"] == "No":
-    #         testcase["preventedrating"] = "0.0"
-    if not os.path.exists(f"files/{assessmentid}/{id}"):
-        os.makedirs(f"files/{assessmentid}/{id}")
-    files = []
-    for file in testcase.redfiles:
-        files.append({"name": file.name, "path": file.path, "caption": request.form["RED" + file.path]})
-    for file in request.files.getlist('redfiles'):
-        if request.files.getlist('redfiles')[0].filename and not blue:
-            filename = secure_filename(file.filename)
-            path = f"files/{assessmentid}/{id}/{filename}"
-            file.save(path)
-            files.append({"name": filename, "path": path, "caption": ""})
-    testcase.update(set__redfiles=files)
-    files = []
-    for file in testcase.bluefiles:
-        files.append({"name": file.name, "path": file.path, "caption": request.form["BLUE" + file.path]})
-    for file in request.files.getlist('bluefiles'):
-        if request.files.getlist('bluefiles')[0].filename:
-            filename = secure_filename(file.filename)
-            path = f"files/{assessmentid}/{id}/{filename}"
-            file.save(path)
-            files.append({"name": filename, "path": path, "caption": ""})
-    testcase.update(set__bluefiles=files)
-    if KnowlegeBase.objects(mitreid=testcase["mitreid"]).first():
-        testcase.kbentry = True
-    else:
-        testcase.kbentry = False
+    isBlue = current_user.has_role("Blue")
+    directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity"]
+    listFields = ["sources", "targets", "tools", "controls", "tags"]
+    boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]
+    timeFields = ["starttime", "endtime"]
+    fileFields = ["redfiles", "bluefiles"] if not isBlue else ["bluefiles"]
+    testcase = applyFormData(testcase, request.form, directFields)
+    testcase = applyFormListData(testcase, request.form, listFields)
+    testcase = applyFormBoolData(testcase, request.form, boolFields)
+    testcase = applyFormTimeData(testcase, request.form, timeFields)
+#     if not os.path.exists(f"files/{assessmentid}/{id}"):
+#         os.makedirs(f"files/{assessmentid}/{id}")
+#     files = []
+#     for file in testcase.redfiles:
+#         files.append({"name": file.name, "path": file.path, "caption": request.form["RED" + file.path]})
+#     for file in request.files.getlist('redfiles'):
+#         if request.files.getlist('redfiles')[0].filename and not blue:
+#             filename = secure_filename(file.filename)
+#             path = f"files/{assessmentid}/{id}/{filename}"
+#             file.save(path)
+#             files.append({"name": filename, "path": path, "caption": ""})
+#     testcase.update(set__redfiles=files)
+#     files = []
+#     for file in testcase.bluefiles:
+#         files.append({"name": file.name, "path": file.path, "caption": request.form["BLUE" + file.path]})
+#     for file in request.files.getlist('bluefiles'):
+#         if request.files.getlist('bluefiles')[0].filename:
+#             filename = secure_filename(file.filename)
+#             path = f"files/{assessmentid}/{id}/{filename}"
+#             file.save(path)
+#             files.append({"name": filename, "path": path, "caption": ""})
+#     testcase.update(set__bluefiles=files)
     testcase.modifytime = datetime.now()
+    if request.form["logged"] == "Yes" and not testcase.detecttime:
+        testcase.detecttime = datetime.now()
     testcase.save()
     return "", 200
 

@@ -10,47 +10,6 @@ from flask import Blueprint, redirect, request, session, send_from_directory, js
 
 blueprint_testcase_utils = Blueprint('blueprint_testcase_utils', __name__)
 
-@blueprint_testcase_utils.route('/testcase/state',methods = ['GET', 'POST'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def changetestcasestate():
-    assessmentid = session["assessmentid"]
-    newstate = "Unknown"
-    if request.method == "POST":
-        testid = request.form["testid"]
-        state = request.form["state"]
-        try:
-            starttime = datetime.strptime(request.form["starttime"], "%d/%m/%Y, %I:%M %p")
-        except:
-            starttime = datetime.strptime(request.form["starttime"], "%d/%m/%Y, %I:%M:%p")
-        
-        try:
-            endtime = datetime.strptime(request.form["endtime"], "%d/%m/%Y, %I:%M %p")
-        except:
-            endtime = datetime.strptime(request.form["endtime"], "%d/%m/%Y, %I:%M:%p")
-        
-        if testid:
-            testcase = TestCase.objects(id=testid).first()
-            if state == "Pending":
-                newstate = "In progress"
-                testcase.starttime = starttime
-            elif state == "In progress":
-                newstate = "Complete"
-                testcase.endtime = endtime
-            elif state == "Complete":
-                newstate = "In progress"
-                testcase.starttime = starttime
-                testcase.endtime = None
-            else:
-                newstate = "Pending"
-                testcase.starttime = None
-                testcase.endtime = None
-            testcase.state = newstate
-            testcase.modifytime = datetime.now()
-            testcase.save()
-        
-    return newstate, 200 
-
 @blueprint_testcase_utils.route('/testcase/file/<color>/<id>/<file>',methods = ['DELETE'])
 @auth_required()
 @roles_accepted('Admin', 'Red', 'Blue')
@@ -82,14 +41,3 @@ def downloadfile(id, file):
 def displayfile(id, file):
     assessmentid = session["assessmentid"]
     return send_from_directory('files', f"{assessmentid}/{id}/{file}")
-
-@blueprint_testcase_utils.route('/testcase/sigma/<id>', methods = ['GET'])
-@auth_required()
-def downloadsigma(id):
-    sigma = Sigma.objects(id=id).first()
-    if not os.path.exists(f"files/sigma/"):
-        os.makedirs(f"files/sigma/")
-    if not os.path.exists(f"files/sigma/{sigma.filename}"):
-        with open(f"files/sigma/{sigma.filename}", "w") as sigmaF:
-            sigmaF.write(sigma.raw)
-    return send_from_directory('files', f"sigma/{sigma.filename}")

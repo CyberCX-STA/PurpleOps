@@ -1,9 +1,8 @@
 <div class="col m-2 ms-0 blue">
 	<div class="row my-2">
 		<div class="col input-group-sm">
-			<!-- PREVENTED -->
 			<span class="input-group-text text-primary rounded-0 rounded-top border-bottom-0">Prevented</span>
-			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ced4da">
+			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ededed">
 				<label class="col-6 col-form-label">Prevented</label>
 				<div class="col-6">
 					<div class="form-check form-check-inline">
@@ -42,7 +41,7 @@
 				</div>
 			</div>
 			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Priority</span>
-			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ced4da">
+			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ededed">
 				<label class="col-6 col-form-label">Focus</label>
 				<div class="col-6">
 					<div class="form-check form-check-inline">
@@ -68,6 +67,7 @@
 					<div class="col-6">
 						<select class="form-select p-1" id="priorityurgency" name="priorityurgency" value="{{testcase.priorityurgency or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
+							<option value="N/A" hidden>N/A</option>
 							{% for val in ["Low", "Medium", "High"] %}
 								<option value="{{ val }}" {% if testcase.priorityurgency==val %} selected{% endif%}>{{ val }}</option>
 							{% endfor %}
@@ -78,17 +78,17 @@
 		</div>
 		<div class="col input-group-sm">
 			<span class="input-group-text text-primary rounded-0 rounded-top border-bottom-0">Detected</span>
-			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ced4da">
+			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ededed">
 				<label class="col-6 col-form-label">Alerted</label>
 				<div class="col-6">
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="alert-yes" value="Yes"
-							name="alerted" {% if testcase.alerted=="Yes" %} checked{% endif%}>
+							name="alerted" {% if testcase.alerted %} checked{% endif%}>
 						<label class="form-check-label" for="alert-yes">Yes</label>
 					</div>
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="alert-no" value="No"
-							name="alerted" {% if testcase.alerted=="No" %} checked{% endif%}>
+							name="alerted" {% if not testcase.alerted %} checked{% endif%}>
 						<label class="form-check-label" for="alert-no">No</label>
 					</div>
 					<input class="form-check-input" type="radio" id="alert-null" name="alerted" value=""{% if testcase.alerted==none %} checked{% endif%} hidden>
@@ -96,7 +96,7 @@
 				<div id="alert-container" class="row m-0 p-0 my-1">
 					<label for="alert" class="col-6 col-form-label">Alert Severity</label>
 					<div class="col-6">
-						<select class="form-select p-1" id="alert" name="alertseverity" value="{{testcase.alertseverity or ''}}">
+						<select class="form-select p-1" id="alertseverity" name="alertseverity" value="{{testcase.alertseverity or ''}}">
 							<option value="" hidden></option>
 							{% for val in ["Informational", "Low", "Medium", "High", "Critical"] %}
 							<option value="{{ val }}" {% if testcase.alertseverity==val %} selected{% endif%}>{{ val }}</option>
@@ -109,12 +109,12 @@
 					<div class="col-6">
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" id="log-yes" value="Yes"
-								name="logged" {% if testcase.logged=="Yes" %} checked{% endif%}>
+								name="logged" {% if testcase.logged %} checked{% endif%}>
 							<label class="form-check-label" for="log-yes">Yes</label>
 						</div>
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" id="log-no" value="No"
-								name="logged" {% if testcase.logged=="No" %} checked{% endif%}>
+								name="logged" {% if not testcase.logged %} checked{% endif%}>
 							<label class="form-check-label" for="log-no">No</label>
 						</div>
 						<input class="form-check-input" type="radio" id="logged-null" name="logged" value=""{% if testcase.logged==none %} checked{% endif%} hidden>
@@ -123,10 +123,10 @@
 				<div id="detection-container" class="row m-0 p-0 my-1">
 					<label for="colFormLabel" class="col-6 col-form-label">Detection Rating</label>
 					<div class="col-6">
-						<select class="form-select p-1" id="detection-rating" name="detectionrating" value="{{testcase.detectionrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<select class="form-select p-1" id="detectionrating" name="detectionrating" value="{{ testcase.detectionrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
 							{% for val in ["0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"] %}
-							<option value="{{ val }}" {% if testcase.detectionrating==val %} selected{% endif%}>{{ val }}</option>
+							<option value="{{ val }}" {% if testcase.detectionrating == val %} selected{% endif%}>{{ val }}</option>
 							{% endfor %}
 						</select>
 					</div>
@@ -135,11 +135,8 @@
 					<span class="input-group-text text-primary">
 						<i class="bi-clock-fill">&zwnj;</i>
 					</span>
-					<input id='time-detect' name="detecttime" type='text' class='form-control' placeholder="Detection time" value="{{ testcase.detecttime }}"/>
 				</div>
 			</div>
-
-			<!-- TAGS -->
 			<div class="input-group input-group-sm mt-3">
 				<span class="input-group-text text-primary" id="controls-label" data-bs-toggle="modal" data-bs-target="#multiControlModal"
 					style="cursor:pointer;" title="Manage Controls">

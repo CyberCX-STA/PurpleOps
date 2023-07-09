@@ -6,19 +6,6 @@ from flask import Blueprint, render_template, redirect, request, session
 
 blueprint_assessment_utils = Blueprint('blueprint_assessment_utils', __name__)
 
-@blueprint_assessment_utils.route('/assessment/update/<id>', methods = ['POST'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def updateassessment(id):
-    if request.method == 'POST':
-        ass = Assessment.objects(id=id).first()
-        
-        fields = ["name", "description", "industry", "techmaturity", "opmaturity", "socmodel", "socprovider", "webhook"]
-        ass = applyFormData(ass, request.form, fields)
-
-        ass.save()
-        return ('', 204)
-
 @blueprint_assessment_utils.route('/assessment/clone/<id>', methods = ['GET'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
@@ -42,16 +29,6 @@ def duplicateassessment(id):
             newcase.save()
 
         return jsonify({"id": str(newAss.id)})
-
-
-
-@blueprint_assessment_utils.route('/assessment/delete/<id>',methods = ['GET'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def deleteassessment(id):
-    TestCase.objects(assessmentid=id).delete()
-    Assessment.objects(id=id).delete()
-    return redirect(f"/")
 
 @blueprint_assessment_utils.route('/assessment/stats/<id>',methods = ['GET'])
 @auth_required()
