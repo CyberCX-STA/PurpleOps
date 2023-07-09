@@ -98,10 +98,79 @@ $('#objective, #actions, #rednotes, #bluenotes').on('input', function(event) {
 	event.target.style.height = event.target.scrollHeight + 5 + 'px';
 }).trigger('input')
 
+// Dynamically update prevent fields
+$('input[name="prevented"]').on('change', function() {
+	current = $('input[name="prevented"]:checked').val()
+	if (["No", "N/A", ""].includes(current)) {
+		$("#preventedrating").val(current.replace("No", "0.0"))
+		$("#preventedrating-container").hide()
+	} else {
+		if (["0.0", "N/A"].includes($("#preventedrating").val())) {
+			$("#preventedrating").val("")
+		}
+		$("#preventedrating-container").show()
+	}
+}).trigger('change')
 
-document.querySelector('input[name="genderS"]:checked').value;
-$('input[name="prevented"]').on('change', function(event) {
-	event.target.style.height = 0;
-	event.target.style.height = event.target.scrollHeight + 5 + 'px';
-}).trigger('input')
+// Dynamically update priority fields
+$('input[name="priority"]').on('change', function() {
+	current = $('input[name="priority"]:checked').val()
+	if (["N/A"].includes(current)) {
+		$("#priorityurgency").val("N/A")
+		$("#urgency-container").hide()
+	} else {
+		if ($("#priorityurgency").val() == "N/A") {
+			$("#priorityurgency").val("")
+		}
+		$("#urgency-container").show()
+	}
+}).trigger('change')
 
+// Dynamically update alerted fields
+$('input[name="alerted"]').on('change', function() {
+	current = $('input[name="alerted"]:checked').val()
+	if (current == "Yes") {
+		$("#alert-container").show()
+		$("#detection-container").show()
+		$("#logged-container").hide()
+		$('input[name="logged"]').val("Yes")
+		if ($('#detection-rating').val() == "0.0") {
+			$('#detection-rating').val("")
+		}
+	} else if (current == "No") {
+		$("#alert-container").hide()
+		$('input[name="logged"]').removeAttr('checked')
+		$("#logged-container").show()
+		$("#detection-container").hide()
+	} else {
+		$("#alert-container").hide()
+		$("#logged-container").hide()
+		$("#detection-container").hide()
+	}
+}).trigger('change')
+
+// Dynamically update logged fields
+$('input[name="logged"]').on('change', function() {
+	current = $('input[name="logged"]:checked').val()
+	if (current == "Yes") {
+		$('#detection-rating').val("")
+		$('#detection-container').show()
+	} else if (current == "No") {
+		$('#detection-rating').val("0.0")
+		$('#detection-container').hide()
+	}
+}).trigger('change')
+
+$("#ttpform").submit(function(e){
+	e.preventDefault();
+	fetch(e.target.action, {
+		method: 'POST',
+		body: new FormData(e.target)
+	}).then(response => {
+		if (response.status == 200) {
+			new bootstrap.Toast(document.querySelector('#toast')).show();
+		} else {
+			alert("Testcase save error - contact admin to review log")
+		}
+	})
+});

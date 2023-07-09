@@ -58,7 +58,7 @@
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-na" name="priority" value="N/A"
 							{% if testcase.priority=="N/A" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
-						<label class="form-check-label" for="priority-detect">N/A</label>
+						<label class="form-check-label" for="priority-na">N/A</label>
 					</div>
 					<input class="form-check-input" type="radio" id="priority-null" name="priority" value=""{% if testcase.priority==none %} checked{% endif%} hidden>
 				</div>
@@ -123,7 +123,7 @@
 				<div id="detection-container" class="row m-0 p-0 my-1">
 					<label for="colFormLabel" class="col-6 col-form-label">Detection Rating</label>
 					<div class="col-6">
-						<select class="form-select p-1" id="detection-quality" name="detectionrating" value="{{testcase.detectionrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<select class="form-select p-1" id="detection-rating" name="detectionrating" value="{{testcase.detectionrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
 							{% for val in ["0.0", "0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"] %}
 							<option value="{{ val }}" {% if testcase.detectionrating==val %} selected{% endif%}>{{ val }}</option>

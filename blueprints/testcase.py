@@ -187,7 +187,7 @@ def runtestcaseget(id):
         testcase.kbentry = False
     testcase.modifytime = datetime.now()
     testcase.save()
-    return redirect(f"/testcase/{id}#saved")
+    return "", 200
 
 @blueprint_testcase.route('/testcase/<id>',methods = ['GET'])
 @auth_required()

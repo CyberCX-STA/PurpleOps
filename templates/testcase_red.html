@@ -10,7 +10,8 @@
 				<span class="input-group-text text-danger" title="Start time">
 					<i class="bi-clock-history">&zwnj;</i>
 				</span>
-				<input id='time-start' name="starttime" type='text' class='form-control' placeholder="Start time" value="{% if testcase.starttime %} {{ testcase.starttime.strftime('%m/%d/%Y, %I:%M %P') }}{% endif %}"{% if current_user.has_role("Blue") %} disabled{% endif %}/>
+				<!-- <input id='time-start' name="starttime" type='text' class='form-control' placeholder="Start time" value="{% if testcase.starttime %} {{ testcase.starttime.strftime('%m/%d/%Y, %I:%M %P') }}{% endif %}"{% if current_user.has_role("Blue") %} disabled{% endif %}/> -->
+				<input id='time-start' name="starttime" type="datetime-local" class='form-control' placeholder="test">
 			</div>
 		</div>
 		<div class="col-4">
