@@ -48,7 +48,7 @@
 <h3>SIGMA Rules</h3>
 <ul>
     {% for sigma in sigmas %}
-    <li><a href='{{ sigma.url }}' target="_blank">{{ sigma.title }}</a><br/>{{ sigma.description }}</li>
+    <li><a href='{{ sigma.url }}' target="_blank">{{ sigma.name }}</a><br/>{{ sigma.description }}</li>
     {% endfor %}
 </ul>
 {% endif %}

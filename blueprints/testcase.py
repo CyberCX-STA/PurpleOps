@@ -90,6 +90,16 @@ def testcasesave(id):
     testcase.modifytime = datetime.now()
     if "logged" in request.form and request.form["logged"] == "Yes" and not testcase.detecttime:
         testcase.detecttime = datetime.now()
+
+    if testcase.prevented in ["Yes", "Partial"]:
+        testcase.outcome = "Prevented"
+    elif testcase.alerted:
+        testcase.outcome = "Alerted"
+    elif testcase.logged:
+        testcase.outcome = "Logged"
+    else:
+        testcase.outcome = "Missed"
+
     testcase.save()
 
     return "", 200

@@ -29,7 +29,7 @@
       <td>{{ a.id }}</td>
       <td>{{ a.name }}</td>
       <td>{{ a.description or "-" }}</td>
-      <td>75</td>
+      <td>{{ a.get_progress() }}</td>
       <td></td>
     </tr>
     {% endif %}

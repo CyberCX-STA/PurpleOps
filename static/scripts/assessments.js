@@ -114,8 +114,11 @@ function nameFormatter(name, row) {
 function progressFormatter(progress) {
 	return `
 		<div class="progress">
-			<div class="progress-bar" role="progressbar" style="width: ${progress}%;" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
+			<div class="progress-bar bg-danger" role="progressbar" style="width: ${progress.split('|')[0]}%"></div>
+			<div class="progress-bar bg-warning" role="progressbar" style="width: ${progress.split('|')[1]}%"></div>
+			<div class="progress-bar bg-success" role="progressbar" style="width: ${progress.split('|')[2]}%"></div>
+			<div class="progress-bar bg-info" role="progressbar" style="width: ${progress.split('|')[3]}%"></div>
+		</div>
 	`
 }
 

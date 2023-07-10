@@ -145,6 +145,7 @@ class TestCase(db.Document):
     bluefiles = db.EmbeddedDocumentListField(File)
     visible = db.BooleanField(default=False)
     modifytime = db.DateTimeField()
+    outcome = db.StringField()
 
     def to_json(self):
         jsonDict = {}
@@ -153,7 +154,7 @@ class TestCase(db.Document):
                       "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
                       "priority", "priorityurgency", "starttime", "endtime",
-                      "detecttime", "visible", "modifytime"]:
+                      "detecttime", "visible", "modifytime", "outcome"]:
             jsonDict[field] = self[field]
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
@@ -180,29 +181,25 @@ class Assessment(db.Document):
     controls = db.EmbeddedDocumentListField(Control)
     tags = db.EmbeddedDocumentListField(Tag)
 
-    # def get_status(self):
-    #     pending = TestCase.objects(assessmentid=str(self.id),state="Pending").count()
-    #     completed = TestCase.objects(assessmentid=str(self.id),state="Complete").count()
-    #     total = TestCase.objects(assessmentid=str(self.id)).count()
-        
-    #     if total > 0:
-    #         pending_percent = int((completed / total) * 100)
-    #     else:
-    #         pending_percent = 0
-    #     completed_percent = 100 - pending_percent
-    #     return {"pending": pending,
-    #         "completed": completed,
-    #         "total": total,
-    #         "pending_percent": pending_percent,
-    #         "completed_percent": completed_percent}
-        
+    def get_progress(self):
+        # Returns string with % of "missed|logged|alerted|prevented|pending"
+        testcases = TestCase.objects(assessmentid=str(self.id)).count()
+        if testcases == 0:
+            return "0|0|0|0|0"
+        outcomes = []
+        for outcome in ["Prevented", "Alerted", "Logged", "Missed"]:
+            outcomes.append(str(round(
+                TestCase.objects(assessmentid=str(self.id), outcome=outcome).count() / 
+                testcases * 100
+            , 2)))
+        return "|".join(outcomes)
 
     def to_json(self):
         return {
             "id": str(self.id),
             "name": self.name,
             "description": self.description,
-            "progress": 75
+            "progress": self.get_progress()
         }
                     
     def multi_to_json(self, field):

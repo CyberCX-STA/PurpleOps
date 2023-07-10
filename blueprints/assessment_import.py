@@ -100,11 +100,12 @@ def importentire():
         for field in ["name", "objective", "actions", "rednotes", "bluenotes",
                       "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
-                      "priority", "priorityurgency", "visible"]:
+                      "priority", "priorityurgency", "visible", "outcome"]:
             newTestcase[field] = oldTestcase[field]
 
         for field in ["starttime", "endtime", "detecttime", "modifytime"]:
-            newTestcase[field] = datetime.datetime.strptime(oldTestcase[field].split(".")[0], "%Y-%m-%d %H:%M:%S")
+            if newTestcase[field]:
+                newTestcase[field] = datetime.datetime.strptime(oldTestcase[field].split(".")[0], "%Y-%m-%d %H:%M:%S")
 
         for field in ["sources", "targets", "tools", "controls", "tags"]:
             newTestcase[field] = []
