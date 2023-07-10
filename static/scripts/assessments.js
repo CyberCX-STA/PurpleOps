@@ -68,6 +68,30 @@ $("#newAssessmentForm").submit(function(e){
 		}
 
 		$('#newAssessmentModal').modal('hide')
+		$('#newAssessmentForm').trigger('reset')
+    })
+});
+
+// Submit entire testcase and AJAX add new row
+$("#importAssessmentForm").submit(function(e){
+	e.preventDefault();
+
+    fetch(e.target.action, {
+        method: 'POST',
+        body: new FormData(e.target)
+    }).then((response) => {
+        return response.json();
+    }).then((body) => {
+		newRow = {
+			id: body.id,
+			name: body.name,
+			description: body.description,
+			progress: body.progress,
+            actions: ""
+		}
+		$('#assessmentsTable').bootstrapTable('append', [newRow])
+		$('#importAssessmentModal').modal('hide')
+		$('#importAssessmentForm').trigger('reset')
     })
 });
 

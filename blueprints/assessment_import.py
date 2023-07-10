@@ -65,131 +65,88 @@ def testcasecampaign():
         
     return newcases, 200
 
-# @blueprint_assessment_import.route('/assessment/import/entire', methods = ['POST'])
-# @auth_required()
-# @roles_accepted('Admin', 'Red')
-# def importentire():
-#     newA = Assessment(name="Importing...")
-#     newA.save()
-#     newAID = str(newA.id)
+@blueprint_assessment_import.route('/assessment/import/entire', methods = ['POST'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def importentire():
+    assessment = Assessment(name="Importing...")
+    assessment.save()
+    assessmentID = str(assessment.id)
 
-#     os.makedirs(f"files/{newAID}/tmp")
-#     f = request.files['file']
-#     f.save(f"files/{newAID}/tmp/entire.zip")
-#     shutil.unpack_archive(f"files/{newAID}/tmp/entire.zip", f"files/{newAID}/tmp/", "zip")
+    os.makedirs(f"files/{assessmentID}/tmp")
+    f = request.files['file']
+    f.save(f"files/{assessmentID}/tmp/entire.zip")
+    shutil.unpack_archive(
+        f"files/{assessmentID}/tmp/entire.zip",
+        f"files/{assessmentID}/tmp/",
+        "zip"
+    )
 
-#     with open(f"files/{newAID}/tmp/meta.json", 'r') as f:
-#         meta = json.load(f)
-#     for key in meta:
-#         newA[key] = meta[key]
-#     newA.save()
+    with open(f"files/{assessmentID}/tmp/meta.json", 'r') as f:
+        meta = json.load(f)
+    for key in ["name", "description"]:
+        assessment[key] = meta[key]
+    assessment.save()
 
-#     engagmentWide = {
-#         "sources": {},
-#         "targets": {},
-#         "tools": {},
-#         "controls": {},
-#         "tags": {}
-#     }
-#     directs = {
-#         "Mitre ID": "mitreid",
-#         "Name": "name",
-#         "Tactic": "tactic",
-#         "Name": "name",
-#         "State": "state",
-#         "Objective": "objective",
-#         "Actions": "actions",
-#         "Red Notes": "rednotes",
-#         "Prevented": "prevented",
-#         "Prevented Rating": "preventedrating",
-#         "Alerted": "alerted",
-#         "Alert Severity": "alertseverity",
-#         "Logged": "logged",
-#         "Detection Rating": "detectionrating",
-#         "Priority": "priority",
-#         "Priority Urgency": "priorityurgency",
-#         "Observations": "bluenotes",
-#         "Visible": "visible",
-#     }
-#     times = {
-#         "Modified Time": "modifytime",
-#         "Start Time": "starttime",
-#         "End Time": "endtime",
-#         "Detection Time": "detecttime"
-#     }
-#     multis = {
-#         "Source(s)": "sources",
-#         "Target(s)": "targets",
-#         "Red Tool(s)": "tools",
-#         "Control(s)": "controls",
-#         "Tags": "tags",
-#     }
-#     files = {
-#         "Red Evidence": "redfiles",
-#         "Blue Evidence": "bluefiles"
-#     }
+    with open(f"files/{assessmentID}/tmp/export.json", 'r') as f:
+        export = json.load(f)
 
-#     with open(f"files/{newAID}/tmp/export.json", 'r') as f:
-#         export = json.load(f)
+    for oldTestcase in export:
+        newTestcase = TestCase()
+        newTestcase.assessmentid = assessmentID
+        newTestcase.save()
+        testcaseID = str(newTestcase.id)
 
-#     for oldT in export:
-#         newT = TestCase()
-#         newT.assessmentid = newAID
-#         newT.save()
-#         newTID = str(newT.id)
+        for field in ["name", "objective", "actions", "rednotes", "bluenotes",
+                      "mitreid", "tactic", "state", "prevented", "preventedrating",
+                      "alerted", "alertseverity", "logged", "detectionrating",
+                      "priority", "priorityurgency", "visible"]:
+            newTestcase[field] = oldTestcase[field]
 
-#         if KnowlegeBase.objects(mitreid=oldT["Mitre ID"]):
-#             newT.kbentry = True
+        for field in ["starttime", "endtime", "detecttime", "modifytime"]:
+            newTestcase[field] = datetime.datetime.strptime(oldTestcase[field].split(".")[0], "%Y-%m-%d %H:%M:%S")
 
-#         for key in directs:
-#             newT[directs[key]] = oldT[key]
+        for field in ["sources", "targets", "tools", "controls", "tags"]:
+            newTestcase[field] = []
+            assessment[field] = []
+            multis = {}
+            for multi in oldTestcase[field]:
+                if multi in multis:
+                    newTestcase[field].append(multis[newMulti.name])
+                else:
+                    if field == "sources":
+                        newMulti = Source(name=multi)
+                    elif field == "targets":
+                        newMulti = Target(name=multi)
+                    elif field == "tools":
+                        newMulti = Tool(name=multi)
+                    elif field == "controls":
+                        newMulti = Control(name=multi)
+                    if field == "tags":
+                        newMulti = Tag(name=multi, colour="#ff0000")
+                    multis[newMulti.name] = str(newMulti.id)
+                    assessment[field].append(newMulti)
+                    newTestcase[field].append(multis[newMulti.name])
 
-#         for key in times:
-#             if oldT[key] and oldT[key] != "None":
-#                 oldT[key] = oldT[key].split(".")[0]
-#                 newT[times[key]] = datetime.datetime.strptime(oldT[key], "%Y-%m-%d %H:%M:%S")
+        for field in ["redfiles", "bluefiles"]:
+            newFiles = []
+            for file in oldTestcase[field]:
+                origFilePath, caption = file.split("|")
+                origFilePath = origFilePath.split("/")
+                name = origFilePath[3]
+                # TODO maybe LFI with dir traverse supplied?
+                origFilePath = f'files/{assessmentID}/tmp/{origFilePath[2]}/{origFilePath[3]}'
+                if not os.path.exists(f"files/{assessmentID}/{testcaseID}"):
+                    os.makedirs(f"files/{assessmentID}/{testcaseID}")
+                newFilePath = f"files/{assessmentID}/{testcaseID}/{name}"
+                shutil.copy2(origFilePath, newFilePath)
+                newFiles.append({"name": name, "path": newFilePath, "caption": caption})
+            if field == "redfiles":
+                newTestcase.update(set__redfiles=newFiles)
+            elif field == "bluefiles":
+                newTestcase.update(set__bluefiles=newFiles)
+        newTestcase.save()
 
-#         for key in multis:
-#             newT[multis[key]] = []
-#             for multi in oldT[key]:
-#                 if multi in engagmentWide[multis[key]]:
-#                     newT[multis[key]].append(engagmentWide[multis[key]][multi])
-#                 else:
-#                     if multis[key] == "sources":
-#                         newM = Source(name=multi)
-#                     elif multis[key] == "targets":
-#                         newM = Target(name=multi)
-#                     elif multis[key] == "tools":
-#                         newM = Tool(name=multi)
-#                     elif multis[key] == "controls":
-#                         newM = Control(name=multi)
-#                     if multis[key] == "tags":
-#                         newM = Tag(name=multi, colour="#ff0000")
-#                     newA[multis[key]].append(newM)
-#                     newA[multis[key]].save()
-#                     engagmentWide[multis[key]][multi] = str(newA[multis[key]][-1].id)
-#                     newT[multis[key]].append(engagmentWide[multis[key]][multi])
+    assessment.save()
 
-#         for key in files:
-#             newFiles = []
-#             for file in oldT[key]:
-#                 origFilePath, caption = file.split("|")
-#                 origFilePath = origFilePath.split("/")
-#                 name = origFilePath[3]
-#                 # TODO maybe LFI with dir traverse supplied?
-#                 origFilePath = f'files/{newAID}/tmp/{origFilePath[2]}/{origFilePath[3]}'
-#                 if not os.path.exists(f"files/{newAID}/{newTID}"):
-#                     os.makedirs(f"files/{newAID}/{newTID}")
-#                 newFilePath = f"files/{newAID}/{newTID}/{name}"
-#                 shutil.copy2(origFilePath, newFilePath)
-#                 newFiles.append({"name": name, "path": newFilePath, "caption": caption})
-#             if files[key] == "redfiles":
-#                 newT.update(set__redfiles=newFiles)
-#             elif files[key] == "bluefiles":
-#                 newT.update(set__bluefiles=newFiles)
-
-#         newT.save()
-
-#     shutil.rmtree(f"files/{newAID}/tmp")
-    
-#     return redirect(request.referrer)
+    return assessment.to_json(), 200

@@ -26,7 +26,7 @@
 {{ macros.modalTail(name="deleteAssessment", cancelLabel="No", actionLabel="Delete") }}
 
 <!-- Import assessment modal -->
-<form action="/assessment/import/entire" enctype="multipart/form-data" method="POST" class="m-0">
+<form action="/assessment/import/entire" enctype="multipart/form-data" method="POST" class="m-0" id="importAssessmentForm">
 	{{ macros.modalHead(name="importAssessment", title="Import Assessment") }}
 	<div class="mb-3">
 		<p>Select the <code>Assessment.zip</code> file output from <code>Export > Entire Assessment</code>.</p>

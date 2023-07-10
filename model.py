@@ -156,7 +156,7 @@ class TestCase(db.Document):
                       "detecttime", "visible", "modifytime"]:
             jsonDict[field] = self[field]
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
-            jsonDict[field] = str(self[field])
+            jsonDict[field] = str(self[field]).split(".")[0]
         for field in ["tags", "sources", "targets", "tools", "controls"]:
             strs = []
             for i in self[field]:
@@ -172,7 +172,7 @@ class TestCase(db.Document):
 
 class Assessment(db.Document):
     name = db.StringField()
-    description = db.StringField()
+    description = db.StringField(default="")
     created = db.DateTimeField(default=datetime.datetime.utcnow)
     targets = db.EmbeddedDocumentListField(Target)
     sources = db.EmbeddedDocumentListField(Source)
