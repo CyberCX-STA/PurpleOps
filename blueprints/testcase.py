@@ -21,100 +21,28 @@ def newtestcase():
     newcase.save()
     return newcase.to_json(), 200
 
-@blueprint_testcase.route('/testcase/import/template', methods = ['POST'])
+@blueprint_testcase.route('/testcase/<id>',methods = ['GET'])
 @auth_required()
-@roles_accepted('Admin', 'Red')
-def testcasetemplates():
-    newcases = []
-    for id in request.json["ids"]:
-        template = TestCaseTemplate.objects(id=id).first()
-        # TODO prevent cross-ass tampering on user supplied input
-        newcase = TestCase(
-            name = template.name,
-            mitreid = template.mitreid,
-            tactic = template.tactic,
-            objective = template.objective,
-            actions = template.actions,
-            rednotes = template.rednotes,
-            assessmentid = request.referrer.split("/")[-1]
-        ).save()
-        newcases.append(newcase.to_json())
-        
-    return newcases, 200
-
-@blueprint_testcase.route('/testcase/import/navigator', methods = ['POST'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def testcasenavigator():
-    newcases = []
-    navigatorTestcases = json.loads(request.files['file'].read())
-    for testcase in navigatorTestcases["techniques"]:
-        # TODO prevent cross-ass tampering on user supplied input
-        newcase = TestCase(
-            name = Technique.objects(mitreid=testcase["techniqueID"]).first().name,
-            mitreid = testcase["techniqueID"],
-            tactic = string.capwords(testcase["tactic"].replace("-", " ")),
-            assessmentid = request.referrer.split("/")[-1]
-        ).save()
-        newcases.append(newcase.to_json())
-        
-    return newcases, 200
-
-@blueprint_testcase.route('/testcase/import/campaign', methods = ['POST'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def testcasecampaign():
-    newcases = []
-    campaignTestcases = json.loads(request.files['file'].read())
-    for testcase in campaignTestcases:
-        # TODO prevent cross-ass tampering on user supplied input
-        newcase = TestCase()
-        newcase.assessmentid = request.referrer.split("/")[-1]
-        for field in ["name", "mitreid", "tactic", "objective", "actions"]: # TODO: "tools", "tags"
-            if field in testcase:
-                newcase[field] = testcase[field]
-        newcase.save()
-        newcases.append(newcase.to_json())
-        
-    return newcases, 200
-
-@blueprint_testcase.route('/testcase/toggle-visibility/<id>', methods = ['GET'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def testcasevisibility(id):
-    newcase = TestCase.objects(id=id).first()
-    newcase.visible = not newcase.visible
-    newcase.save()
-        
-    return newcase.to_json(), 200
-
-@blueprint_testcase.route('/testcase/clone/<id>', methods = ['GET'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def testcaseclone(id):
-    orig = TestCase.objects(id=id).first()
-    newcase = TestCase()
-    copy = ["name", "assessmentid", "objective", "actions", "rednotes", "mitreid", "tactic", "tools", "tags"]
-    for field in copy:
-        newcase[field] = orig[field]
-    newcase.name = orig["name"] + " (Copy)"
-    newcase.save()
-
-    return newcase.to_json(), 200
-
-@blueprint_testcase.route('/testcase/delete/<id>', methods = ['GET'])
-@auth_required()
-@roles_accepted('Admin', 'Red')
-def testcasedelete(id):
-    # TODO has writes to deltee?
-    TestCase.objects(id=id).first().delete()
-    return "", 200
-
-
-
-
-
-
+def runtestcasepost(id):
+    testcase = TestCase.objects(id=id).first()
+    assessment = Assessment.objects(id=testcase.assessmentid).first()
+    return render_template('testcase.html',
+        testcase = testcase,
+        testcases = TestCase.objects(assessmentid=str(assessment.id)).all(),
+        tactics = Tactic.objects().all(),
+        assessment = assessment,
+        kb = KnowlegeBase.objects(mitreid=testcase.mitreid).first(),
+        templates = TestCaseTemplate.objects(mitreid=testcase["mitreid"]),
+        mitres = [[m["mitreid"], m["name"]] for m in Technique.objects()],
+        sigmas = Sigma.objects(mitreid=testcase["mitreid"]),
+        multi = {
+            "sources": assessment.sources,
+            "targets": assessment.targets,
+            "tools": assessment.tools,
+            "controls": assessment.controls,
+            "tags": assessment.tags
+        }
+    )
 
 @blueprint_testcase.route('/testcase/<id>',methods = ['POST'])
 @auth_required()
@@ -165,80 +93,3 @@ def testcasesave(id):
     testcase.save()
 
     return "", 200
-
-
-
-
-
-
-
-@blueprint_testcase.route('/testcase/<id>/evidence/<colour>/<file>', methods = ['DELETE'])
-@auth_required()
-@roles_accepted('Admin', 'Red', 'Blue')
-def deletefile(id, colour, file):
-    if colour not in ["red", "blue"] or colour == "red" and current_user.has_role("Blue"):
-        return 401
-    
-    testcase = TestCase.objects(id=id).first()
-    os.remove(f"files/{testcase.assessmentid}/{testcase.id}/{file}")
-
-    files = []
-    for f in testcase["redfiles" if colour == "red" else "bluefiles"]:
-        if f.name != file:
-            files.append(f)
-            
-    if colour == "red":
-        testcase.update(set__redfiles=files)
-    else:
-        testcase.update(set__bluefiles=files)
-
-    return ('', 204)
-
-@blueprint_testcase.route('/testcase/<id>/evidence/<file>', methods = ['GET'])
-@auth_required()
-def fetchFile(id, file):
-    testcase = TestCase.objects(id=id).first()
-    return send_from_directory(
-        'files',
-        f"{testcase.assessmentid}/{str(testcase.id)}/{file}",
-        as_attachment = True if "download" in request.args else False
-    )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@blueprint_testcase.route('/testcase/<id>',methods = ['GET'])
-@auth_required()
-def runtestcasepost(id):
-    testcase = TestCase.objects(id=id).first()
-    assessment = Assessment.objects(id=testcase.assessmentid).first()
-    return render_template('testcase.html',
-        testcase = testcase,
-        testcases = TestCase.objects(assessmentid=str(assessment.id)).all(),
-        tactics = Tactic.objects().all(),
-        assessment = assessment,
-        kb = KnowlegeBase.objects(mitreid=testcase.mitreid).first(),
-        templates = TestCaseTemplate.objects(mitreid=testcase["mitreid"]),
-        mitres = [[m["mitreid"], m["name"]] for m in Technique.objects()],
-        sigmas = Sigma.objects(mitreid=testcase["mitreid"]),
-        multi = {
-            "sources": assessment.sources,
-            "targets": assessment.targets,
-            "tools": assessment.tools,
-            "controls": assessment.controls,
-            "tags": assessment.tags
-        }
-    )

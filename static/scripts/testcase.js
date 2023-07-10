@@ -162,6 +162,7 @@ $('input[name="logged"]').on('change', function() {
 	}
 }).trigger('change')
 
+// AJAX submit and pop toast on save success
 $("#ttpform").submit(function(e){
 	e.preventDefault();
 	fetch(e.target.action, {
@@ -177,11 +178,11 @@ $("#ttpform").submit(function(e){
 	})
 });
 
+// Alter timestamps, button labels and state when hitting run button
 $("#run-button").click(function(){
 	clickTime = new Date();
 	clickTime.setMinutes(clickTime.getMinutes() - clickTime.getTimezoneOffset());
 	clickTime = clickTime.toISOString().slice(0, 16)
-	console.log(clickTime)
 
 	if ($("#run-button").text() == "Start" || $("#run-button").text() == "Restart") {
 		$("#time-start").val(clickTime)
@@ -206,6 +207,7 @@ $("#run-button").click(function(){
 	}
 });
 
+// Delete evidence AJAX handler
 $(document).on("click", ".evidence-delete", function(event) {
 	target = event.target.tagName == "I" ? event.target.parentNode : event.target
 	colour = $(target).attr("class").includes("evidence-red") ? "red" : "blue"
@@ -221,6 +223,7 @@ $(document).on("click", ".evidence-delete", function(event) {
 	});
 });
 
+// AJAX inject new evidence HTML on testcase save
 function displayNewEvidence(form) {
 	["red", "blue"].forEach(colour => {
 		form.getAll(`${colour}files`).forEach(file => {

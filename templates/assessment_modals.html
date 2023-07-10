@@ -68,7 +68,7 @@
 {{ macros.modalTail(name="testcaseTemplates", cancelLabel="Cancel", actionLabel="Add Selected") }}
 
 <!-- MITRE Modal -->
-<form action="/testcase/import/navigator" enctype="multipart/form-data" method="POST" class="m-0" id="navigatorTemplateForm">
+<form action="/assessment/import/navigator" enctype="multipart/form-data" method="POST" class="m-0" id="navigatorTemplateForm">
     {{ macros.modalHead(name="testcaseNavigator", title="Import MITRE Layer") }}
     <div class="mb-3">
         <p>Select your threat actor / ad-hoc TTP at <a href="https://mitre-attack.github.io/attack-navigator/" target="_blank">the Mitre ATT&CK Navigator</a> &gt; <code>Download Controls</code> &gt; <code>Download Layer as JSON</code>.</p>
@@ -79,7 +79,7 @@
 </form>
 
 <!-- Template Modal -->
-<form action="/testcase/import/campaign" enctype="multipart/form-data" method="POST" class="m-0" id="campaignTemplateForm">
+<form action="/assessment/import/campaign" enctype="multipart/form-data" method="POST" class="m-0" id="campaignTemplateForm">
     {{ macros.modalHead(name="testcaseCampaign", title="Import Testcase Campaign") }}
     <div class="mb-3">
         <p>Select the <code>template.json</code> file output from <code>Export > Testcase Template</code>.</p>
