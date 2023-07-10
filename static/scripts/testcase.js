@@ -141,7 +141,6 @@ $('input[name="alerted"]').on('change', function() {
 	} else if (current == "No") {
 		$("#alert-container").hide()
 		$("#alertseverity").val("")
-		$('input[name="logged"]').prop('checked', false)
 		$("#logged-container").show()
 		$("#detection-container").hide()
 	} else {

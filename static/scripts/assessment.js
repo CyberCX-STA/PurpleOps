@@ -20,13 +20,14 @@ function formatRow(response) {
 		mitreid: response.mitreid,
 		name: response.name,
 		tactic: response.tactic,
-		state: `${response.state} - ${response.visible}`,
+		state: response.state,
+		visible: response.visible,
 		tags: response.tags.join(","),
-		start: "-",
-		modified: "",
-		preventscore: "",
-		detectscore: "",
-		outcome: "",
+		start: response.starttime != "None" ? response.starttime : "",
+		modified: response.modifytime,
+		preventscore: response.preventedrating !== null ? response.preventedrating : "",
+		detectscore: response.detectionrating !== null ? response.detectionrating : "",
+		outcome: response.outcome,
 		actions: "",
 	}
 }
@@ -105,8 +106,8 @@ function visibleTest(event) {
 		url: `/testcase/toggle-visibility/${rowData.id}`,
 		type: 'GET',
 		success: function(body) {
-			$('#assessmentTable').bootstrapTable('updateRow', {
-				index: row.data("index"),
+			$('#assessmentTable').bootstrapTable('updateByUniqueId', {
+				id: body.id,
 				row: formatRow(body),
 				replace: true
 			})
@@ -150,12 +151,16 @@ function nameFormatter(name, row) {
 	return `<a href="/testcase/${row.id}">${name}</a>`
 }
 
+function visibleFormatter(name) {
+	return (name == "True" || name == true) ? "✅" : "❌"
+}
+
 function tagFormatter(tags) {
-	html = ""
+	html = []
 	tags.split(",").forEach(tag => {
-		html += `<span class='badge rounded-pill' style="background:#ff0000; cursor:pointer" onclick="filterTag(this)">${tag}</span>`
+		html.push(`<span class='badge rounded-pill' style="background:${tag.split("|")[1]}; cursor:pointer">${tag.split("|")[0]}</span>`)
 	})
-	return html
+	return html.join("&nbsp;")
 }
 
 function actionFormatter() {
@@ -174,6 +179,35 @@ function actionFormatter() {
 	`
 }
 
+function bgFormatter(value) {
+	bg = ""
+	text = ""
+	if (["Missed", "1.0", "1.5"].includes(value)) {
+		bg = "danger"
+	} else if (["Running", "Logged", "2.0", "2.5"].includes(value)) {
+		bg = "warning"
+	} else if (["Alerted", "3.0", "3.5"].includes(value)) {
+		bg = "success"
+	} else if (["Prevented", "4.0", "4.5", "5.0"].includes(value)) {
+		bg = "info"
+		text = "light"
+	} else if (["Complete"].includes(value)) {
+		bg = "primary"
+		text = "light"
+	} else if (["Pending"].includes(value)) {
+		bg = "light"
+	} else if (["False", false, "0.0", "0.5"].includes(value)) {
+		bg = "dark"
+		text = "light"
+	}
+	css = {background: `var(--bs-${bg})`}
+	if (text.length) {
+		css["color"] = `var(--bs-${text})`
+	}
+	return {css: css}
+}
+
+// Show # selected testcases
 $('#assessmentTable').on( 'check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function (e) {
 	selectedIds = $("#assessmentTable").bootstrapTable('getSelections').map(i => i.id)
 	if (selectedIds.length > 0) {

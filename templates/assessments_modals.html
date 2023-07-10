@@ -30,7 +30,7 @@
 	{{ macros.modalHead(name="importAssessment", title="Import Assessment") }}
 	<div class="mb-3">
 		<p>Select the <code>Assessment.zip</code> file output from <code>Export > Entire Assessment</code>.</p>
-		<input class="form-control" type="file" id="formFile" name="file" accept=".zip,application/zip" autocomplete="false">
+		<input class="form-control" type="file" id="formFile" name="file" accept=".zip,application/zip" autocomplete="off">
 	</div>
 	{{ macros.modalTail(name="deleteAssessment", cancelLabel="Cancel", actionLabel="Import") }}
 </form>

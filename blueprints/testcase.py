@@ -97,8 +97,10 @@ def testcasesave(id):
         testcase.outcome = "Alerted"
     elif testcase.logged:
         testcase.outcome = "Logged"
-    else:
+    elif not testcase.logged and testcase.prevented:
         testcase.outcome = "Missed"
+    else:
+        testcase.outcome = ""
 
     testcase.save()
 

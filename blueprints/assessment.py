@@ -38,6 +38,7 @@ def editassessment(id):
 @roles_accepted('Admin', 'Red')
 def deleteassessment(id):
     assessment = Assessment.objects(id=id).first()
+    [testcase.delete() for testcase in TestCase.objects(assessmentid=id).all()]
     if os.path.exists(f"files/{str(assessment.id)}"):
         shutil.rmtree(f"files/{str(assessment.id)}")
     assessment.delete()

@@ -23,7 +23,7 @@ class Technique(db.Document):
 class Source(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
     name = db.StringField()
-    description = db.StringField()
+    description = db.StringField(default="")
 
     def to_json(self):
         return {
@@ -36,7 +36,7 @@ class Source(db.EmbeddedDocument):
 class Target(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
     name = db.StringField()
-    description = db.StringField()
+    description = db.StringField(default="")
 
     def to_json(self):
         return {
@@ -49,7 +49,7 @@ class Target(db.EmbeddedDocument):
 class Tool(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
     name = db.StringField()
-    description = db.StringField()
+    description = db.StringField(default="")
 
     def to_json(self):
         return {
@@ -62,7 +62,7 @@ class Tool(db.EmbeddedDocument):
 class Control(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
     name = db.StringField()
-    description = db.StringField()
+    description = db.StringField(default="")
 
     def to_json(self):
         return {
@@ -75,7 +75,7 @@ class Control(db.EmbeddedDocument):
 class Tag(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
     name = db.StringField()
-    colour = db.StringField()
+    colour = db.StringField(default="#ff0000")
 
     def to_json(self):
         return {
@@ -144,32 +144,37 @@ class TestCase(db.Document):
     redfiles = db.EmbeddedDocumentListField(File)
     bluefiles = db.EmbeddedDocumentListField(File)
     visible = db.BooleanField(default=False)
-    modifytime = db.DateTimeField()
-    outcome = db.StringField()
+    modifytime = db.DateTimeField(default=datetime.datetime.utcnow)
+    outcome = db.StringField(default="")
 
     def to_json(self):
         jsonDict = {}
-        assessment = Assessment.objects(id=self.assessmentid).first()
         for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
                       "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
-                      "priority", "priorityurgency", "starttime", "endtime",
-                      "detecttime", "visible", "modifytime", "outcome"]:
+                      "priority", "priorityurgency", "visible", "outcome"]:
             jsonDict[field] = self[field]
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
         for field in ["tags", "sources", "targets", "tools", "controls"]:
-            strs = []
-            for i in self[field]:
-                strs.append([j.name for j in assessment[field] if str(j.id) == i][0])
-            jsonDict[field] = strs
+            jsonDict[field] = self.to_json_multi(field)
         for field in ["redfiles", "bluefiles"]:
             files = []
             for file in self[field]:
                 files.append(f"{file.path}|{file.caption}")
             jsonDict[field] = files
         return jsonDict
-
+    
+    def to_json_multi(self, field):
+        assessment = Assessment.objects(id=self.assessmentid).first()
+        strs = []
+        for i in self[field]:
+            # Pipe delimit name and desc/colour for export/display
+            if field != "tags":
+                strs.append([f"{j.name}|{j.description}" for j in assessment[field] if str(j.id) == i][0])
+            else:
+                strs.append([f"{j.name}|{j.colour}" for j in assessment[field] if str(j.id) == i][0])
+        return strs
 
 class Assessment(db.Document):
     name = db.StringField()
@@ -199,7 +204,8 @@ class Assessment(db.Document):
             "id": str(self.id),
             "name": self.name,
             "description": self.description,
-            "progress": self.get_progress()
+            "progress": self.get_progress(),
+            "created": str(self.created).split(".")[0]
         }
                     
     def multi_to_json(self, field):

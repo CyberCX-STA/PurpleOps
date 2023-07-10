@@ -91,6 +91,14 @@ def importentire():
     with open(f"files/{assessmentID}/tmp/export.json", 'r') as f:
         export = json.load(f)
 
+    assessmentMultis = {
+        "sources": {},
+        "targets": {},
+        "tools": {},
+        "controls": {},
+        "tags": {}
+    }
+
     for oldTestcase in export:
         newTestcase = TestCase()
         newTestcase.assessmentid = assessmentID
@@ -104,30 +112,31 @@ def importentire():
             newTestcase[field] = oldTestcase[field]
 
         for field in ["starttime", "endtime", "detecttime", "modifytime"]:
-            if newTestcase[field]:
+            if oldTestcase[field] != "None":
                 newTestcase[field] = datetime.datetime.strptime(oldTestcase[field].split(".")[0], "%Y-%m-%d %H:%M:%S")
 
         for field in ["sources", "targets", "tools", "controls", "tags"]:
             newTestcase[field] = []
-            assessment[field] = []
-            multis = {}
+            
             for multi in oldTestcase[field]:
-                if multi in multis:
-                    newTestcase[field].append(multis[newMulti.name])
+                if multi in assessmentMultis[field]:
+                    newTestcase[field].append(assessmentMultis[field][multi])
                 else:
+                    name, details = multi.split("|")
                     if field == "sources":
-                        newMulti = Source(name=multi)
+                        newMulti = Source(name=name, description=details)
                     elif field == "targets":
-                        newMulti = Target(name=multi)
+                        newMulti = Target(name=name, description=details)
                     elif field == "tools":
-                        newMulti = Tool(name=multi)
+                        newMulti = Tool(name=name, description=details)
                     elif field == "controls":
-                        newMulti = Control(name=multi)
-                    if field == "tags":
-                        newMulti = Tag(name=multi, colour="#ff0000")
-                    multis[newMulti.name] = str(newMulti.id)
+                        newMulti = Control(name=name, description=details)
+                    elif field == "tags":
+                        newMulti = Tag(name=name, colour=details)
                     assessment[field].append(newMulti)
-                    newTestcase[field].append(multis[newMulti.name])
+                    assessment[field].save()
+                    assessmentMultis[field][f"{newMulti.name}|{newMulti.description if field != 'tags' else newMulti.colour}"] = str(assessment[field][-1].id)
+                    newTestcase[field].append(assessmentMultis[field][f"{newMulti.name}|{newMulti.description if field != 'tags' else newMulti.colour}"])
 
         for field in ["redfiles", "bluefiles"]:
             newFiles = []
@@ -147,7 +156,5 @@ def importentire():
             elif field == "bluefiles":
                 newTestcase.update(set__bluefiles=newFiles)
         newTestcase.save()
-
-    assessment.save()
 
     return assessment.to_json(), 200

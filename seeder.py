@@ -147,7 +147,6 @@ def parseCustomTestcases ():
             tactic = yml["tactic"],
             objective = yml["objective"],
             actions = yml["actions"],
-            rednotes = yml["rednotes"],
             provider = yml["provider"]
         ).save()
 

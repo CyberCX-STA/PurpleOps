@@ -82,7 +82,7 @@
 <form action="/assessment/import/campaign" enctype="multipart/form-data" method="POST" class="m-0" id="campaignTemplateForm">
     {{ macros.modalHead(name="testcaseCampaign", title="Import Testcase Campaign") }}
     <div class="mb-3">
-        <p>Select the <code>template.json</code> file output from <code>Export > Testcase Template</code>.</p>
+        <p>Select the <code>campaign.json</code> file output from <code>Export > Campaign Template</code>.</p>
         <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json" autocomplete="false">
     </div>
     {{ macros.modalTail(name="testcaseCampaign", cancelLabel="Close", actionLabel="Import") }}

@@ -35,7 +35,8 @@
         </div>
         <span id="selected-count" class="ms-1"></span>
     </div>
-    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="assessmentTable" data-click-to-select="true" data-maintain-meta-data="true" data-sort-name="start" data-sort-order="asc" data-silent-sort="false" style="display:none;" data-cookie="true" data-cookie-id-table="assessmentSave" data-unique-id="id" data-id-field="id" >
+    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="assessmentTable" data-click-to-select="true" data-maintain-meta-data="false" data-sort-name="start" data-sort-order="desc" data-silent-sort="false" style="display:none;"  data-unique-id="id" data-id-field="id">
+        <!-- data-cookie="true" data-cookie-id-table="assessmentTable" -->
         <thead>
             <tr class="tr-class-1">
                 <th data-field="add" data-checkbox="true" data-sortable="true">Add</th>
@@ -43,13 +44,14 @@
                 <th data-field="mitreid" data-sortable="true" data-width="10" data-width-unit="%" data-filter-control="input">Mitre ID</th>
                 <th data-field="name" data-sortable="true" data-filter-control="input" data-formatter="nameFormatter">Name</th>
                 <th data-field="tactic" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select">Tactic</th>
-                <th data-field="state" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select">State</th>
+                <th data-field="state" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select" data-cell-style="bgFormatter">State</th>
+                <th data-field="visible" data-sortable="true" data-filter-control="select" data-formatter="visibleFormatter" data-cell-style="bgFormatter" class="text-center"><i class="bi-eye"></i></th>
                 <th data-field="tags" data-width="15" data-width-unit="%" data-filter-control="input" data-formatter="tagFormatter">Tags</th>
                 <th data-field="start" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Start</th>
                 <th data-field="modified" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Modified</th>
-                <th data-field="preventscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Prevention</th>
-                <th data-field="detectscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Detection</th>
-                <th data-field="outcome" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Outcome</th>
+                <th data-field="preventscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter" class="text-center">Prevention</th>
+                <th data-field="detectscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter" class="text-center">Detection</th>
+                <th data-field="outcome" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter">Outcome</th>
                 <th data-field="actions" class="text-center" data-width="10" data-width-unit="%" data-switchable="false"{% if current_user.has_role("Blue") %} data-visible="false"{% endif %} data-formatter="actionFormatter">Actions</th>
             </tr>
         </thead>
@@ -64,12 +66,13 @@
                 <td>{{ t.name }}</td>
                 <td>{{ t.tactic }}</td>
                 <td>{{ t.state }}</td>
-                <td>{{ t.tags | join(",") }}</td>
-                <td>{{ t.starttime or "-" }}</td>
-                <td>{{ t.modifytime or "-" }}</td>
-                <td>{{ t.preventedrating or "-" }}</td>
-                <td>{{ t.detectionrating or "-" }}</td>
-                <td>{% if t.prevented == "Yes" %}Prevented{% elif t.alerted == "Yes" %}Alerted{% elif t.logged == "Yes" %}Logged{% elif t.state == "Complete" %}Blind{% else %}Pending{% endif %}</td>
+                <td>{{ t.visible }}</td>
+                <td>{{ t.to_json_multi("tags") | join(",") }}</td>
+                <td>{{ t.starttime or "" }}</td>
+                <td>{{ t.modifytime }}</td>
+                <td>{{ t.preventedrating or "" }}</td>
+                <td>{{ t.detectionrating or "" }}</td>
+                <td>{{ t.outcome }}</td>
                 <td></td>
             </tr>
             {% endif %}
