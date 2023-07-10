@@ -9,190 +9,95 @@ from flask import Blueprint, request, session, send_from_directory
 
 blueprint_assessment_export = Blueprint('blueprint_assessment_export', __name__)
 
-# @blueprint_assessment_export.route('/assessment/export/<filetype>/<id>',methods = ['GET'])
-# @auth_required()
-# def exportassessment(filetype, id):
-#     session["assessmentid"] = id
-#     tests = TestCase.objects(assessmentid=id).all()
-#     if "ids" in request.args:
-#         ids = request.args.get("ids").split(",")
-#         selectTests = []
-#         for test in tests:
-#             if str(test.id) in ids:
-#                 selectTests.append(test)
-#         tests = selectTests
-#     elif current_user.has_role("Blue"):
-#         selectTests = [t for t in tests if t.visible]
-#         tests = selectTests
-#     ass = Assessment.objects(id=id).first()
-#     rowsJSON = []
-#     rowsCSV = []
-
-#     for test in tests:
-#         df = {
-#             "Mitre ID": test["mitreid"],
-#             "Name": test["name"],
-#             "Tactic": test["tactic"],
-#             "State": test["state"],
-#             "Modified Time": str(test["modifytime"]),
-#             "Start Time": str(test["starttime"]),
-#             "End Time": str(test["endtime"]),
-#             "Source(s)": [[k["name"] for k in ass["sources"] if str(k["id"]) == i][0] for i in test["sources"]], 
-#             "Target(s)": [[k["name"] for k in ass["targets"] if str(k["id"]) == i][0] for i in test["targets"]],
-#             "Red Tool(s)": [[k["name"] for k in ass["tools"] if str(k["id"]) == i][0] for i in test["tools"]],
-#             "Objective": test["objective"],
-#             "Actions": test["actions"],
-#             "Red Notes": test["rednotes"],
-#             "Red Evidence": [i["path"] + "|" + i["caption"] for i in test["redfiles"]],
-#             "Prevented": test["prevented"],
-#             "Prevented Rating": test["preventedrating"],
-#             "Alerted": test["alerted"],
-#             "Alert Severity": test["alertseverity"],
-#             "Logged": test["logged"],
-#             "Detection Rating": test["detectionrating"],
-#             "Detection Time": str(test["detecttime"]),
-#             "Priority": test["priority"],
-#             "Priority Urgency": test["priorityurgency"],
-#             "Control(s)": [[k["name"] for k in ass["controls"] if str(k["id"]) == i][0] for i in test["controls"]],
-#             "Tags": [[k["name"] for k in ass["tags"] if str(k["id"]) == i][0] for i in test["tags"]],
-#             "Observations": test["bluenotes"],
-#             "Blue Evidence": [i["path"] + "|" + i["caption"] for i in test["bluefiles"]],
-#             "Visible": test["visible"]
-#         }
-          
-#         # Keep JSON arrays as is, but flatten for CSV
-#         rowsJSON.append(df.copy())
-
-#         for field in ["Source(s)", "Target(s)", "Red Tool(s)", "Red Evidence", "Tags", "Blue Evidence", "Control(s)"]:
-#             df[field] = ",".join(df[field])
-#         rowsCSV.append(df)
-
-#     if not os.path.exists(f"files/{id}"):
-#         os.makedirs(f"files/{id}")
-
-#     with open(f'files/{id}/export.json', 'w') as f:
-#         json.dump(rowsJSON, f)
-
-#     with open(f'files/{id}/export.csv', 'w', encoding='UTF8', newline='') as f:
-#         writer = csv.DictWriter(f, fieldnames=rowsJSON[0].keys())
-#         writer.writeheader()
-#         writer.writerows(rowsCSV)
+# CSV / JSON export (we testcase[].to_json() then CSV the JSON dict, so function is reused)
+@blueprint_assessment_export.route('/assessment/<id>/export/<filetype>',methods = ['GET'])
+@auth_required()
+@roles_accepted("Admin", "Red")
+def exportassessment(id, filetype):
+    if filetype not in ["json", 'csv']:
+        return 401
     
-#     if filetype in ["csv", "json"]:
-#         return send_from_directory('files', f"{id}/export.{filetype}", as_attachment=True)
+    assessment = Assessment.objects(id=id).first()
+    testcases = TestCase.objects(assessmentid=str(assessment.id)).all()
     
-#     return ("", 204)
-
-# @blueprint_assessment_export.route('/assessment/export/template/<id>',methods = ['GET'])
-# @auth_required()
-# @roles_accepted('Admin', 'Red')
-# def exporttemplate(id):
-#     session["assessmentid"] = id
-#     tests = TestCase.objects(assessmentid=id).all()
-#     ass = Assessment.objects(id=id).first()
-
-#     if "ids" in request.args:
-#         ids = request.args.get("ids").split(",")
-#         selectTests = []
-#         for test in tests:
-#             if str(test.id) in ids:
-#                 selectTests.append(test)
-#         tests = selectTests
-
-#     rowsJSON = []
-
-#     fields = ["mitreid", "tactic", "name", "objective", "actions", "tools", "tags"]
-
-#     for test in tests:
-#         df = {}
-#         for field in fields:
-#             if field == "tools":
-#                 df[field] = []
-#                 for toolID in test[field]:
-#                     df[field].append([t["name"] for t in ass["tools"] if str(t["id"]) == toolID][0])
-#             elif field == "tags":
-#                 df[field] = []
-#                 for tagID in test[field]:
-#                     try:
-#                         df[field].append([t["name"] for t in ass["tags"] if str(t["id"]) == tagID][0])
-#                     except IndexError:
-#                         # Tag was deleted but there's still a reference to it, thus we can ignore it
-#                         pass
-#             else:
-#                 df[field] = test[field]
-#         rowsJSON.append(df)
-
-#     if not os.path.exists(f"files/{id}"):
-#         os.makedirs(f"files/{id}")
-
-#     with open(f'files/{id}/template.json', 'w') as f:
-#         json.dump(rowsJSON, f)
-    
-#     return send_from_directory('files', f"{id}/template.json", as_attachment=True)
-
-# @blueprint_assessment_export.route('/assessment/export/atomics/<id>',methods = ['GET'])
-# @auth_required()
-# @roles_accepted('Admin', 'Red')
-# def exportatomics(id):
-#     session["assessmentid"] = id
-#     tests = TestCase.objects(assessmentid=id).all()
-#     ass = Assessment.objects(id=id).first()
-
-#     if "ids" in request.args:
-#         ids = request.args.get("ids").split(",")
-#         selectTests = []
-#         for test in tests:
-#             if str(test.id) in ids:
-#                 selectTests.append(test)
-#         tests = selectTests
-
-#     big = ""
-
-#     for test in tests:
-#         atomics = {"tests": []}
-#         testcase = {}
-#         if test["name"]: testcase["name"] = test["name"]
-#         if test["objective"]: testcase["description"] = test["objective"]
-#         if test["actions"]: testcase["command"] = test["actions"]
-#         if test["rednotes"]: testcase["notes"] = test["rednotes"]
-#         if test["priority"]: testcase["priority"] = test["priority"]
-#         tags = []
-#         for tag in test["tags"]:
-#             tags.append([t["name"] for t in ass["tags"] if str(t["id"]) == tag][0])
-#         if tags: testcase["tags"] = tags
-#         atomics["tests"].append(testcase)
-#         big += "\n\n\n\n"
-#         big += test["mitreid"] + "\n\n"
-#         big += yaml.dump(atomics, sort_keys=False)
-
-#     if not os.path.exists(f"files/"):
-#         os.makedirs(f"files")
-
-#     with open(f'files/atomics.yaml', 'w') as f:
-#         f.write(big)
+    jsonDict = []
+    for testcase in testcases:
+        jsonDict.append(testcase.to_json())
         
-#     return send_from_directory('files', f"atomics.yaml", as_attachment=True)
-
-# def exportmeta(id):
-#     ass = Assessment.objects(id=id).first()
-
-#     if not os.path.exists(f"files/"):
-#         os.makedirs(f"files")
-
-#     with open(f'files/{id}/meta.json', 'w') as f:
-#         json.dump(ass.to_json(), f)
-
-# @blueprint_assessment_export.route('/assessment/export/entire/<id>',methods = ['GET'])
-# @auth_required()
-# @roles_accepted('Admin', 'Red')
-# def exportentire(id):
-#     session["assessmentid"] = id
-#     name = Assessment.objects(id=id).first()["name"]
-
-#     exporttemplate(id)
-#     exportassessment("csv", id)
-#     exportmeta(id)
-
-#     shutil.make_archive("files/" + id, 'zip', "files/" + id)
+    # Write JSON and if JSON requested, deliver file and return
+    with open(f'files/{str(assessment.id)}/export.json', 'w') as f:
+        json.dump(jsonDict, f, indent=4)  
+    if filetype == "json":
+        return send_from_directory('files', f"{str(assessment.id)}/export.{filetype}", as_attachment=True)
     
-#     return send_from_directory('files', f"{id}.zip", as_attachment=True, download_name=f"{name}.zip")
+    # Otherwise flatten JSON arrays into comma delimited strings
+    for t, testcase in enumerate(jsonDict):
+        for field in ["sources", "targets", "tools", "controls", "tags", "redfiles", "bluefiles"]:
+            jsonDict[t][field] = ",".join(testcase[field])
+
+    # Convert the JSON dict to CSV and deliver
+    with open(f'files/{str(assessment.id)}/export.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=jsonDict[0].keys())
+        writer.writeheader()
+        writer.writerows(jsonDict)
+
+    return send_from_directory('files', f"{str(assessment.id)}/export.{filetype}", as_attachment=True)
+
+@blueprint_assessment_export.route('/assessment/<id>/export/campaign',methods = ['GET'])
+@auth_required()
+@roles_accepted("Admin", "Red")
+def exportcampaign(id):
+    assessment = Assessment.objects(id=id).first()
+    testcases = TestCase.objects(assessmentid=str(assessment.id)).all()
+    
+    jsonDict = []
+    for testcase in testcases:
+        # Generate a full JSON dump but then filter to only the applicable fields
+        fullJson = testcase.to_json()
+        campaignJson = {}
+        for field in ["mitreid", "tactic", "name", "objective", "actions", "tools", "tags"]:
+            campaignJson[field] = fullJson[field]
+        jsonDict.append(campaignJson)
+
+    with open(f'files/{str(assessment.id)}/campaign.json', 'w') as f:
+        json.dump(jsonDict, f, indent=4)
+
+
+    return send_from_directory('files', f"{str(assessment.id)}/campaign.json", as_attachment=True)
+
+@blueprint_assessment_export.route('/assessment/<id>/export/templates',methods = ['GET'])
+@auth_required()
+@roles_accepted("Admin", "Red")
+def exporttestcases(id):
+    # Hijack the campaign exporter and inject a "provider" field
+    exportcampaign(id)
+    with open(f'files/{id}/campaign.json', 'r') as f:
+        jsonDict = json.load(f)
+        
+    for t, _ in enumerate(jsonDict):
+        jsonDict[t]["provider"] = "???"
+
+    with open(f'files/{id}/testcases.json', 'w') as f:
+        json.dump(jsonDict, f, indent=4)
+
+    return send_from_directory('files', f"{id}/testcases.json", as_attachment=True)
+
+@blueprint_assessment_export.route('/assessment/<id>/export/entire',methods = ['GET'])
+@auth_required()
+@roles_accepted('Admin', 'Red')
+def exportentire(id):
+    assessment = Assessment.objects(id=id).first()
+
+    # Exports fresh JSON as precursor to CSV, so we get both
+    exportassessment(id, "csv")
+    # Exports fresh campaign template as precursor to testcase templates, so we get both
+    exporttestcases(id)
+    
+    # Export assessment meta JSON
+    with open(f'files/{id}/meta.json', 'w') as f:
+        json.dump(assessment.to_json(), f)
+
+    # ZIP up the above generated files and testcase evidence and deliver
+    shutil.make_archive("files/" + id, 'zip', "files/" + id)
+    
+    return send_from_directory('files', f"{id}.zip", as_attachment=True, download_name=f"{assessment.name}.zip")

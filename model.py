@@ -9,13 +9,6 @@ db = MongoEngine()
 class Tactic(db.Document):
     mitreid = db.StringField()
     name = db.StringField()
-    # url = db.StringField()
-    # description = db.StringField()
-    # created = db.StringField()
-    # lastmodified = db.StringField()
-
-    def to_json(self):
-        return None
 
 
 class Technique(db.Document):
@@ -24,21 +17,7 @@ class Technique(db.Document):
     description = db.StringField()
     detection = db.StringField()
     tactics = db.ListField(db.StringField())
-    # url = db.StringField()
-    # datasources = db.ListField(db.StringField())
-    # created = db.StringField()
-    # lastmodified = db.StringField()
-    # version = db.StringField()
-    # platforms = db.ListField(db.StringField())
-    # issubtechnique = db.StringField()
-    # subtechniqueof = db.StringField()
-    # contributors = db.StringField()
-    # systemrequirements = db.ListField(db.StringField())
-    # permissionsrequired = db.ListField(db.StringField())
-    # effectivepermissions = db.StringField()
-    # defensesbypassed = db.ListField(db.StringField())
-    # impacttype = db.StringField()
-    # supportsremote = db.StringField()
+
 
 # TODO how to generalise? 4x same object
 class Source(db.EmbeddedDocument):
@@ -53,6 +32,7 @@ class Source(db.EmbeddedDocument):
             "description": self.description
         }
 
+
 class Target(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
     name = db.StringField()
@@ -64,6 +44,7 @@ class Target(db.EmbeddedDocument):
             "name": self.name,
             "description": self.description
         }
+
 
 class Tool(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
@@ -77,6 +58,7 @@ class Tool(db.EmbeddedDocument):
             "description": self.description
         }
 
+
 class Control(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
     name = db.StringField()
@@ -88,6 +70,7 @@ class Control(db.EmbeddedDocument):
             "name": self.name,
             "description": self.description
         }
+
 
 class Tag(db.EmbeddedDocument):
     id = db.ObjectIdField( required=True, default=ObjectId )
@@ -102,11 +85,6 @@ class Tag(db.EmbeddedDocument):
         }
 
 
-# class Reference(db.EmbeddedDocument):
-#     name = db.StringField()
-#     url = db.StringField()
-
-
 class File(db.EmbeddedDocument):
     name = db.StringField()
     path = db.StringField()
@@ -118,15 +96,14 @@ class KnowlegeBase(db.Document):
     overview = db.StringField()
     advice = db.StringField()
     provider = db.StringField()
-#     references = db.EmbeddedDocumentListField(Reference)
+
 
 class Sigma(db.Document):
     mitreid = db.StringField()
     name = db.StringField()
     description = db.StringField()
     url = db.StringField()
-    # filename = db.StringField()
-    # raw = db.StringField()
+
 
 class TestCaseTemplate(db.Document):
     name = db.StringField()
@@ -136,14 +113,7 @@ class TestCaseTemplate(db.Document):
     actions = db.StringField(default="")
     rednotes = db.StringField(default="")
     provider = db.StringField(default="")
-    # advice = db.StringField(default="")
-    # overview = db.StringField()
-    # html = db.StringField(default="")
-    # mitretitle = db.StringField(default="")
-    # state = db.StringField(default="")
-    # location = db.StringField(default="")
-    # kbentry = db.BooleanField(default=False)
-    # references = db.EmbeddedDocumentListField(Reference)
+
 
 class TestCase(db.Document):
     assessmentid = db.StringField()
@@ -175,42 +145,29 @@ class TestCase(db.Document):
     bluefiles = db.EmbeddedDocumentListField(File)
     visible = db.BooleanField(default=False)
     modifytime = db.DateTimeField()
-    # overview = db.StringField()
-    # advice = db.StringField()
-    # references = db.EmbeddedDocumentListField(Reference)
-    # location = db.StringField()
-    # provider = db.StringField()
-    # kbentry = db.BooleanField(default=False)
 
     def to_json(self):
-        return {
-            "id": str(self.id),
-            "name": self.name,
-            "mitreid": self.mitreid,
-            "tactic": self.tactic,
-            "state": self.state,
-            "tags": [], #self.assessment_refs_to_str("tags"),
-            "visible": str(self.visible).lower()
-        }
-    
-    def assessment_refs_to_str(self, field):
+        jsonDict = {}
         assessment = Assessment.objects(id=self.assessmentid).first()
-        strs = []
-        for i in self[field]:
-            strs.append([j.name for j in assessment[field] if str(j.id) == i][0])
-        return strs
-
-    def starttime_tostring(self):
-        if not self.starttime:
-            return ""
-        else:
-            return self.starttime.strftime("%d/%m/%Y, %I:%M %p")
-
-    def endtime_tostring(self):
-        if not self.endtime:
-            return ""
-        else:
-            return self.endtime.strftime("%d/%m/%Y, %I:%M %p")
+        for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
+                      "mitreid", "tactic", "state", "prevented", "preventedrating",
+                      "alerted", "alertseverity", "logged", "detectionrating",
+                      "priority", "priorityurgency", "starttime", "endtime",
+                      "detecttime", "visible", "modifytime"]:
+            jsonDict[field] = self[field]
+        for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
+            jsonDict[field] = str(self[field])
+        for field in ["tags", "sources", "targets", "tools", "controls"]:
+            strs = []
+            for i in self[field]:
+                strs.append([j.name for j in assessment[field] if str(j.id) == i][0])
+            jsonDict[field] = strs
+        for field in ["redfiles", "bluefiles"]:
+            files = []
+            for file in self[field]:
+                files.append(f"{file.path}|{file.caption}")
+            jsonDict[field] = files
+        return jsonDict
 
 
 class Assessment(db.Document):
@@ -222,28 +179,22 @@ class Assessment(db.Document):
     tools = db.EmbeddedDocumentListField(Tool)
     controls = db.EmbeddedDocumentListField(Control)
     tags = db.EmbeddedDocumentListField(Tag)
-    # industry = db.StringField()
-    # techmaturity = db.StringField()
-    # opmaturity = db.StringField()
-    # socmodel = db.StringField()
-    # socprovider = db.StringField()
-    # webhook = db.StringField(default="")
 
-    def get_status(self):
-        pending = TestCase.objects(assessmentid=str(self.id),state="Pending").count()
-        completed = TestCase.objects(assessmentid=str(self.id),state="Complete").count()
-        total = TestCase.objects(assessmentid=str(self.id)).count()
+    # def get_status(self):
+    #     pending = TestCase.objects(assessmentid=str(self.id),state="Pending").count()
+    #     completed = TestCase.objects(assessmentid=str(self.id),state="Complete").count()
+    #     total = TestCase.objects(assessmentid=str(self.id)).count()
         
-        if total > 0:
-            pending_percent = int((completed / total) * 100)
-        else:
-            pending_percent = 0
-        completed_percent = 100 - pending_percent
-        return {"pending": pending,
-            "completed": completed,
-            "total": total,
-            "pending_percent": pending_percent,
-            "completed_percent": completed_percent}
+    #     if total > 0:
+    #         pending_percent = int((completed / total) * 100)
+    #     else:
+    #         pending_percent = 0
+    #     completed_percent = 100 - pending_percent
+    #     return {"pending": pending,
+    #         "completed": completed,
+    #         "total": total,
+    #         "pending_percent": pending_percent,
+    #         "completed_percent": completed_percent}
         
 
     def to_json(self):
@@ -261,6 +212,7 @@ class Assessment(db.Document):
 class Role(db.Document, RoleMixin):
     name = db.StringField(max_length=80, unique=True)
     description = db.StringField(max_length=255, default="")
+
 
 class User(db.Document, UserMixin):
     email = db.StringField(max_length=255)
@@ -298,5 +250,6 @@ class User(db.Document, UserMixin):
             "current_login_ip": self.current_login_ip,
             "last_login_ip": self.last_login_ip
         }
+
 
 user_datastore = MongoEngineUserDatastore(db, User, Role)

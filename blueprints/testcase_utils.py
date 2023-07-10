@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import shutil
 from model import *
 from utils import applyFormData
 from sqlite3 import Date
@@ -38,8 +39,13 @@ def testcaseclone(id):
 @auth_required()
 @roles_accepted('Admin', 'Red')
 def testcasedelete(id):
-    # TODO has writes to deltee?
-    TestCase.objects(id=id).first().delete()
+    testcase = TestCase.objects(id=id).first()
+    assessment = Assessment.objects(id=testcase.assessmentid).first()
+    # TODO has writes to delete?
+    if os.path.exists(f"files/{str(assessment.id)}/{str(testcase.id)}"):
+        shutil.rmtree(f"files/{str(assessment.id)}/{str(testcase.id)}")
+    testcase.delete()
+
     return "", 200
 
 @blueprint_testcase_utils.route('/testcase/<id>/evidence/<colour>/<file>', methods = ['DELETE'])
@@ -68,6 +74,7 @@ def deletefile(id, colour, file):
 @auth_required()
 def fetchFile(id, file):
     testcase = TestCase.objects(id=id).first()
+    
     return send_from_directory(
         'files',
         f"{testcase.assessmentid}/{str(testcase.id)}/{file}",

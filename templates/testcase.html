@@ -1,7 +1,7 @@
 {% extends "master.html" %}
 
 {% block navpill %}
-    <a role="button" class="btn btn-primary" title="Back" id="assessment-crumb-button" href="/assessments/{{ assessment.name }}">
+    <a role="button" class="btn btn-primary" title="Back" id="assessment-crumb-button" href="/assessment/{{ assessment.id }}">
         <i class="bi-arrow-left-circle-fill">&zwnj;</i>&nbsp;
         <span id="assessment-crumb">{{ assessment.name }}</span>
     </a>

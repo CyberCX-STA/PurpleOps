@@ -20,34 +20,18 @@
         <div class="btn-group">
             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Export...</button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/assessment/export/json/{{ ass.id }}">Results as JSON</a></li>
-                <li><a class="dropdown-item" href="/assessment/export/csv/{{ ass.id }}">Results as CSV</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/json">Results as JSON</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/csv">Results as CSV</a></li>
                 {% if not current_user.has_role("Blue") %}
-                <li><a class="dropdown-item" href="/assessment/export/template/{{ ass.id }}">Assessment Template</a></li>
-                <li><a class="dropdown-item" href="/assessment/export/entire/{{ ass.id }}">Entire Assessment</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/campaign">Campaign Template</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/templates">Testcase Templates</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/entire">Entire Assessment</a></li>
+                <!-- TODO export as testcase templates -->
                 {% endif %}
-                <div id="selected-dropdown" style="display:none">
-                    <li><a class="dropdown-item" href="/assessment/export/json/{{ ass.id }}" id="selected-json" data-id="{{ ass.id }}">Selected Results as JSON</a></li>
-                    <li><a class="dropdown-item" href="/assessment/export/csv/{{ ass.id }}" id="selected-csv">Selected Results as CSV</a></li>
-                    {% if not current_user.has_role("Blue") %}
-                    <li><a class="dropdown-item" href="/assessment/export/template/{{ ass.id }}" id="selected-template">Selected Assessment Template</a></li>
-                    <li><a class="dropdown-item" href="/assessment/export/atomics/{{ ass.id }}" id="selected-atomics">Selected Testcase Templates</a></li>
-                    {% endif %}
-                </div>
             </ul>
         </div>
-        {% if not current_user.has_role("Blue") %}
-        <div class="btn-group" id="bulk-dropdown" style="display:none">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Bulk...</button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="visibleTest(event, selectedIds)">Toggle Testcase Visibility</a></li>
-                <li><a class="dropdown-item" href="#" onclick="deleteTest(event, selectedIds)">Delete Testcases</a></li>
-                <li><a class="dropdown-item" href="#" onclick="$('#table').bootstrapTable('uncheckAll')">Clear Selection</a></li>
-            </ul>
-        </div>
-        {% endif %}
         <div class="btn-group">
-            <a type="button" class="btn btn-secondary" href="/assessment/stats/{{ ass.id }}">Statistics</a>
+            <a type="button" class="btn btn-secondary" href="/assessment/{{ ass.id }}/stats">Statistics</a>
         </div>
         <span id="selected-count" class="ms-1"></span>
     </div>

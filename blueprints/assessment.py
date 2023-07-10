@@ -1,8 +1,9 @@
+import os
+import shutil
 from model import *
 from utils import applyFormData
 from flask_security import auth_required, roles_accepted
 from flask import Blueprint, render_template, request, session
-# from blueprints.assessment_utils import generatestats
 
 blueprint_assessment = Blueprint('blueprint_assessment', __name__)
 
@@ -17,6 +18,9 @@ def newassessment():
     )
     assessment.save()
 
+    if not os.path.exists(f"files/{str(assessment.id)}"):
+        os.makedirs(f"files/{str(assessment.id)}")
+
     return assessment.to_json(), 200
 
 @blueprint_assessment.route('/assessment/<id>', methods = ['POST'])
@@ -26,6 +30,7 @@ def editassessment(id):
     assessment = Assessment.objects(id=id).first()
     assessment = applyFormData(assessment, request.form, ["name", "description"])
     assessment.save()
+    
     return assessment.to_json(), 200
 
 @blueprint_assessment.route('/assessment/<id>', methods = ['DELETE'])
@@ -33,8 +38,9 @@ def editassessment(id):
 @roles_accepted('Admin', 'Red')
 def deleteassessment(id):
     assessment = Assessment.objects(id=id).first()
+    if os.path.exists(f"files/{str(assessment.id)}"):
+        shutil.rmtree(f"files/{str(assessment.id)}")
     assessment.delete()
-    assessment.save()
     return "", 200
 
 @blueprint_assessment.route('/assessment/<id>', methods = ['GET'])
