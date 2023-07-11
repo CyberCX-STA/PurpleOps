@@ -136,4 +136,3 @@ supervisord.pid
 sampledata/sigma/*
 external/*
 INITIAL_ADMIN_PASSWORD.TXT
-custom/*

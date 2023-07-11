@@ -1,13 +1,8 @@
 import os
-import json
-import requests
 import shutil
 from model import *
-from utils import applyFormData
-from sqlite3 import Date
-from datetime import datetime
+from flask import Blueprint, request, send_from_directory
 from flask_security import auth_required, roles_accepted, current_user
-from flask import Blueprint, redirect, request, session, send_from_directory, jsonify
 
 blueprint_testcase_utils = Blueprint('blueprint_testcase_utils', __name__)
 

@@ -3,8 +3,8 @@ import json
 import string
 import shutil
 from model import *
+from flask import Blueprint, request
 from flask_security import auth_required, roles_accepted
-from flask import Blueprint, redirect, request
 
 blueprint_assessment_import = Blueprint('blueprint_assessment_import', __name__)
 

@@ -1,9 +1,10 @@
 import os
 import shutil
 from model import *
+from glob import glob
 from utils import applyFormData
 from flask_security import auth_required, roles_accepted
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request
 from blueprints.assessment_utils import assessmenthexagons
 
 blueprint_assessment = Blueprint('blueprint_assessment', __name__)
@@ -52,12 +53,13 @@ def loadassessment(id):
     return render_template(
         'assessment.html',
         testcases = TestCase.objects(assessmentid=id).all(),
-        ass = Assessment.objects(id=id).first(),
+        assessment = Assessment.objects(id=id).first(),
         templates = TestCaseTemplate.objects(),
         mitres = sorted(
             [[m["mitreid"], m["name"]] for m in Technique.objects()],
             key=lambda m: m[0]
         ),
         tactics = [tactic["name"] for tactic in Tactic.objects()],
-        hexagons = assessmenthexagons(id)
+        hexagons = assessmenthexagons(id),
+        reports = [f.split("/")[-1] for f in sorted(glob("custom/reports/*.docx"))]
     )

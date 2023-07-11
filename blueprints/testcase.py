@@ -1,12 +1,10 @@
 import os
-import json
-import string
 from model import *
 from utils import *
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from flask import Blueprint, render_template, request
 from flask_security import auth_required, roles_accepted, current_user
-from flask import Blueprint, render_template, redirect, request, session, send_from_directory
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 

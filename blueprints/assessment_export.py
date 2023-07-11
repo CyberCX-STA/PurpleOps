@@ -1,11 +1,11 @@
 import os
 import csv
 import json
-import yaml
 import shutil
 from model import *
-from flask_security import auth_required, current_user, roles_accepted
-from flask import Blueprint, request, session, send_from_directory
+from docxtpl import DocxTemplate
+from flask_security import auth_required, roles_accepted
+from flask import Blueprint, request, send_from_directory
 
 blueprint_assessment_export = Blueprint('blueprint_assessment_export', __name__)
 
@@ -82,6 +82,29 @@ def exporttestcases(id):
 
     return send_from_directory('files', f"{id}/testcases.json", as_attachment=True)
 
+@blueprint_assessment_export.route('/assessment/<id>/export/report',methods = ['POST'])
+@auth_required()
+@roles_accepted("Admin", "Red")
+def exportreport(id):
+    assessment = Assessment.objects(id=id).first().to_json()
+
+    if not os.path.isfile(f"custom/reports/{request.form['report']}"):
+        return "", 401
+    
+    # Hijack assessment JSON export
+    exportassessment(id, "json")
+    with open(f'files/{id}/export.json', 'r') as f:
+        testcases = json.load(f)
+
+    doc = DocxTemplate(f"custom/reports/{request.form['report']}")
+    doc.render({
+        "assessment": assessment,
+        "testcases": testcases
+    })
+    doc.save(f'files/{id}/report.docx')
+
+    return send_from_directory('files', f"{id}/report.docx", as_attachment=True)
+
 @blueprint_assessment_export.route('/assessment/<id>/export/navigator',methods = ['GET'])
 @auth_required()
 @roles_accepted("Admin", "Red")
@@ -154,6 +177,8 @@ def exportentire(id):
     exportassessment(id, "csv")
     # Exports fresh campaign template as precursor to testcase templates, so we get both
     exporttestcases(id)
+
+    exportnavigator(id)
     
     # Export assessment meta JSON
     with open(f'files/{id}/meta.json', 'w') as f:

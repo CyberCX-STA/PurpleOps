@@ -79,11 +79,16 @@
 </form>
 
 <!-- Template Modal -->
-<form action="/assessment/import/campaign" enctype="multipart/form-data" method="POST" class="m-0" id="campaignTemplateForm">
-    {{ macros.modalHead(name="testcaseCampaign", title="Import Testcase Campaign") }}
+<form action="/assessment/{{ assessment.id }}/export/report" enctype="multipart/form-data" method="POST" class="m-0" id="exportReportForm">
+    {{ macros.modalHead(name="exportReport", title="Generate Engagement Report") }}
     <div class="mb-3">
-        <p>Select the <code>campaign.json</code> file output from <code>Export > Campaign Template</code>.</p>
-        <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json" autocomplete="false">
+        <p>Select the report below.</p>
+        <select id="report" name="report" class="form-label form-select" required autocomplete="off">
+            <option value="none" selected disabled hidden>Select...</option>
+            {% for report in reports %}
+            <option value="{{ report }}">{{ report }}</option>
+            {% endfor %}
+        </select>
     </div>
-    {{ macros.modalTail(name="testcaseCampaign", cancelLabel="Close", actionLabel="Import") }}
+    {{ macros.modalTail(name="exportReport", cancelLabel="Close", actionLabel="Generate") }}
 </form>

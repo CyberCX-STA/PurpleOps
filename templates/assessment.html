@@ -5,7 +5,7 @@
 
 <div class="m-2 mt-0">
     <div id="toolbar">
-        <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">{{ ass.name }}</p>
+        <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">{{ assessment.name }}</p>
         {% if not current_user.has_role("Blue") %}
         <button id="newTestcase" class="btn btn-primary">New</button>
         <div class="btn-group">
@@ -20,18 +20,21 @@
         <div class="btn-group">
             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Export...</button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/json">Results as JSON</a></li>
-                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/csv">Results as CSV</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/json">Results as JSON</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/csv">Results as CSV</a></li>
                 {% if not current_user.has_role("Blue") %}
-                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/campaign">Campaign Template</a></li>
-                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/templates">Testcase Templates</a></li>
-                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/navigator">ATT&amp;CK Navigator Layer</a></li>
-                <li><a class="dropdown-item" href="/assessment/{{ ass.id }}/export/entire">Entire Assessment</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/campaign">Campaign Template</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/templates">Testcase Templates</a></li>
+                <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/navigator">ATT&amp;CK Navigator Layer</a></li>
+                {% if reports %}
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#exportReportModal">Generate Report</a></li>
+                {% endif %}
+                <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/entire">Entire Assessment</a></li>
                 {% endif %}
             </ul>
         </div>
-        <a type="button" class="btn btn-secondary" href="/assessment/{{ ass.id }}/stats">Statistics</a>
-        <a type="button" class="btn btn-secondary" href="/assessment/{{ ass.id }}/navigator">ATT&amp;CK Navigator</a>
+        <a type="button" class="btn btn-secondary" href="/assessment/{{ assessment.id }}/stats">Statistics</a>
+        <a type="button" class="btn btn-secondary" href="/assessment/{{ assessment.id }}/navigator">ATT&amp;CK Navigator</a>
         <span id="selected-count" class="ms-1"></span>
     </div>
     <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="assessmentTable" data-click-to-select="true" data-maintain-meta-data="false" data-sort-name="start" data-sort-order="desc" data-silent-sort="false" style="display:none;"  data-unique-id="id" data-id-field="id">

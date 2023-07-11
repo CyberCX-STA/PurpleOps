@@ -1,11 +1,10 @@
-from copy import deepcopy
-from model import *
 import secrets
+from model import *
 from time import time
-from utils import applyFormData
-from flask_security import auth_required, current_user, roles_accepted
-from flask import Blueprint, render_template, redirect, request, session, send_from_directory, make_response
+from copy import deepcopy
+from flask_security import auth_required, roles_accepted
 from blueprints.assessment_export import exportnavigator
+from flask import Blueprint, render_template, request, send_from_directory, make_response
 
 blueprint_assessment_utils = Blueprint('blueprint_assessment_utils', __name__)
 

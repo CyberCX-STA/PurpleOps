@@ -1,7 +1,6 @@
 import datetime
-from flask import jsonify
-from flask_mongoengine import MongoEngine
 from bson.objectid import ObjectId
+from flask_mongoengine import MongoEngine
 from flask_security import UserMixin, RoleMixin, MongoEngineUserDatastore
 
 db = MongoEngine()
