@@ -82,6 +82,68 @@ def exporttestcases(id):
 
     return send_from_directory('files', f"{id}/testcases.json", as_attachment=True)
 
+@blueprint_assessment_export.route('/assessment/<id>/export/navigator',methods = ['GET'])
+@auth_required()
+@roles_accepted("Admin", "Red")
+def exportnavigator(id):
+    navigator = {
+        "name": Assessment.objects(id=id).first().name,
+        "domain": "enterprise-attack",
+        "sorting": 3,
+        "layout": {
+            "layout": "flat",
+            "aggregateFunction": "average",
+            "showID": True,
+            "showName": True,
+            "showAggregateScores": True,
+            "countUnscored": False
+        },
+        "hideDisabled": False,
+        "techniques": [],
+        "gradient": {
+            "colors": [
+                "#ff6666ff",
+                "#ffe766ff",
+                "#8ec843ff"
+            ],
+            "minValue": 0,
+            "maxValue": 100
+        },
+        "showTacticRowBackground": True,
+        "tacticRowBackground": "#593196",
+        "selectTechniquesAcrossTactics": True,
+        "selectSubtechniquesWithParent": False
+    }
+
+    for technique in Technique.objects().all():
+        testcases = TestCase.objects(assessmentid=id, mitreid=technique.mitreid).all()
+        ttp = {
+            "techniqueID": technique.mitreid
+        }
+
+        if testcases:
+            count = 0
+            outcomes = {"Prevented": 0, "Alerted": 0, "Logged": 0, "Missed": 0}
+            for testcase in testcases:
+                if testcase.outcome in outcomes.keys():
+                    count += 1
+                    outcomes[testcase.outcome] += 1
+
+            score = int((outcomes["Prevented"] * 3 + outcomes["Alerted"] * 2 +
+                        outcomes["Logged"]) / (count * 3) * 100)
+            ttp["score"] = score
+
+        for tactic in technique.tactics:
+            tactic = tactic.lower().replace(" ", "-")
+            tacticTTP = dict(ttp)
+            tacticTTP["tactic"] = tactic
+            navigator["techniques"].append(tacticTTP)
+
+    with open(f'files/{id}/navigator.json', 'w') as f:
+        json.dump(navigator, f, indent=4)  
+
+    return send_from_directory('files', f"{id}/navigator.json", as_attachment=True)
+
 @blueprint_assessment_export.route('/assessment/<id>/export/entire',methods = ['GET'])
 @auth_required()
 @roles_accepted('Admin', 'Red')

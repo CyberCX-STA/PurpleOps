@@ -1,5 +1,3 @@
-tacticStats = {{ stats | safe }}
-
 // Template pie chart styles
 var pieChartOptions = {
 	chart: {
@@ -106,7 +104,7 @@ var resultsPie = JSON.parse(JSON.stringify(pieChartOptions));
 resultsPie.title.text = "Outcomes"
 keys = ["Prevented", "Alerted", "Logged", "Missed"]
 resultsPie.series = keys.map((t) => {
-	return tacticStats["All"][t.toLowerCase()]
+	return tacticStats["All"][t]
 })
 resultsPie.labels = keys
 var chart = new ApexCharts(document.querySelector("#resultspie"), resultsPie);
@@ -119,7 +117,7 @@ results.series = ["Prevented", "Alerted", "Logged", "Missed"].map((t) => {
 	return {
 		name: t,
 		data: Object.keys(tacticStats).map((i) => {
-			return tacticStats[i][t.toLowerCase()]
+			return tacticStats[i][t]
 		})
 	}
 })
@@ -134,7 +132,7 @@ alerts.series = ["Informational", "Low", "Medium", "High", "Critical"].map((t) =
 	return {
 		name: t,
 		data: Object.keys(tacticStats).map((i) => {
-			return tacticStats[i][t.toLowerCase()]
+			return tacticStats[i][t]
 		})
 	}
 })
@@ -176,39 +174,3 @@ chart.render();
 // Prev/detect box plot chart
 var chart = new ApexCharts(document.querySelector("#scores"), boxChartOptions);
 chart.render();
-
-// Onload - update mitre attack chain hexagon SVG
-$(window).on('load', function(){
-	// Grab the SVG document
-	var svgDoc = document.getElementById("mitre-hexs").contentDocument;
-
-	// Order to display hexagons in
-	tactics = ["Execution", "Command and Control", "Discovery", "Persistence", "Privilege Escalation", "Credential Access", "Lateral Movement", "Exfiltration", "Impact"]
-	hex = 1
-
-	// Initalise all hexagons as blank
-	for (const x of Array(9).keys()) {
-		svgDoc.querySelectorAll('.hex-' + (x+1)).forEach(j => j.style.display = "none");
-	}
-
-	// For each tactic we have data for
-	tactics.forEach(tactic => {
-		if (Object.keys(tacticStats).includes(tactic)) {
-			// Calculate the score
-			total = tacticStats[tactic].prevented + tacticStats[tactic].alerted - tacticStats[tactic].missed
-			if (total > 1) color = "#B8DF43"
-			else if (total < -1) color = "#FB6B64"
-			else color = "#FFC000"
-
-			// Update the hexagon text and colours
-			svgDoc.querySelectorAll('.hex-' + hex).forEach(j => j.style.display = "block");
-			svgDoc.getElementById(`hex-${hex}-stroke`).style.stroke = color
-			svgDoc.getElementById(`hex-${hex}-stroke`).style.fill = "#eeeeee"
-			svgDoc.getElementById(`hex-${hex}-label`).innerText = tactic
-			hex += 1
-		}
-	})
-
-	// Hexagon starts hidden, once populate, show to user
-	document.getElementById("mitre-hexs").style.opacity = 1
-});

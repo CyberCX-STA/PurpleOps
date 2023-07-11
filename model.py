@@ -185,6 +185,7 @@ class Assessment(db.Document):
     tools = db.EmbeddedDocumentListField(Tool)
     controls = db.EmbeddedDocumentListField(Control)
     tags = db.EmbeddedDocumentListField(Tag)
+    navigatorexport = db.StringField(default="")
 
     def get_progress(self):
         # Returns string with % of "missed|logged|alerted|prevented|pending"

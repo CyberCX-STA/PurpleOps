@@ -4,6 +4,7 @@ from model import *
 from utils import applyFormData
 from flask_security import auth_required, roles_accepted
 from flask import Blueprint, render_template, request, session
+from blueprints.assessment_utils import assessmenthexagons
 
 blueprint_assessment = Blueprint('blueprint_assessment', __name__)
 
@@ -57,5 +58,6 @@ def loadassessment(id):
             [[m["mitreid"], m["name"]] for m in Technique.objects()],
             key=lambda m: m[0]
         ),
-        tactics = [tactic["name"] for tactic in Tactic.objects()]
+        tactics = [tactic["name"] for tactic in Tactic.objects()],
+        hexagons = assessmenthexagons(id)
     )

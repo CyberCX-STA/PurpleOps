@@ -14,7 +14,7 @@ $('.multiNew').click(function(event) {
 $('.multiButton').click(function(event) {
 	type = event.target.id.replace("multi", "").replace("Button", "").toLowerCase() + "s" // Hacky
 	$.ajax({
-		url: `/assessment/multi/${type}`,
+		url: `${$("#assessment-crumb-button").attr("href")}/multi/${type}`,
 		type: 'POST',
 		
 		data: JSON.stringify({

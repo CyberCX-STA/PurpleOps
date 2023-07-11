@@ -1,10 +1,16 @@
 {% extends "master.html" %}
+
+{% block navpill %}
+    <a role="button" class="btn btn-primary" title="Back" id="assessment-crumb-button" href="/assessment/{{ assessment.id }}">
+        <i class="bi-arrow-left-circle-fill">&zwnj;</i>&nbsp;
+        <span id="assessment-crumb">{{ assessment.name }}</span>
+    </a>
+{% endblock %}
+
 {% block content %}
 
 <div id="toolbar" class="m-2">
-    <div class="btn-group">
-        <a type="button" class="btn btn-primary" href="/assessment/{{ assid }}">Back to Assessment</a>
-    </div>
+    <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">Stats</p>
 </div>
 <div class="container-fluid">
     <div class="row mt-3">
@@ -32,10 +38,11 @@
     </div>
     <div class="hex">
         <h6>MITRE ATT&amp;CK Chain</h6>
-        <object id="mitre-hexs" data="/static/images/mitre-hexagons.svg" type="image/svg+xml" style="display:block; margin:0 auto;width: 600px;opacity: 0"></object>
+        {{ hexagons | safe }}
     </div>
 </div>
 
+<script>tacticStats = {{ stats | safe }}</script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="/static/scripts/assessment.stats.js"></script>
 
