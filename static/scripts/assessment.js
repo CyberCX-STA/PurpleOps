@@ -221,6 +221,6 @@ $('#assessmentTable').on( 'check.bs.table uncheck.bs.table check-all.bs.table un
 
 // Close modal once report generated
 $("#exportReportButton").click(function() {
-	$('#exportReportForm').trigger('reset')
+	// $('#exportReportForm').trigger('reset')
 	$('#exportReportModal').modal('hide')
 })

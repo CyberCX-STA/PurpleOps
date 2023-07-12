@@ -69,7 +69,7 @@ def assessmentnavigatorjson(id):
     # 2. With the same IP used to his the above authed endpoint
     # 3. With a one-time secret key returned in the above authed endpoint
     # 4. From the mitre-attack origin (yes this is spoofable, but why not)
-    if (int(time()) - int(timestamp) <= 10 and
+    if (int(time()) - int(timestamp) <= 30 and
         request.remote_addr == ip and
         request.args.get("secret") == secret and
         request.origin == "https://mitre-attack.github.io"):
