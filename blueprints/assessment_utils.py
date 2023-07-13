@@ -125,8 +125,10 @@ def assessmentstats(id):
             if testcase["priorityurgency"]:
                 stats[testcase["tactic"]]["priorityUrgency"].append(testcase["priorityurgency"])
             if testcase["controls"]:
-                names = [control.split("|")[0] for control in testcase["controls"]]
-                stats[testcase["tactic"]]["controls"].extend(names)
+                controls = []
+                for control in testcase["controls"]:
+                    controls.append([c.name for c in assessment.controls if str(c.id) == control][0])
+                stats[testcase["tactic"]]["controls"].extend(controls)
 
     # We've populated per-tactic data, this function adds it all together for an "All" tactic
     for tactic in stats:

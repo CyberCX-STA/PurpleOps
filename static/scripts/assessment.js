@@ -97,6 +97,18 @@ $("#campaignTemplateForm").submit(function(e){
 	})
 });
 
+// AJAX generate report
+$("#exportReportForm").submit(function(e){
+	e.preventDefault();
+	fetch(e.target.action, {
+		method: 'POST',
+		body: new FormData(e.target)
+	}).then((response) => {
+		$('#exportReportForm').trigger('reset')
+		$('#exportReportModal').modal('hide')
+	})
+});
+
 // Toggle visibility of testcase AJAX
 function visibleTest(event) {
 	event.stopPropagation();
@@ -218,9 +230,3 @@ $('#assessmentTable').on( 'check.bs.table uncheck.bs.table check-all.bs.table un
 		$("#selected-count").hide()
 	}
 } );
-
-// Close modal once report generated
-$("#exportReportButton").click(function() {
-	// $('#exportReportForm').trigger('reset')
-	$('#exportReportModal').modal('hide')
-})
