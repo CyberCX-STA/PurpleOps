@@ -59,7 +59,7 @@
 </div>
 {{ macros.modalTail(name="testcaseTemplates", cancelLabel="Cancel", actionLabel="Add Selected") }}
 
-<!-- MITRE Modal -->
+<!-- Import MITRE Navigator Modal -->
 <form action="/assessment/{{ assessment.id }}/import/navigator" enctype="multipart/form-data" method="POST" class="m-0" id="navigatorTemplateForm">
     {{ macros.modalHead(name="testcaseNavigator", title="Import MITRE Layer") }}
     <div class="mb-3">
@@ -68,6 +68,16 @@
         <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json">
     </div>
     {{ macros.modalTail(name="testcaseNavigator", cancelLabel="Close", actionLabel="Import") }}
+</form>
+
+<!-- Import Campaign Modal -->
+<form action="/assessment/{{ assessment.id }}/import/campaign" enctype="multipart/form-data" method="POST" class="m-0" id="campaignTemplateForm">
+    {{ macros.modalHead(name="testcaseCampaign", title="Import Campaign Template") }}
+    <div class="mb-3">
+        <label for="campaignFile" class="form-label">Import Campaign from <code>Export</code> &gt; <code>Campaign Template</code>.</label>
+        <input class="form-control" type="file" id="campaignFile" name="file" accept=".json,application/json">
+    </div>
+    {{ macros.modalTail(name="testcaseCampaign", cancelLabel="Close", actionLabel="Import") }}
 </form>
 
 <!-- Template Modal -->

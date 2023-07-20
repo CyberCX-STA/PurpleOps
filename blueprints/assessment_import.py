@@ -55,12 +55,30 @@ def testcasenavigator(id):
 def testcasecampaign(id):
     newcases = []
     campaignTestcases = json.loads(request.files['file'].read())
+    assessment = Assessment.objects(id=id).first()
     for testcase in campaignTestcases:
         newcase = TestCase()
         newcase.assessmentid = id
-        for field in ["name", "mitreid", "tactic", "objective", "actions"]: # TODO: "tools", "tags"
+        for field in ["name", "mitreid", "tactic", "objective", "actions", "tools", "tags"]:
             if field in testcase:
-                newcase[field] = testcase[field]
+                if field not in ["tools", "tags"]:
+                    newcase[field] = testcase[field]
+                else:
+                    multis = []
+                    for multi in testcase[field]:
+                        name, desc = multi.split("|")
+                        if name in [i.name for i in assessment[field]]:
+                            multis.append([str(i.id) for i in assessment[field] if i.name == name][0])
+                            continue
+                        elif field == "tools":
+                            newMulti = Tool(name=name, description=desc)
+                        elif field == "tags":
+                            newMulti = Tag(name=name, colour=desc)
+                        assessment[field].append(newMulti)
+                        assessment[field].save()
+                        multis.append(str(newMulti.id))
+                    newcase[field] = multis
+
         newcase.save()
         newcases.append(newcase.to_json())
         

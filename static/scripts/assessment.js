@@ -65,7 +65,7 @@ $('#testcaseTemplatesButton').click(function() {
 	});
 });
 
-// AJAX new testcases from template POST and table append
+// AJAX new testcases from navigator template POST and table append
 $("#navigatorTemplateForm").submit(function(e){
 	e.preventDefault();
 	fetch(e.target.action, {
@@ -81,7 +81,7 @@ $("#navigatorTemplateForm").submit(function(e){
 	})
 });
 
-// AJAX new testcases from assessment template POST and table append
+// AJAX new testcases from campaign template POST and table append
 $("#campaignTemplateForm").submit(function(e){
 	e.preventDefault();
 	fetch(e.target.action, {
