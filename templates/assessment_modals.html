@@ -63,8 +63,7 @@
 <form action="/assessment/{{ assessment.id }}/import/navigator" enctype="multipart/form-data" method="POST" class="m-0" id="navigatorTemplateForm">
     {{ macros.modalHead(name="testcaseNavigator", title="Import MITRE Layer") }}
     <div class="mb-3">
-        <p>Select your threat actor / ad-hoc TTP at <a href="https://mitre-attack.github.io/attack-navigator/" target="_blank">the Mitre ATT&CK Navigator</a> &gt; <code>Download Controls</code> &gt; <code>Download Layer as JSON</code>.</p>
-        <label for="formFile" class="form-label">MITRE Layer .json</label>
+        <label for="formFile" class="form-label">Select your threat actor / ad-hoc TTP at <a href="https://mitre-attack.github.io/attack-navigator/" target="_blank">the Mitre ATT&CK Navigator</a> &gt; <code>Download Controls</code> &gt; <code>Download Layer as JSON</code>.</label>
         <input class="form-control" type="file" id="formFile" name="file" accept=".json,application/json">
     </div>
     {{ macros.modalTail(name="testcaseNavigator", cancelLabel="Close", actionLabel="Import") }}

@@ -38,12 +38,24 @@ def testcasenavigator(id):
     newcases = []
     navigatorTestcases = json.loads(request.files['file'].read())
     for testcase in navigatorTestcases["techniques"]:
-        newcase = TestCase(
-            name = Technique.objects(mitreid=testcase["techniqueID"]).first().name,
-            mitreid = testcase["techniqueID"],
-            tactic = string.capwords(testcase["tactic"].replace("-", " ")),
-            assessmentid = id
-        ).save()
+        tactic = string.capwords(testcase["tactic"].replace("-", " "))
+        templates = TestCaseTemplate.objects(mitreid=testcase["techniqueID"], tactic=tactic).all()
+        if templates:
+            newcase = TestCase(
+                name = templates[0].name,
+                mitreid = templates[0].mitreid,
+                tactic = templates[0].tactic,
+                objective = templates[0].objective,
+                actions = templates[0].actions,
+                assessmentid = id
+            ).save()
+        else:
+            newcase = TestCase(
+                name = Technique.objects(mitreid=testcase["techniqueID"]).first().name,
+                mitreid = testcase["techniqueID"],
+                tactic = tactic,
+                assessmentid = id
+            ).save()
         newcases.append(newcase.to_json())
         
     return jsonify(newcases), 200
