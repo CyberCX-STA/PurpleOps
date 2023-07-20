@@ -43,7 +43,7 @@ function deleteUserModal(e) {
 	row = $(e).closest("tr")
 	rowData = $('#userTable').bootstrapTable('getData')[row.data("index")]
 	$('#deleteUserForm').attr('action', '/manage/access/user/' + rowData.id) 
-	$('#deleteUserWarning').html(`Really Delete <code>${rowData.username}</code>?`)
+	$('#deleteUserWarning').text(`Really Delete ${rowData.username}?`)
 	$('#deleteUserModal').modal('show')
 }
 

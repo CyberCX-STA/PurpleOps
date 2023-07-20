@@ -1,5 +1,6 @@
 import datetime
 from bson.objectid import ObjectId
+from flask import escape
 from flask_mongoengine import MongoEngine
 from flask_security import UserMixin, RoleMixin, MongoEngineUserDatastore
 
@@ -24,11 +25,11 @@ class Source(db.EmbeddedDocument):
     name = db.StringField()
     description = db.StringField(default="")
 
-    def to_json(self):
+    def to_json(self, raw=False):
         return {
             "id": str(self.id),
-            "name": self.name,
-            "description": self.description
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
         }
 
 
@@ -37,11 +38,11 @@ class Target(db.EmbeddedDocument):
     name = db.StringField()
     description = db.StringField(default="")
 
-    def to_json(self):
+    def to_json(self, raw=False):
         return {
             "id": str(self.id),
-            "name": self.name,
-            "description": self.description
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
         }
 
 
@@ -50,11 +51,11 @@ class Tool(db.EmbeddedDocument):
     name = db.StringField()
     description = db.StringField(default="")
 
-    def to_json(self):
+    def to_json(self, raw=False):
         return {
             "id": str(self.id),
-            "name": self.name,
-            "description": self.description
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
         }
 
 
@@ -63,11 +64,11 @@ class Control(db.EmbeddedDocument):
     name = db.StringField()
     description = db.StringField(default="")
 
-    def to_json(self):
+    def to_json(self, raw=False):
         return {
             "id": str(self.id),
-            "name": self.name,
-            "description": self.description
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
         }
 
 
@@ -76,11 +77,11 @@ class Tag(db.EmbeddedDocument):
     name = db.StringField()
     colour = db.StringField(default="#ff0000")
 
-    def to_json(self):
+    def to_json(self, raw=False):
         return {
             "id": str(self.id),
-            "name": self.name,
-            "colour": self.colour # AU spelling is non-negotiable xx
+            "name": esc(self.name, raw),
+            "colour": esc(self.colour, raw) # AU spelling is non-negotiable xx
         }
 
 
@@ -146,13 +147,13 @@ class TestCase(db.Document):
     modifytime = db.DateTimeField(default=datetime.datetime.utcnow)
     outcome = db.StringField(default="")
 
-    def to_json(self):
+    def to_json(self, raw=False):
         jsonDict = {}
         for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
                       "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
                       "priority", "priorityurgency", "visible", "outcome"]:
-            jsonDict[field] = self[field]
+            jsonDict[field] = esc(self[field], raw)
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
         for field in ["tags", "sources", "targets", "tools", "controls"]:
@@ -199,17 +200,17 @@ class Assessment(db.Document):
             , 2)))
         return "|".join(outcomes)
 
-    def to_json(self):
+    def to_json(self, raw=False):
         return {
             "id": str(self.id),
-            "name": self.name,
-            "description": self.description,
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw),
             "progress": self.get_progress(),
             "created": str(self.created).split(".")[0]
         }
                     
-    def multi_to_json(self, field):
-        return [item.to_json() for item in self[field]]
+    def multi_to_json(self, field, raw=False):
+        return [item.to_json(raw=raw) for item in self[field]]
 
 
 class Role(db.Document, RoleMixin):
@@ -242,11 +243,11 @@ class User(db.Document, UserMixin):
         else:
             return [a.id for a in self.assessments]
         
-    def to_json(self):
+    def to_json(self, raw=False):
         return {
             "id": str(self.id),
-            "username": self.username,
-            "email": self.email,
+            "username": esc(self.username, raw),
+            "email": esc(self.email, raw),
             "roles": [r.name for r in self.roles],
             "assessments": [a.name for a in self.assessments],
             "last_login_at": self.last_login_at,
@@ -256,3 +257,9 @@ class User(db.Document, UserMixin):
 
 
 user_datastore = MongoEngineUserDatastore(db, User, Role)
+
+def esc(s, raw):
+    if raw:
+        return s
+    else:
+        return escape(s)

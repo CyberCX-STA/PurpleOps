@@ -2,7 +2,7 @@
 {{ macros.toast(title="Testcase Deleted") }}
 
 <!-- New Test Modal-->
-<form action="/testcase/single" method="POST" class="m-0" id="newTestcaseForm">
+<form action="/testcase/{{ assessment.id }}/single" method="POST" class="m-0" id="newTestcaseForm">
     {{ macros.modalHead(name="newTestcase", title="New Testcase") }}
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>

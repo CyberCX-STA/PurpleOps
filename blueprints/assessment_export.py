@@ -26,7 +26,7 @@ def exportassessment(id, filetype):
     
     jsonDict = []
     for testcase in testcases:
-        jsonDict.append(testcase.to_json())
+        jsonDict.append(testcase.to_json(raw=True))
         
     # Write JSON and if JSON requested, deliver file and return
     with open(f'files/{str(assessment.id)}/export.json', 'w') as f:
@@ -41,9 +41,12 @@ def exportassessment(id, filetype):
 
     # Convert the JSON dict to CSV and deliver
     with open(f'files/{str(assessment.id)}/export.csv', 'w', encoding='UTF8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=jsonDict[0].keys())
-        writer.writeheader()
-        writer.writerows(jsonDict)
+        if not testcases:
+            f.write("")
+        else:
+            writer = csv.DictWriter(f, fieldnames=jsonDict[0].keys())
+            writer.writeheader()
+            writer.writerows(jsonDict)
 
     return send_from_directory('files', f"{str(assessment.id)}/export.{filetype}", as_attachment=True)
 
@@ -60,7 +63,7 @@ def exportcampaign(id):
     jsonDict = []
     for testcase in testcases:
         # Generate a full JSON dump but then filter to only the applicable fields
-        fullJson = testcase.to_json()
+        fullJson = testcase.to_json(raw=True)
         campaignJson = {}
         for field in ["mitreid", "tactic", "name", "objective", "actions", "tools", "tags"]:
             campaignJson[field] = fullJson[field]
@@ -68,7 +71,6 @@ def exportcampaign(id):
 
     with open(f'files/{str(assessment.id)}/campaign.json', 'w') as f:
         json.dump(jsonDict, f, indent=4)
-
 
     return send_from_directory('files', f"{str(assessment.id)}/campaign.json", as_attachment=True)
 
@@ -93,7 +95,7 @@ def exporttestcases(id):
 @auth_required()
 @user_assigned_assessment
 def exportreport(id):
-    assessment = Assessment.objects(id=id).first().to_json()
+    assessment = Assessment.objects(id=id).first().to_json(raw=True)
 
     if not os.path.isfile(f"custom/reports/{request.form['report']}"):
         return "", 401
@@ -193,7 +195,7 @@ def exportentire(id):
     
     # Export assessment meta JSON
     with open(f'files/{id}/meta.json', 'w') as f:
-        json.dump(assessment.to_json(), f)
+        json.dump(assessment.to_json(raw=True), f)
 
     # ZIP up the above generated files and testcase evidence and deliver
     if not current_user.has_role("Blue"):

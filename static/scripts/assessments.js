@@ -32,8 +32,7 @@ function deleteAssessmentModal(e) {
 	row = $(e).closest("tr")
 	rowData = $('#assessmentsTable').bootstrapTable('getData')[row.data("index")]
 	$('#deleteAssessmentForm').attr('action', `/assessment/${rowData.id}`) 
-    // TODO XSS
-	$('#deleteAssessmentWarning').html(`Really Delete <code>${rowData.name}</code>?`)
+	$('#deleteAssessmentWarning').text(`Really Delete ${rowData.name}?`)
 	$('#deleteAssessmentModal').modal('show')
 }
 
