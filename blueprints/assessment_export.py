@@ -2,9 +2,10 @@ import os
 import csv
 import json
 import shutil
+from utils import user_assigned_assessment
 from model import *
 from docxtpl import DocxTemplate
-from flask_security import auth_required, roles_accepted
+from flask_security import auth_required, roles_accepted, current_user
 from flask import Blueprint, request, send_from_directory
 
 blueprint_assessment_export = Blueprint('blueprint_assessment_export', __name__)
@@ -12,13 +13,16 @@ blueprint_assessment_export = Blueprint('blueprint_assessment_export', __name__)
 # CSV / JSON export (we testcase[].to_json() then CSV the JSON dict, so function is reused)
 @blueprint_assessment_export.route('/assessment/<id>/export/<filetype>',methods = ['GET'])
 @auth_required()
-@roles_accepted("Admin", "Red")
+@user_assigned_assessment
 def exportassessment(id, filetype):
     if filetype not in ["json", 'csv']:
         return 401
     
     assessment = Assessment.objects(id=id).first()
-    testcases = TestCase.objects(assessmentid=str(assessment.id)).all()
+    if current_user.has_role("Blue"):
+        testcases = TestCase.objects(assessmentid=str(assessment.id), visible=True).all()
+    else:
+        testcases = TestCase.objects(assessmentid=str(assessment.id)).all()
     
     jsonDict = []
     for testcase in testcases:
@@ -43,12 +47,15 @@ def exportassessment(id, filetype):
 
     return send_from_directory('files', f"{str(assessment.id)}/export.{filetype}", as_attachment=True)
 
-@blueprint_assessment_export.route('/assessment/<id>/export/campaign',methods = ['GET'])
+@blueprint_assessment_export.route('/assessment/<id>/export/campaign', methods = ['GET'])
 @auth_required()
-@roles_accepted("Admin", "Red")
+@user_assigned_assessment
 def exportcampaign(id):
     assessment = Assessment.objects(id=id).first()
-    testcases = TestCase.objects(assessmentid=str(assessment.id)).all()
+    if current_user.has_role("Blue"):
+        testcases = TestCase.objects(assessmentid=str(assessment.id), visible=True).all()
+    else:
+        testcases = TestCase.objects(assessmentid=str(assessment.id)).all()
     
     jsonDict = []
     for testcase in testcases:
@@ -67,7 +74,7 @@ def exportcampaign(id):
 
 @blueprint_assessment_export.route('/assessment/<id>/export/templates',methods = ['GET'])
 @auth_required()
-@roles_accepted("Admin", "Red")
+@user_assigned_assessment
 def exporttestcases(id):
     # Hijack the campaign exporter and inject a "provider" field
     exportcampaign(id)
@@ -84,7 +91,7 @@ def exporttestcases(id):
 
 @blueprint_assessment_export.route('/assessment/<id>/export/report',methods = ['POST'])
 @auth_required()
-@roles_accepted("Admin", "Red")
+@user_assigned_assessment
 def exportreport(id):
     assessment = Assessment.objects(id=id).first().to_json()
 
@@ -107,7 +114,7 @@ def exportreport(id):
 
 @blueprint_assessment_export.route('/assessment/<id>/export/navigator',methods = ['GET'])
 @auth_required()
-@roles_accepted("Admin", "Red")
+@user_assigned_assessment
 def exportnavigator(id):
     navigator = {
         "name": Assessment.objects(id=id).first().name,
@@ -139,7 +146,10 @@ def exportnavigator(id):
     }
 
     for technique in Technique.objects().all():
-        testcases = TestCase.objects(assessmentid=id, mitreid=technique.mitreid).all()
+        if current_user.has_role("Blue"):
+            testcases = TestCase.objects(assessmentid=id, visible=True, mitreid=technique.mitreid).all()
+        else:
+            testcases = TestCase.objects(assessmentid=id, mitreid=technique.mitreid).all()
         ttp = {
             "techniqueID": technique.mitreid
         }
@@ -152,12 +162,13 @@ def exportnavigator(id):
                     count += 1
                     outcomes[testcase.outcome] += 1
 
-            score = int((outcomes["Prevented"] * 3 + outcomes["Alerted"] * 2 +
-                        outcomes["Logged"]) / (count * 3) * 100)
-            ttp["score"] = score
+            if count:
+                score = int((outcomes["Prevented"] * 3 + outcomes["Alerted"] * 2 +
+                            outcomes["Logged"]) / (count * 3) * 100)
+                ttp["score"] = score
 
         for tactic in technique.tactics:
-            tactic = tactic.lower().replace(" ", "-")
+            tactic = tactic.lower().strip().replace(" ", "-")
             tacticTTP = dict(ttp)
             tacticTTP["tactic"] = tactic
             navigator["techniques"].append(tacticTTP)
@@ -169,7 +180,7 @@ def exportnavigator(id):
 
 @blueprint_assessment_export.route('/assessment/<id>/export/entire',methods = ['GET'])
 @auth_required()
-@roles_accepted('Admin', 'Red')
+@user_assigned_assessment
 def exportentire(id):
     assessment = Assessment.objects(id=id).first()
 
@@ -185,6 +196,16 @@ def exportentire(id):
         json.dump(assessment.to_json(), f)
 
     # ZIP up the above generated files and testcase evidence and deliver
-    shutil.make_archive("files/" + id, 'zip', "files/" + id)
+    if not current_user.has_role("Blue"):
+        shutil.make_archive("files/" + id, 'zip', "files/" + id)
+    else:
+        # If they're blue then they can only export the evidence files of visible testcases
+        shutil.copytree(f"files/{id}", f"files/tmp{id}")
+        testcases = TestCase.objects(assessmentid=str(assessment.id)).all()
+        for testcase in testcases:
+            if not testcase.visible and os.path.isdir(f"files/tmp{id}/{str(testcase.id)}"):
+                shutil.rmtree(f"files/tmp{id}/{str(testcase.id)}")
+        shutil.make_archive(f"files/{id}", 'zip', f"files/tmp{id}")
+        shutil.rmtree(f"files/tmp{id}")
     
     return send_from_directory('files', f"{id}.zip", as_attachment=True, download_name=f"{assessment.name}.zip")

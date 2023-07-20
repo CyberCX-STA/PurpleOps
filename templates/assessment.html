@@ -25,12 +25,12 @@
                 {% if not current_user.has_role("Blue") %}
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/campaign">Campaign Template</a></li>
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/templates">Testcase Templates</a></li>
+                {% endif %}
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/navigator">ATT&amp;CK Navigator Layer</a></li>
                 {% if reports %}
                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#exportReportModal">Generate Report</a></li>
                 {% endif %}
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/entire">Entire Assessment</a></li>
-                {% endif %}
             </ul>
         </div>
         <a type="button" class="btn btn-secondary" href="/assessment/{{ assessment.id }}/stats">Statistics</a>
@@ -47,7 +47,7 @@
                 <th data-field="name" data-sortable="true" data-filter-control="input" data-formatter="nameFormatter">Name</th>
                 <th data-field="tactic" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select">Tactic</th>
                 <th data-field="state" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select" data-cell-style="bgFormatter">State</th>
-                <th data-field="visible" data-sortable="true" data-filter-control="select" data-formatter="visibleFormatter" data-cell-style="bgFormatter" class="text-center"><i class="bi-eye"></i></th>
+                <th data-field="visible" data-sortable="true" data-filter-control="select" data-formatter="visibleFormatter" data-cell-style="bgFormatter" class="text-center" {% if current_user.has_role("Blue") %} data-visible="false"{% endif %}><i class="bi-eye"></i></th>
                 <th data-field="tags" data-width="15" data-width-unit="%" data-filter-control="input" data-formatter="tagFormatter">Tags</th>
                 <th data-field="start" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Start</th>
                 <th data-field="modified" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">Modified</th>

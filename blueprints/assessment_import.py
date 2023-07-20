@@ -3,19 +3,20 @@ import json
 import string
 import shutil
 from model import *
-from flask import Blueprint, request
+from utils import user_assigned_assessment
+from flask import Blueprint, request, jsonify
 from flask_security import auth_required, roles_accepted
 
 blueprint_assessment_import = Blueprint('blueprint_assessment_import', __name__)
 
-@blueprint_assessment_import.route('/assessment/import/template', methods = ['POST'])
+@blueprint_assessment_import.route('/assessment/<id>/import/template', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
-def testcasetemplates():
+@user_assigned_assessment
+def testcasetemplates(id):
     newcases = []
-    for id in request.json["ids"]:
-        template = TestCaseTemplate.objects(id=id).first()
-        # TODO prevent cross-ass tampering on user supplied input
+    for templateid in request.json["ids"]:
+        template = TestCaseTemplate.objects(id=templateid).first()
         newcase = TestCase(
             name = template.name,
             mitreid = template.mitreid,
@@ -23,51 +24,51 @@ def testcasetemplates():
             objective = template.objective,
             actions = template.actions,
             rednotes = template.rednotes,
-            assessmentid = request.referrer.split("/")[-1]
+            assessmentid = id
         ).save()
         newcases.append(newcase.to_json())
         
-    return newcases, 200
+    return jsonify(newcases), 200
 
-@blueprint_assessment_import.route('/assessment/import/navigator', methods = ['POST'])
+@blueprint_assessment_import.route('/assessment/<id>/import/navigator', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
-def testcasenavigator():
+@user_assigned_assessment
+def testcasenavigator(id):
     newcases = []
     navigatorTestcases = json.loads(request.files['file'].read())
     for testcase in navigatorTestcases["techniques"]:
-        # TODO prevent cross-ass tampering on user supplied input
         newcase = TestCase(
             name = Technique.objects(mitreid=testcase["techniqueID"]).first().name,
             mitreid = testcase["techniqueID"],
             tactic = string.capwords(testcase["tactic"].replace("-", " ")),
-            assessmentid = request.referrer.split("/")[-1]
+            assessmentid = id
         ).save()
         newcases.append(newcase.to_json())
         
-    return newcases, 200
+    return jsonify(newcases), 200
 
-@blueprint_assessment_import.route('/assessment/import/campaign', methods = ['POST'])
+@blueprint_assessment_import.route('/assessment/<id>/import/campaign', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
-def testcasecampaign():
+@user_assigned_assessment
+def testcasecampaign(id):
     newcases = []
     campaignTestcases = json.loads(request.files['file'].read())
     for testcase in campaignTestcases:
-        # TODO prevent cross-ass tampering on user supplied input
         newcase = TestCase()
-        newcase.assessmentid = request.referrer.split("/")[-1]
+        newcase.assessmentid = id
         for field in ["name", "mitreid", "tactic", "objective", "actions"]: # TODO: "tools", "tags"
             if field in testcase:
                 newcase[field] = testcase[field]
         newcase.save()
         newcases.append(newcase.to_json())
         
-    return newcases, 200
+    return jsonify(newcases), 200
 
 @blueprint_assessment_import.route('/assessment/import/entire', methods = ['POST'])
 @auth_required()
-@roles_accepted('Admin', 'Red')
+@roles_accepted('Admin')
 def importentire():
     assessment = Assessment(name="Importing...")
     assessment.save()
@@ -157,4 +158,4 @@ def importentire():
                 newTestcase.update(set__bluefiles=newFiles)
         newTestcase.save()
 
-    return assessment.to_json(), 200
+    return jsonify(assessment.to_json()), 200

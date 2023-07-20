@@ -134,6 +134,3 @@ function actionFormatter() {
 		</div>
 	`
 }
-
-// TODO import assessment form
-// TODO assessment clone

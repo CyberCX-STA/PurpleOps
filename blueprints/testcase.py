@@ -3,27 +3,32 @@ from model import *
 from utils import *
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from flask_security import auth_required, roles_accepted, current_user
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 
-@blueprint_testcase.route('/testcase/single', methods = ['POST'])
+@blueprint_testcase.route('/testcase/<id>/single', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
-def newtestcase():
+@user_assigned_assessment
+def newtestcase(id):
     newcase = TestCase()
-    # TODO prevent cross-ass tampering on user supplied input
-    newcase.assessmentid = request.referrer.split("/")[-1]
+    newcase.assessmentid = id
     newcase = applyFormData(newcase, request.form, ["name", "mitreid", "tactic"])
     newcase.save()
-    return newcase.to_json(), 200
+    return jsonify(newcase.to_json()), 200
 
 @blueprint_testcase.route('/testcase/<id>',methods = ['GET'])
 @auth_required()
+@user_assigned_assessment
 def runtestcasepost(id):
     testcase = TestCase.objects(id=id).first()
     assessment = Assessment.objects(id=testcase.assessmentid).first()
+
+    if not testcase.visible and current_user.has_role("Blue"):
+        return ("", 403)
+
     return render_template('testcase.html',
         testcase = testcase,
         testcases = TestCase.objects(assessmentid=str(assessment.id)).all(),
@@ -45,9 +50,14 @@ def runtestcasepost(id):
 @blueprint_testcase.route('/testcase/<id>',methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red', 'Blue')
+@user_assigned_assessment
 def testcasesave(id):
     testcase = TestCase.objects(id=id).first()
     isBlue = current_user.has_role("Blue")
+
+    if not testcase.visible and isBlue:
+        return ("", 403)
+
     directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity"]
     listFields = ["sources", "targets", "tools", "controls", "tags"]
     boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]

@@ -41,7 +41,7 @@
             <div class="col-2">
                 <div class="input-group">
                     <span class="input-group-text">Status</span>
-                    <input id="state" name="state" type="text" class="form-control {% if testcase.state=="Running" %}bg-warning{% endif%}{% if testcase.state=="Complete" %}bg-primary text-white{% endif%}" value="{{ testcase.state }}">
+                    <input id="state" name="state" type="text" class="form-control {% if testcase.state=="Running" %}bg-warning{% endif%}{% if testcase.state=="Complete" %}bg-primary text-white{% endif%}" value="{{ testcase.state }}" {% if current_user.has_role("Blue") %} disabled{% endif %}>
                 </div>
             </div>
             <div class="col-1">

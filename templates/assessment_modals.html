@@ -1,9 +1,3 @@
-<!-- Cloned test Toast -->
-{{ macros.toast(title="Cloned") }}
-
-<!-- Testcase Reset Toast -->
-{{ macros.toast(title="Testcase Reset") }}
-
 <!-- Testcase Delete Toast -->
 {{ macros.toast(title="Testcase Deleted") }}
 
@@ -46,7 +40,6 @@
                 <th data-field="tactic" data-sortable="true" data-filter-control="select">Tactic</th>
                 <th data-field="technique">Technique</th>
                 <th data-field="title">Title</th>
-                <th data-field="html" data-visible="false">Details</th>
                 <th data-field="id" data-visible="false">ID</th>
             </tr>
         </thead>
@@ -58,7 +51,6 @@
                 <td>{{ template.tactic }}</td>
                 <td>{{ template.mitreid }}<!-- TODO mitre tactic name --></td>
                 <td>{{ template.name }}</td>
-                <td>{{ template.html|safe }}</td>
                 <td>{{ template.id }}</td>
             </tr>
             {% endfor %}
@@ -68,7 +60,7 @@
 {{ macros.modalTail(name="testcaseTemplates", cancelLabel="Cancel", actionLabel="Add Selected") }}
 
 <!-- MITRE Modal -->
-<form action="/assessment/import/navigator" enctype="multipart/form-data" method="POST" class="m-0" id="navigatorTemplateForm">
+<form action="/assessment/{{ assessment.id }}/import/navigator" enctype="multipart/form-data" method="POST" class="m-0" id="navigatorTemplateForm">
     {{ macros.modalHead(name="testcaseNavigator", title="Import MITRE Layer") }}
     <div class="mb-3">
         <p>Select your threat actor / ad-hoc TTP at <a href="https://mitre-attack.github.io/attack-navigator/" target="_blank">the Mitre ATT&CK Navigator</a> &gt; <code>Download Controls</code> &gt; <code>Download Layer as JSON</code>.</p>

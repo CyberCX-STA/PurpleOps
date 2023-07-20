@@ -49,7 +49,7 @@ $("#newTestcaseForm").submit(function(e){
 // AJAX new testcase from template POST and table append
 $('#testcaseTemplatesButton').click(function() {
 	$.ajax({
-		url: `/assessment/import/template`,
+		url: `/assessment/${window.location.href.split("/").slice(-1)[0]}/import/template`,
 		type: 'POST',
 		data: JSON.stringify({
 			ids: $('#testcaseTemplateTable').bootstrapTable('getSelections').map(row => row.id)
@@ -97,25 +97,13 @@ $("#campaignTemplateForm").submit(function(e){
 	})
 });
 
-// AJAX generate report
-$("#exportReportForm").submit(function(e){
-	e.preventDefault();
-	fetch(e.target.action, {
-		method: 'POST',
-		body: new FormData(e.target)
-	}).then((response) => {
-		$('#exportReportForm').trigger('reset')
-		$('#exportReportModal').modal('hide')
-	})
-});
-
 // Toggle visibility of testcase AJAX
 function visibleTest(event) {
 	event.stopPropagation();
 	row = $(event.target).closest("tr")
 	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
 	$.ajax({
-		url: `/testcase/toggle-visibility/${rowData.id}`,
+		url: `/testcase/${rowData.id}/toggle-visibility`,
 		type: 'GET',
 		success: function(body) {
 			$('#assessmentTable').bootstrapTable('updateByUniqueId', {
@@ -133,7 +121,7 @@ function cloneTest(event) {
 	row = $(event.target).closest("tr")
 	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
 	$.ajax({
-		url: `/testcase/clone/${rowData.id}`,
+		url: `/testcase/${rowData.id}/clone`,
 		type: 'GET',
 		success: function(body) {
 			$('#assessmentTable').bootstrapTable('insertRow', {
@@ -150,7 +138,7 @@ function deleteTest(event) {
 	row = $(event.target).closest("tr")
 	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
 	$.ajax({
-		url: `/testcase/delete/${rowData.id}`,
+		url: `/testcase/${rowData.id}/delete`,
 		type: 'GET',
 		success: function(body) {
 			$('#assessmentTable').bootstrapTable('removeByUniqueId', rowData.id)

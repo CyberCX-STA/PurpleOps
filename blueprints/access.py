@@ -1,6 +1,6 @@
 from model import *
 from utils import applyFormData
-from flask import Blueprint, redirect, request, render_template
+from flask import Blueprint, redirect, request, render_template, jsonify
 from flask_security import auth_required, utils, current_user, roles_accepted
 
 blueprint_access = Blueprint('blueprint_access', __name__)
@@ -34,7 +34,7 @@ def createuser():
         roles = [Role.objects(name=role).first() for role in request.form.getlist('roles')],
         assessments = [Assessment.objects(name=assessment).first() for assessment in request.form.getlist('assessments')]
     )
-    return user.to_json(), 200
+    return jsonify(user.to_json()), 200
 
 @blueprint_access.route('/manage/access/user/<id>', methods = ['POST', 'DELETE'])
 @auth_required()
@@ -66,7 +66,7 @@ def edituser(id):
             user.assessments = []
 
         user.save()
-        return user.to_json(), 200
+        return jsonify(user.to_json()), 200
         
     if request.method == 'DELETE':
         # Prevent inbuilt admin deletion

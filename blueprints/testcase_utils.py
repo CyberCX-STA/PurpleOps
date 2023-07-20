@@ -1,7 +1,8 @@
 import os
 import shutil
 from model import *
-from flask import Blueprint, request, send_from_directory
+from utils import user_assigned_assessment
+from flask import Blueprint, request, send_from_directory, jsonify
 from flask_security import auth_required, roles_accepted, current_user
 
 blueprint_testcase_utils = Blueprint('blueprint_testcase_utils', __name__)
@@ -9,16 +10,18 @@ blueprint_testcase_utils = Blueprint('blueprint_testcase_utils', __name__)
 @blueprint_testcase_utils.route('/testcase/toggle-visibility/<id>', methods = ['GET'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
+@user_assigned_assessment
 def testcasevisibility(id):
     newcase = TestCase.objects(id=id).first()
     newcase.visible = not newcase.visible
     newcase.save()
         
-    return newcase.to_json(), 200
+    return jsonify(newcase.to_json()), 200
 
-@blueprint_testcase_utils.route('/testcase/clone/<id>', methods = ['GET'])
+@blueprint_testcase_utils.route('/testcase/<id>/clone', methods = ['GET'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
+@user_assigned_assessment
 def testcaseclone(id):
     orig = TestCase.objects(id=id).first()
     newcase = TestCase()
@@ -28,15 +31,15 @@ def testcaseclone(id):
     newcase.name = orig["name"] + " (Copy)"
     newcase.save()
 
-    return newcase.to_json(), 200
+    return jsonify(newcase.to_json()), 200
 
-@blueprint_testcase_utils.route('/testcase/delete/<id>', methods = ['GET'])
+@blueprint_testcase_utils.route('/testcase/<id>/delete', methods = ['GET'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
+@user_assigned_assessment
 def testcasedelete(id):
     testcase = TestCase.objects(id=id).first()
     assessment = Assessment.objects(id=testcase.assessmentid).first()
-    # TODO has writes to delete?
     if os.path.exists(f"files/{str(assessment.id)}/{str(testcase.id)}"):
         shutil.rmtree(f"files/{str(assessment.id)}/{str(testcase.id)}")
     testcase.delete()
@@ -46,9 +49,12 @@ def testcasedelete(id):
 @blueprint_testcase_utils.route('/testcase/<id>/evidence/<colour>/<file>', methods = ['DELETE'])
 @auth_required()
 @roles_accepted('Admin', 'Red', 'Blue')
+@user_assigned_assessment
 def deletefile(id, colour, file):
-    if colour not in ["red", "blue"] or colour == "red" and current_user.has_role("Blue"):
+    if colour not in ["red", "blue"]:
         return 401
+    if colour == "red" and current_user.has_role("Blue"):
+        return 403
     
     testcase = TestCase.objects(id=id).first()
     os.remove(f"files/{testcase.assessmentid}/{testcase.id}/{file}")
@@ -63,10 +69,11 @@ def deletefile(id, colour, file):
     else:
         testcase.update(set__bluefiles=files)
 
-    return ('', 204)
+    return '', 204
 
 @blueprint_testcase_utils.route('/testcase/<id>/evidence/<file>', methods = ['GET'])
 @auth_required()
+@user_assigned_assessment
 def fetchFile(id, file):
     testcase = TestCase.objects(id=id).first()
     

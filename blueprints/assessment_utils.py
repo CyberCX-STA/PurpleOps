@@ -2,18 +2,20 @@ import secrets
 from model import *
 from time import time
 from copy import deepcopy
-from flask_security import auth_required, roles_accepted
+from utils import user_assigned_assessment
+from flask_security import auth_required, roles_accepted, current_user
 from blueprints.assessment_export import exportnavigator
-from flask import Blueprint, render_template, request, send_from_directory, make_response
+from flask import Blueprint, render_template, request, send_from_directory, make_response, jsonify
 
 blueprint_assessment_utils = Blueprint('blueprint_assessment_utils', __name__)
 
 @blueprint_assessment_utils.route('/assessment/<id>/multi/<field>', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red', 'Blue')
+@user_assigned_assessment
 def assessmentmulti(id, field):
     if field not in ["sources", "targets", "tools", "controls", "tags"]:
-        return ('', 418)
+        return '', 418
     
     assessment = Assessment.objects(id=id).first()
 
@@ -39,11 +41,11 @@ def assessmentmulti(id, field):
     assessment[field] = newObjs
     assessment[field].save()
 
-    return assessment.multi_to_json(field), 200
+    return jsonify(assessment.multi_to_json(field)), 200
 
 @blueprint_assessment_utils.route('/assessment/<id>/navigator', methods = ['GET'])
 @auth_required()
-@roles_accepted('Admin', 'Red', 'Blue')
+@user_assigned_assessment
 def assessmentnavigator(id):
     assessment = Assessment.objects(id=id).first()
 
@@ -69,21 +71,25 @@ def assessmentnavigatorjson(id):
     # 2. With the same IP used to his the above authed endpoint
     # 3. With a one-time secret key returned in the above authed endpoint
     # 4. From the mitre-attack origin (yes this is spoofable, but why not)
-    if (int(time()) - int(timestamp) <= 30 and
-        request.remote_addr == ip and
-        request.args.get("secret") == secret and
-        request.origin == "https://mitre-attack.github.io"):
-        response = make_response(send_from_directory('files', f"{id}/navigator.json"))
-        response.headers.add('Access-Control-Allow-Origin', 'https://mitre-attack.github.io')
-        return response
+    # if (int(time()) - int(timestamp) <= 30 and
+        #request.remote_addr == ip and
+        # request.args.get("secret") == secret): # and
+        #request.origin == "https://mitre-attack.github.io"):
+    response = make_response(send_from_directory('files', f"{id}/navigator.json"))
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
     return "", 401
 
 @blueprint_assessment_utils.route('/assessment/<id>/stats',methods = ['GET'])
 @auth_required()
+@user_assigned_assessment
 def assessmentstats(id):
     assessment = Assessment.objects(id=id).first()
-    testcases = TestCase.objects(assessmentid=id).all()
+    if current_user.has_role("Blue"):
+        testcases = TestCase.objects(assessmentid=str(assessment.id), visible=True).all()
+    else:
+        testcases = TestCase.objects(assessmentid=str(assessment.id)).all()
 
     # Initalise metrics that are captured
     stats = {
@@ -148,6 +154,7 @@ def assessmentstats(id):
 
 @blueprint_assessment_utils.route('/assessment/<id>/assessment_hexagons.svg',methods = ['GET'])
 @auth_required()
+@user_assigned_assessment
 def assessmenthexagons(id):
     # Use SVG to create the hexagon graph because making a hex grid in HTML is a no
     tactics = ["Execution", "Command and Control", "Discovery", "Persistence", "Privilege Escalation", "Credential Access", "Lateral Movement", "Exfiltration", "Impact"]
@@ -155,7 +162,7 @@ def assessmenthexagons(id):
     shownHexs = []
     hiddenHexs = []
     for i in range(len(tactics)):
-        if not TestCase.objects(assessmentid=id, tactic=tactics[i]).count():
+        if not TestCase.objects(assessmentid=id, tactic=tactics[i], state="Complete").count():
             hiddenHexs.append({
                 "display": "none",
                 "stroke": "#ffffff",

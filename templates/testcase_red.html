@@ -10,7 +10,7 @@
 				<span class="input-group-text text-danger" title="Start time">
 					<i class="bi-clock-history">&zwnj;</i>
 				</span>
-				<input id='time-start' name="starttime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.starttime %}{{ testcase.starttime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+				<input id='time-start' name="starttime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.starttime %}{{ testcase.starttime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" {% if current_user.has_role("Blue") %} disabled{% endif %}>
 			</div>
 		</div>
 		<div class="col-4">
@@ -18,7 +18,7 @@
 				<span class="input-group-text text-danger" title="End time">
 					<i class="bi-clock-fill">&zwnj;</i>
 				</span>
-				<input id='time-end' name="endtime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.endtime %}{{ testcase.endtime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+				<input id='time-end' name="endtime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.endtime %}{{ testcase.endtime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" {% if current_user.has_role("Blue") %} disabled{% endif %}>
 			</div>
 		</div>
 		<div class="col-2">

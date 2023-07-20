@@ -1,4 +1,7 @@
 from datetime import datetime
+from model import TestCase
+from flask_security import current_user
+from functools import wraps
 
 def applyFormData (obj, form, fields):
     for field in fields:
@@ -26,3 +29,19 @@ def applyFormTimeData (obj, form, fields):
             else:
                 obj[field] = None
     return obj
+
+def user_assigned_assessment(f):
+    @wraps(f)
+    def inner(*args, **kwargs):
+        if current_user.has_role("Admin"):
+            return f(*args, **kwargs)
+        id = kwargs.get("id")
+        if not id:
+            id = args[0]
+        if TestCase.objects(id=id).count():
+            id = TestCase.objects(id=id).first().assessmentid
+        if (id in [str(a.id) for a in current_user.assessments]):
+            return f(*args, **kwargs)
+        else:
+            return ("", 403)
+    return inner

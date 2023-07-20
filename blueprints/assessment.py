@@ -2,18 +2,17 @@ import os
 import shutil
 from model import *
 from glob import glob
-from utils import applyFormData
-from flask_security import auth_required, roles_accepted
-from flask import Blueprint, render_template, request
+from utils import applyFormData, user_assigned_assessment
+from flask_security import auth_required, roles_accepted, current_user
+from flask import Blueprint, render_template, request, jsonify
 from blueprints.assessment_utils import assessmenthexagons
 
 blueprint_assessment = Blueprint('blueprint_assessment', __name__)
 
 @blueprint_assessment.route('/assessment', methods = ['POST'])
 @auth_required()
-@roles_accepted('Admin', 'Red')
+@roles_accepted('Admin')
 def newassessment():
-    # TODO way to import custom packs of tools/controls
     assessment = Assessment(
         name = request.form['name'],
         description = request.form['description']
@@ -23,21 +22,21 @@ def newassessment():
     if not os.path.exists(f"files/{str(assessment.id)}"):
         os.makedirs(f"files/{str(assessment.id)}")
 
-    return assessment.to_json(), 200
+    return jsonify(assessment.to_json()), 200
 
 @blueprint_assessment.route('/assessment/<id>', methods = ['POST'])
 @auth_required()
-@roles_accepted('Admin', 'Red')
+@roles_accepted('Admin')
 def editassessment(id):
     assessment = Assessment.objects(id=id).first()
     assessment = applyFormData(assessment, request.form, ["name", "description"])
     assessment.save()
     
-    return assessment.to_json(), 200
+    return jsonify(assessment.to_json()), 200
 
 @blueprint_assessment.route('/assessment/<id>', methods = ['DELETE'])
 @auth_required()
-@roles_accepted('Admin', 'Red')
+@roles_accepted('Admin')
 def deleteassessment(id):
     assessment = Assessment.objects(id=id).first()
     [testcase.delete() for testcase in TestCase.objects(assessmentid=id).all()]
@@ -48,7 +47,7 @@ def deleteassessment(id):
 
 @blueprint_assessment.route('/assessment/<id>', methods = ['GET'])
 @auth_required()
-# TODO have perms?
+@user_assigned_assessment
 def loadassessment(id):
     return render_template(
         'assessment.html',
