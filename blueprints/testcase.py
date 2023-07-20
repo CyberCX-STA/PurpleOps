@@ -95,9 +95,9 @@ def testcasesave(id):
         else:
             testcase.update(set__bluefiles=files)
 
-    testcase.modifytime = datetime.now()
+    testcase.modifytime = datetime.utcnow()
     if "logged" in request.form and request.form["logged"] == "Yes" and not testcase.detecttime:
-        testcase.detecttime = datetime.now()
+        testcase.detecttime = datetime.utcnow()
 
     if testcase.prevented in ["Yes", "Partial"]:
         testcase.outcome = "Prevented"

@@ -177,6 +177,24 @@ $("#ttpform").submit(function(e){
 	})
 });
 
+// Convert UTC DB time to local time
+$( document ).ready(function() {
+	offset = new Date().getTimezoneOffset()
+    $("#timezone").val(offset)
+
+	if ($("#time-start").val()) {
+		startTime = new Date($("#time-start").val());
+		startTime.setMinutes(startTime.getMinutes() - offset * 2);
+		$("#time-start").val(startTime.toISOString().slice(0,16))
+	}
+
+	if ($("#time-end").val()) {
+		endTime = new Date($("#time-end").val());
+		endTime.setMinutes(endTime.getMinutes() - offset * 2);
+		$("#time-end").val(endTime.toISOString().slice(0,16))
+	}
+});
+
 // Alter timestamps, button labels and state when hitting run button
 $("#run-button").click(function(){
 	clickTime = new Date();

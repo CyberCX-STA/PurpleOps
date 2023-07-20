@@ -179,6 +179,17 @@ function actionFormatter() {
 	`
 }
 
+function timeFormatter(utc) {
+	if (!utc.length) {
+		return utc
+	}
+	
+	offset = new Date().getTimezoneOffset()
+	local = new Date(utc);
+	local.setMinutes(local.getMinutes() - offset);
+	return local.toISOString().slice(0,16)
+}
+
 function bgFormatter(value) {
 	bg = ""
 	text = ""

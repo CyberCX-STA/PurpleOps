@@ -10,6 +10,7 @@
 				<span class="input-group-text text-danger" title="Start time">
 					<i class="bi-clock-history">&zwnj;</i>
 				</span>
+				<input type="hidden" name="timezone" id="timezone">
 				<input id='time-start' name="starttime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.starttime %}{{ testcase.starttime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" {% if current_user.has_role("Blue") %} disabled{% endif %}>
 			</div>
 		</div>
