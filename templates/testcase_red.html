@@ -49,7 +49,7 @@
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="sources"
 					name="sources" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
-					<option data-icon="bi-gear">Manage</option>
+					{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
 					<option data-divider="true"></option>
 					{% for source in multi.sources %}
 						<option {% if source.id|string in testcase.sources %}selected{% endif %} class="dynopt-sources" value="{{ source.id }}">{{ source.name }}</option>
@@ -67,7 +67,7 @@
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="targets"
 					name="targets" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
-					<option data-icon="bi-gear">Manage</option>
+					{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
 					<option data-divider="true"></option>
 					{% for target in multi.targets %}
 						<option {% if target.id|string in testcase.targets %}selected{% endif %} class="dynopt-targets" value="{{ target.id }}">{{ target.name }}</option>
@@ -85,7 +85,7 @@
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="tools"
 					name="tools" autocomplete="off" data-size="10"{% if current_user.has_role("Blue") %} disabled{% endif %}>
-					<option data-icon="bi-gear">Manage</option>
+					{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
 					<option data-divider="true"></option>
 					{% for tool in multi.tools %}
 						<option {% if tool.id|string in testcase.tools %}selected{% endif %} class="dynopt-tools" value="{{ tool.id }}">{{ tool.name }}</option>

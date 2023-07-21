@@ -6,7 +6,7 @@
 <div class="m-2 mt-0">
 <div id="toolbar">
   <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">Assessments</p>
-  {% if current_user.has_role("Admin") or current_user.has_role("Red") %}
+  {% if current_user.has_role("Admin") %}
   <button id="newAssessment" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAssessmentModal">New Assessment</button>
   <button id="importAssessment" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#importAssessmentModal">Import Assessment</button>
   {% endif %}
@@ -19,7 +19,7 @@
       <th data-field="name" data-sortable="true" data-width="20" data-width-unit="%" data-formatter="nameFormatter">Name</th>
       <th data-field="description" data-sortable="true" data-width="35" data-width-unit="%">Description</th>
       <th data-field="progress" data-sortable="true" data-width="15" data-width-unit="%" class="text-center" data-formatter="progressFormatter">Progress</th>
-      <th data-field="actions" data-width="15" data-width-unit="%" class="text-center"{% if not (current_user.has_role("Admin") or current_user.has_role("Red")) %} data-visible="false"{% endif %} data-formatter="actionFormatter">Actions</th>
+      <th data-field="actions" data-width="15" data-width-unit="%" class="text-center"{% if not (current_user.has_role("Admin")) %} data-visible="false"{% endif %} data-formatter="actionFormatter">Actions</th>
     </tr>
   </thead>
   <tbody>

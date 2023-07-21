@@ -38,12 +38,13 @@
                     </select>
                 </div>
             </div>
-            <div class="col-2">
+            <div class="col-{% if current_user.has_role('Spectator') %}3{% else %}2{% endif %}">
                 <div class="input-group">
                     <span class="input-group-text">Status</span>
                     <input id="state" name="state" type="text" class="form-control {% if testcase.state=="Running" %}bg-warning{% endif%}{% if testcase.state=="Complete" %}bg-primary text-white{% endif%}" value="{{ testcase.state }}" {% if current_user.has_role("Blue") %} disabled{% endif %}>
                 </div>
             </div>
+            {% if not current_user.has_role("Spectator") %}
             <div class="col-1">
                 <div class="btn-group w-100" role="group">
                     <a class="btn btn-outline-danger" href="/assessment/{{ assessment.id }}" role="button" title="Return Without Saving">
@@ -54,6 +55,7 @@
                     </button>
                 </div>
             </div>
+            {% endif %}
         </div>
         <hr class="m-0" />
         <div class="row">

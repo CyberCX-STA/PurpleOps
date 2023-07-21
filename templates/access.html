@@ -15,7 +15,7 @@
 				<th data-field="username" data-valign="middle" data-sortable="true">Username</th>
 				<th data-field="email" data-sortable="true">Email</th>
 				<th data-field="roles">Roles</th>
-				<th data-field="last-login" data-sortable="true">Last Login</th>
+				<th data-field="last-login" data-sortable="true" data-formatter="timeFormatter">Last Login</th>
 				<th data-field="assessments">Assessments</th>
 				<th data-field="actions" data-formatter="actionFormatter" class="text-center">Actions</th>
 			</tr>
@@ -27,7 +27,7 @@
 				<td>{{ user.username }}</td>
 				<td>{{ user.email }}</td>
 				<td>{{ user.roles | map(attribute='name') | join(', ') or "-" }}</td>
-				<td>{{ user.last_login_at or "-" }}{% if user.last_login_at %} ({{ user.current_login_ip or user.last_login_ip }}){% endif %}</td>
+				<td>{% if user.current_login_at %}{{ user.current_login_at.strftime('%Y-%m-%dT%H:%M') }}{% else %}-{% endif %}|{{ user.current_login_ip or "-" }}</td>
 				<td>{% if 'Admin' in (user.roles | map(attribute='name')) %}*{% elif user.assessments %}{{ (user.assessments | map(attribute='name') | join(', ')) }}{% else %}-{% endif %}</td>
 				<td>{{ user.username }}</td>
 			</tr>

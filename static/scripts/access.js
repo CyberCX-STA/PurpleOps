@@ -66,18 +66,11 @@ $("#userDetailForm").submit(function(e){
 			body.assessments = "-"
 		}
 
-		// Format last login cell
-		body["last-login"] = body.last_login_at ? body.last_login_at : "-"
-		if (body.last_login_at) {
-			body["last-login"] += ` (${body.current_login_ip || body.last_login_ip})`
-		}
-
 		newRow = {
 			id: body.id,
 			username: body.username,
 			email: body.email,
 			roles: body.roles.length ? body.roles.join(", ") : "-",
-			"last-login": body["last-login"],
 			assessments: body.assessments,
 			actions: body.username
 		}
@@ -87,8 +80,7 @@ $("#userDetailForm").submit(function(e){
 		if ($('#userTable').bootstrapTable('getRowByUniqueId', body.id)) {
 			$('#userTable').bootstrapTable('updateRow', {
 				index: row.data("index"),
-				row: newRow,
-				replace: true
+				row: newRow
 			})
 		} else {
 			$('#userTable').bootstrapTable('append', [newRow])
@@ -124,4 +116,19 @@ function actionFormatter(username) {
 			`}
 		</div>
 	`
+}
+
+function timeFormatter(utcip) {
+	utc = utcip.split("|")[0]
+	ip = utcip.split("|")[1]
+	cell = ""
+	if (!utc || utc == "-") {
+		return "-"
+	}
+
+	offset = new Date().getTimezoneOffset()
+	local = new Date(utc);
+	local.setMinutes(local.getMinutes() - offset * 2);
+
+	return `${local.toISOString().slice(0,16)} (${ip})`
 }

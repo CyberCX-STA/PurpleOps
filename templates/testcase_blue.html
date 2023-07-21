@@ -146,7 +146,7 @@
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="controls"
 					name="controls" autocomplete="off" data-size="10">
-					<option data-icon="bi-gear">Manage</option>
+					{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
 					<option data-divider="true"></option>
 					{% for control in multi.controls %}
 						<option {% if control.id|string in testcase.controls %}selected{% endif %} class="dynopt-controls" value="{{ control.id }}">{{ control.name }}</option>
@@ -162,7 +162,7 @@
 					data-style="" data-style-base="form-control-sm form-control"
 					data-live-search-placeholder="Search..." data-width="auto" id="tags"
 					name="tags" autocomplete="off">
-					<option data-icon="bi-gear">Manage</option>
+					{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
 					<option data-divider="true"></option>
 					{% for tag in multi.tags %}
 						<option {% if tag.id|string in testcase.tags %}selected{% endif %} class="dynopt-tags" value="{{ tag.id }}" data-content="<span class='badge rounded-pill' style='background:{{ tag.colour }}'>{{ tag.name }}</span>">{{ tag.name }}</option>

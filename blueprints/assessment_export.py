@@ -169,11 +169,11 @@ def exportnavigator(id):
                             outcomes["Logged"]) / (count * 3) * 100)
                 ttp["score"] = score
 
-        for tactic in technique.tactics:
-            tactic = tactic.lower().strip().replace(" ", "-")
-            tacticTTP = dict(ttp)
-            tacticTTP["tactic"] = tactic
-            navigator["techniques"].append(tacticTTP)
+            for tactic in technique.tactics:
+                tactic = tactic.lower().strip().replace(" ", "-")
+                tacticTTP = dict(ttp)
+                tacticTTP["tactic"] = tactic
+                navigator["techniques"].append(tacticTTP)
 
     with open(f'files/{id}/navigator.json', 'w') as f:
         json.dump(navigator, f, indent=4)  

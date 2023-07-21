@@ -6,7 +6,7 @@
 <div class="m-2 mt-0">
     <div id="toolbar">
         <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">{{ assessment.name }}</p>
-        {% if not current_user.has_role("Blue") %}
+        {% if current_user.has_role("Admin") or current_user.has_role("Red") %}
         <button id="newTestcase" class="btn btn-primary">New</button>
         <div class="btn-group">
             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Import...</button>
@@ -22,7 +22,7 @@
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/json">Results as JSON</a></li>
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/csv">Results as CSV</a></li>
-                {% if not current_user.has_role("Blue") %}
+                {% if current_user.has_role("Admin") %}
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/campaign">Campaign Template</a></li>
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/templates">Testcase Templates</a></li>
                 {% endif %}
@@ -37,7 +37,7 @@
         <a type="button" class="btn btn-secondary" href="/assessment/{{ assessment.id }}/navigator">ATT&amp;CK Navigator</a>
         <span id="selected-count" class="ms-1"></span>
     </div>
-    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="assessmentTable" data-click-to-select="true" data-maintain-meta-data="false" data-sort-name="start" data-sort-order="desc" data-silent-sort="false" style="display:none;"  data-unique-id="id" data-id-field="id">
+    <table data-toggle="table" data-toolbar="#toolbar" data-search="true" data-show-columns="true" data-search-highlight="true" data-show-search-clear-button="true" data-filter-control="true" id="assessmentTable" data-click-to-select="true" data-maintain-meta-data="false" data-sort-name="modified" data-sort-order="desc" data-silent-sort="false" style="display:none;"  data-unique-id="id" data-id-field="id">
         <!-- data-cookie="true" data-cookie-id-table="assessmentTable" -->
         <thead>
             <tr class="tr-class-1">
@@ -47,14 +47,14 @@
                 <th data-field="name" data-sortable="true" data-filter-control="input" data-formatter="nameFormatter">Name</th>
                 <th data-field="tactic" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select">Tactic</th>
                 <th data-field="state" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select" data-cell-style="bgFormatter">State</th>
-                <th data-field="visible" data-sortable="true" data-filter-control="select" data-formatter="visibleFormatter" data-cell-style="bgFormatter" class="text-center" {% if current_user.has_role("Blue") %} data-visible="false"{% endif %}><i class="bi-eye"></i></th>
+                <th data-field="visible" data-sortable="true" data-filter-control="select" data-formatter="visibleFormatter" data-cell-style="bgFormatter" class="text-center" {% if current_user.has_role("Blue") %} data-visible="false" data-switchable="false"{% endif %}><i class="bi-eye"></i></th>
                 <th data-field="tags" data-width="15" data-width-unit="%" data-filter-control="input" data-formatter="tagFormatter">Tags</th>
                 <th data-field="start" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-formatter="timeFormatter">Start</th>
                 <th data-field="modified" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-formatter="timeFormatter">Modified</th>
                 <th data-field="preventscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter" class="text-center">Prevention</th>
                 <th data-field="detectscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter" class="text-center">Detection</th>
                 <th data-field="outcome" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter">Outcome</th>
-                <th data-field="actions" class="text-center" data-width="10" data-width-unit="%" data-switchable="false"{% if current_user.has_role("Blue") %} data-visible="false"{% endif %} data-formatter="actionFormatter">Actions</th>
+                <th data-field="actions" class="text-center" data-width="10" data-width-unit="%" data-switchable="false"{% if current_user.has_role("Blue") or current_user.has_role("Spectator") %} data-visible="false"{% endif %} data-formatter="actionFormatter">Actions</th>
             </tr>
         </thead>
 

@@ -7,7 +7,7 @@ from flask_security import auth_required, roles_accepted, current_user
 
 blueprint_testcase_utils = Blueprint('blueprint_testcase_utils', __name__)
 
-@blueprint_testcase_utils.route('/testcase/toggle-visibility/<id>', methods = ['GET'])
+@blueprint_testcase_utils.route('/testcase/<id>/toggle-visibility', methods = ['GET'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
 @user_assigned_assessment

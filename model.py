@@ -250,9 +250,8 @@ class User(db.Document, UserMixin):
             "email": esc(self.email, raw),
             "roles": [r.name for r in self.roles],
             "assessments": [a.name for a in self.assessments],
-            "last_login_at": self.last_login_at,
-            "current_login_ip": self.current_login_ip,
-            "last_login_ip": self.last_login_ip
+            "current_login_at": self.current_login_at,
+            "current_login_ip": self.current_login_ip
         }
 
 
