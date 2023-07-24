@@ -80,7 +80,7 @@ def testcasesave(id):
             else:
                 caption = ""
             files.append({
-                "name": file.name,
+                "name": secure_filename(file.name),
                 "path": file.path,
                 "caption": caption
             })

@@ -2,10 +2,11 @@ import os
 import csv
 import json
 import shutil
-from utils import user_assigned_assessment
 from model import *
 from docxtpl import DocxTemplate
-from flask_security import auth_required, roles_accepted, current_user
+from utils import user_assigned_assessment
+from werkzeug.utils import secure_filename
+from flask_security import auth_required, current_user
 from flask import Blueprint, request, send_from_directory
 
 blueprint_assessment_export = Blueprint('blueprint_assessment_export', __name__)
@@ -97,7 +98,7 @@ def exporttestcases(id):
 def exportreport(id):
     assessment = Assessment.objects(id=id).first().to_json(raw=True)
 
-    if not os.path.isfile(f"custom/reports/{request.form['report']}"):
+    if not os.path.isfile(f"custom/reports/{secure_filename(request.form['report'])}"):
         return "", 401
     
     # Hijack assessment JSON export
@@ -105,7 +106,7 @@ def exportreport(id):
     with open(f'files/{id}/export.json', 'r') as f:
         testcases = json.load(f)
 
-    doc = DocxTemplate(f"custom/reports/{request.form['report']}")
+    doc = DocxTemplate(f"custom/reports/{secure_filename(request.form['report'])}")
     doc.render({
         "assessment": assessment,
         "testcases": testcases
@@ -118,6 +119,8 @@ def exportreport(id):
 @auth_required()
 @user_assigned_assessment
 def exportnavigator(id):
+    # Sanity check to ensure assessment exists and to die if not
+    _ = Assessment.objects(id=id).first()
     navigator = {
         "name": Assessment.objects(id=id).first().name,
         "domain": "enterprise-attack",

@@ -5,6 +5,7 @@ import shutil
 from model import *
 from utils import user_assigned_assessment
 from flask import Blueprint, request, jsonify
+from werkzeug.utils import secure_filename
 from flask_security import auth_required, roles_accepted
 
 blueprint_assessment_import = Blueprint('blueprint_assessment_import', __name__)
@@ -173,10 +174,8 @@ def importentire():
             newFiles = []
             for file in oldTestcase[field]:
                 origFilePath, caption = file.split("|")
-                origFilePath = origFilePath.split("/")
-                name = origFilePath[3]
-                # TODO maybe LFI with dir traverse supplied?
-                origFilePath = f'files/{assessmentID}/tmp/{origFilePath[2]}/{origFilePath[3]}'
+                _, _, oldTestcaseID, name = [secure_filename(i) for i in origFilePath.split("/")]
+                origFilePath = f'files/{assessmentID}/tmp/{oldTestcaseID}/{name}'
                 if not os.path.exists(f"files/{assessmentID}/{testcaseID}"):
                     os.makedirs(f"files/{assessmentID}/{testcaseID}")
                 newFilePath = f"files/{assessmentID}/{testcaseID}/{name}"

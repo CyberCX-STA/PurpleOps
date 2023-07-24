@@ -2,6 +2,7 @@ import os
 import shutil
 from model import *
 from utils import user_assigned_assessment
+from werkzeug.utils import secure_filename
 from flask import Blueprint, request, send_from_directory, jsonify
 from flask_security import auth_required, roles_accepted, current_user
 
@@ -57,7 +58,7 @@ def deletefile(id, colour, file):
         return 403
     
     testcase = TestCase.objects(id=id).first()
-    os.remove(f"files/{testcase.assessmentid}/{testcase.id}/{file}")
+    os.remove(f"files/{testcase.assessmentid}/{testcase.id}/{secure_filename(file)}")
 
     files = []
     for f in testcase["redfiles" if colour == "red" else "bluefiles"]:
@@ -79,6 +80,6 @@ def fetchFile(id, file):
     
     return send_from_directory(
         'files',
-        f"{testcase.assessmentid}/{str(testcase.id)}/{file}",
+        f"{testcase.assessmentid}/{str(testcase.id)}/{secure_filename(file)}",
         as_attachment = True if "download" in request.args else False
     )
