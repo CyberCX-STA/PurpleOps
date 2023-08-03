@@ -28,8 +28,9 @@
 
 ## Key Features
 
-* Feature
-* Feature!
+* Template engagements and testcases
+* Framework friendly
+* Role-based Access Control & MFA
 
 How PurpleOps is different:
 
@@ -38,14 +39,6 @@ How PurpleOps is different:
 * No over complications with tomcat, redis, manual database transplanting and an obtuce permission model
 
 ## Installation
-
-TMP:
-
-```
-pip3 install 'flask-security-too[common,mfa,fsqla]==5.0.2'
-pip3 install flask-mongoengine openpyxl gitpython
-pip3 install 'flask-wtf==1.0.1'
-```
 
 ```bash
 # Clone this repository
@@ -64,8 +57,8 @@ $ sudo docker compose up -d
 ## Credits
 
 - Atomic Red Team [(LICENSE)](https://github.com/redcanaryco/atomic-red-team/blob/master/LICENSE.txt) for sample commands
-- [CyberCX](https://cybercx.com.au/) for foudational support
+- [CyberCX](https://cybercx.com.au/) for foundational support
 
 ## License
 
-MIT
+Apache
