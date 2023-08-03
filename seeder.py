@@ -16,8 +16,7 @@ from openpyxl import load_workbook
 dotenvFile = dotenv.find_dotenv()
 dotenv.load_dotenv(dotenvFile)
 
-# Adjust for local dev
-PWD = "/home/harrison/Tools/PurpleOps"
+PWD = os.getcwd()
 
 app = Flask(__name__)
 app.config.from_pyfile("flask.cfg")
