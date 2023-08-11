@@ -16,6 +16,7 @@
 <p align="center">
   <a href="#key-features">Key Features</a> •
   <a href="#installation">Installation</a> •
+  <a href="#contact-us">Contact Us</a> •
   <a href="#credits">Credit</a> •
   <a href="#license">License</a>
 </p>
@@ -58,6 +59,9 @@ $ pip3 install -r requirements.txt
 $ python3 seeder.py
 $ python3 purpleops.py
 ```
+## Contact Us
+
+We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or ping us pops@purpleops.app | @_w_m__ 
 
 ## Credits
 
