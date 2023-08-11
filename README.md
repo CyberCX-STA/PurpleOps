@@ -61,7 +61,7 @@ $ python3 purpleops.py
 ```
 ## Contact Us
 
-We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or ping us pops@purpleops.app | @_w_m__ 
+We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or ping us pops@purpleops.app |```` @_w_m__```` 
 
 ## Credits
 
