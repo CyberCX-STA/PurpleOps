@@ -202,35 +202,39 @@ def populateSecrets ():
 
 #####
 
-print("Clearing old gubbs")
-Tactic.objects.delete()
-Technique.objects.delete()
-Sigma.objects.delete()
-TestCaseTemplate.objects.delete()
-KnowlegeBase.objects.delete()
-# Role.objects.delete()
-# User.objects.delete()
+if Tactic.objects.count() == 0:
+    print("==============================================================\n\n\n")
+    print(f"\t NEW INSTANCE DETECTED, LETS GET THE DATA WE NEED")
+    print("\n\n\n==============================================================")
+    
+    Tactic.objects.delete()
+    Technique.objects.delete()
+    Sigma.objects.delete()
+    TestCaseTemplate.objects.delete()
+    KnowlegeBase.objects.delete()
+    # Role.objects.delete()
+    # User.objects.delete()
 
-print("Pulling MITRE tactics")
-parseMitreTactics()
+    print("Pulling MITRE tactics")
+    parseMitreTactics()
 
-print("Pulling MITRE techniques")
-parseMitreTechniques()
+    print("Pulling MITRE techniques")
+    parseMitreTechniques()
 
-print("Pulling SIGMA detections")
-parseSigma()
+    print("Pulling SIGMA detections")
+    parseSigma()
 
-print("Pulling Atomic Red Team testcases")
-parseAtomicRedTeam()
+    print("Pulling Atomic Red Team testcases")
+    parseAtomicRedTeam()
 
-print("Parsing Custom testcases")
-parseCustomTestcases()
+    print("Parsing Custom testcases")
+    parseCustomTestcases()
 
-print("Parsing Custom KBs")
-parseCustomKBs()
+    print("Parsing Custom KBs")
+    parseCustomKBs()
 
-print("Populating (randomising) secrets")
-populateSecrets()
+    print("Populating (randomising) secrets")
+    populateSecrets()
 
-print("Preparing roles and initial admin")
-prepareRolesAndAdmin()
+    print("Preparing roles and initial admin")
+    prepareRolesAndAdmin()

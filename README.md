@@ -47,11 +47,13 @@ $ git clone https://github.com/CyberCX-STA/PurpleOps
 # Go into the repository
 $ cd PurpleOps
 
-# Alter PurpleOps settings
+# Alter PurpleOps settings (if you want to customize anything but should work out the box)
 $ nano .env
 
 # Run the app with docker
-$ sudo docker compose up -d
+$ sudo docker compose up
+
+# PurpleOps should now by available on http://localhost:5000, it is recommended to add a reverse proxy such as nginx or Apache in front of it if you want to expose this to the outside world.
 
 # Alternatively
 $ sudo docker run --name mongodb -d -p 27017:27017 mongo
@@ -61,7 +63,7 @@ $ python3 purpleops.py
 ```
 ## Contact Us
 
-We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or ping us pops@purpleops.app |```` @_w_m__```` 
+We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or ping us pops@purpleops.app | `@_w_m__` 
 
 ## Credits
 
