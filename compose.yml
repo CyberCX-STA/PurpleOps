@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - 27017
+    volumes:
+      - mongodb_data:/data/db
+  purpleops:
+    build: .
+    container_name: purpleops
+    command: gunicorn --bind 0.0.0.0:5000 purpleops:app
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./.env
+    depends_on:
+      - mongodb
+volumes:
+  mongodb_data:
+

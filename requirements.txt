@@ -68,3 +68,4 @@ webencodings==0.5.1
 Werkzeug==2.3.6
 WTForms==3.0.1
 zipp==3.16.2
+gunicorn==20.1.0

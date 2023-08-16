@@ -178,7 +178,9 @@ def prepareRolesAndAdmin ():
             roles = [Role.objects(name="Admin").first()],
             initpwd = False
         )
+        print("==============================================================\n\n\n")
         print(f"\tCreated initial admin: U: admin@purpleops.com P: {password}")
+        print("\n\n\n==============================================================")
 
 def populateSecrets ():
     if Role.objects().count() == 0:
