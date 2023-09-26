@@ -18,6 +18,8 @@ services:
       - ./.env
     depends_on:
       - mongodb
+    volumes:
+      - purpleops_data:/usr/src/app/
 volumes:
   mongodb_data:
-
+  purpleops_data:
