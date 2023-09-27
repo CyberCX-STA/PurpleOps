@@ -120,15 +120,15 @@ def assessmentstats(id):
                 stats[testcase["tactic"]][testcase["alertseverity"]] += 1
 
             # Store scores to later average with
-            if testcase["preventedrating"]:
+            if testcase["preventedrating"] and testcase["preventedrating"] != "N/A":
                 stats[testcase["tactic"]]["scoresPrevent"].append(float(testcase["preventedrating"]))
             if testcase["detectionrating"]:
                 stats[testcase["tactic"]]["scoresDetect"].append(float(testcase["detectionrating"]))
 
             # Collate priorities, ratings and controls
-            if testcase["priority"]:
+            if testcase["priority"] and testcase["priority"] != "N/A":
                 stats[testcase["tactic"]]["priorityType"].append(testcase["priority"])
-            if testcase["priorityurgency"]:
+            if testcase["priorityurgency"] and testcase["priorityurgency"] != "N/A":
                 stats[testcase["tactic"]]["priorityUrgency"].append(testcase["priorityurgency"])
             if testcase["controls"]:
                 controls = []

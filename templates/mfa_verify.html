@@ -18,7 +18,7 @@
     }
 </style>
 <main class="form-mfa">
-    <img class="mb-4" src="/static/images/logo.png" alt="" width="300" height="300">
+    {{ macros.logo() }}
 
     {%- with messages = get_flashed_messages(with_categories=true) -%}
         {% if messages %}
