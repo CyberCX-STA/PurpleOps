@@ -28,7 +28,7 @@ Flask-Security-Too==5.0.2
 Flask-SQLAlchemy==3.0.5
 Flask-WTF==1.1.1
 gitdb==4.0.10
-GitPython==3.1.32
+GitPython==3.1.41
 greenlet==2.0.2
 h11==0.14.0
 httpcore==0.17.3
