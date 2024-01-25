@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import yaml
 import uuid
 import shutil
@@ -29,19 +30,24 @@ if not os.path.exists(f"{PWD}/external/"):
 
 def pullMitreAttack (component):
     # Pull the HTML page to find and download the link to the latest framework version
-    req = requests.get("https://attack.mitre.org/resources/working-with-attack/").text.split('"')
-    url = [x for x in req if "xlsx" in x and "enterprise" in x and "docs" in x and component in x][0]
-    req = requests.get("https://attack.mitre.org" + url)
-    with open(f"{PWD}/external/mitre-{component}.xlsx", "wb") as mitreXLSX:
-        mitreXLSX.write(req.content)
+    req = requests.get(f"https://attack.mitre.org/docs/enterprise-attack-v14.1/enterprise-attack-v14.1-{component}.xlsx")
+    if req.status_code == 200:
+        #req = r.text.split('"')
+        #url = [x for x in req if "xlsx" in x and "enterprise" in x and "docs" in x and component in x][0]
+        #req = requests.get("https://attack.mitre.org" + url)
+        with open(f"{PWD}/external/mitre-{component}.xlsx", "wb") as mitreXLSX:
+            mitreXLSX.write(req.content)
 
-    wb = load_workbook(f"{PWD}/external/mitre-{component}.xlsx", read_only=True)
-    ws = wb.active
+        wb = load_workbook(f"{PWD}/external/mitre-{component}.xlsx", read_only=True)
+        ws = wb.active
 
-    headers = [col.value for col in list(ws.rows)[0]]
+        headers = [col.value for col in list(ws.rows)[0]]
 
-    return [ws.rows, headers]
-
+        return [ws.rows, headers]
+    else:
+        print(f"Failed getting information from MITRE [{r.status_code}]")
+        sys.exit()
+        
 def parseMitreTactics ():
     rows, headers = pullMitreAttack("tactics")
     for row in rows:
