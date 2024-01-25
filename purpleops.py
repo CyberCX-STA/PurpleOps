@@ -32,5 +32,12 @@ def index():
     assessments = Assessment.objects().all()
     return render_template('assessments.html', assessments=assessments)
 
+# mitigates cve-2023-49438 - can be removed with Flask-Security-Too >=5.3.3
+# see: https://github.com/brandon-t-elliott/CVE-2023-49438
+@app.after_request
+def fix_location_header(response):
+    response.autocorrect_location_header = True
+    return response
+
 if __name__ == "__main__":
     app.run(host=os.getenv('HOST'), port=int(os.getenv('PORT')))
