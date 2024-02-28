@@ -54,7 +54,29 @@ $ nano .env
 $ sudo docker compose up
 
 # PurpleOps should now by available on http://localhost:5000, it is recommended to add a reverse proxy such as nginx or Apache in front of it if you want to expose this to the outside world.
+```
 
+### Kali 2024.1
+```bash
+# Install docker-compose
+sudo apt install docker-compose -y
+
+# Clone this repository
+$ git clone https://github.com/CyberCX-STA/PurpleOps
+
+# Go into the repository
+$ cd PurpleOps
+
+# Alter PurpleOps settings (if you want to customize anything but should work out the box)
+$ nano .env
+
+# Run the app with docker
+$ sudo docker-compose up
+
+# PurpleOps should now by available on http://localhost:5000, it is recommended to add a reverse proxy such as nginx or Apache in front of it if you want to expose this to the outside world.
+```
+
+```bash
 # Alternatively
 $ sudo docker run --name mongodb -d -p 27017:27017 mongo
 $ pip3 install -r requirements.txt
