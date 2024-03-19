@@ -144,7 +144,7 @@ def exportentirebackupid(assessment):
         
     #Copy remaining uploaded artifacts across to the backup dir
     shutil.copytree(f"{args.files}/{str(assessment.id)}", f"{args.backupdir}/{str(assessment.id)}", dirs_exist_ok=True)
-    shutil.make_archive(f"{args.backupdir}/{str(assessment.id)}", 'zip', f"{args.files}/{str(assessment.id)}")
+    shutil.make_archive(f"{args.backupdir}/{str(assessment.id)}", 'zip', f"{args.backupdir}/{str(assessment.id)}")
    
 
 if __name__ == "__main__":
