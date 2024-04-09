@@ -49,7 +49,7 @@ def exportcampaign(id):
         # Generate a full JSON dump but then filter to only the applicable fields
         fullJson = testcase.to_json(raw=True)
         campaignJson = {}
-        for field in ["mitreid", "tactic", "name", "objective", "actions", "tools", "tags"]:
+        for field in ["mitreid", "tactic", "name", "objective", "actions", "tools", "uuid", "tags"]:
             campaignJson[field] = fullJson[field]
         jsonDict.append(campaignJson)
 

@@ -112,6 +112,7 @@ class TestCaseTemplate(db.Document):
     objective = db.StringField(default="")
     actions = db.StringField(default="")
     rednotes = db.StringField(default="")
+    uuid = db.StringField(default="")
     provider = db.StringField(default="")
 
 
@@ -122,6 +123,7 @@ class TestCase(db.Document):
     actions = db.StringField(default="")
     rednotes = db.StringField(default="")
     bluenotes = db.StringField(default="")
+    uuid = db.StringField(default="")
     mitreid = db.StringField()
     tactic = db.StringField()
     sources = db.ListField(db.StringField())
@@ -150,7 +152,7 @@ class TestCase(db.Document):
     def to_json(self, raw=False):
         jsonDict = {}
         for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
-                      "mitreid", "tactic", "state", "prevented", "preventedrating",
+                      "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
                       "priority", "priorityurgency", "visible", "outcome"]:
             jsonDict[field] = esc(self[field], raw)

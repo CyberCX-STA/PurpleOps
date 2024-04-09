@@ -114,6 +114,12 @@
 					<textarea class="form-control" name="rednotes" id="rednotes"
 						style="min-height: 4em"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.rednotes }}</textarea>
 				</div>
+				<div class="input-group my-2" id="red-uuid">
+					<span class="input-group-text px-1 text-danger"
+						style="writing-mode: vertical-lr;">UUID</span>
+					<textarea class="form-control" name="uuid" id="uuid" rows="1"
+						style="resize: none; min-height: 1.5em;"{% if current_user.has_role("Blue") %} disabled{% endif %}>{{ testcase.uuid }}</textarea>
+				</div>
 		</div>
 
 	</div>

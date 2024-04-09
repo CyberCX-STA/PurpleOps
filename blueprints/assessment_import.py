@@ -72,7 +72,7 @@ def testcasecampaign(id):
     for testcase in campaignTestcases:
         newcase = TestCase()
         newcase.assessmentid = id
-        for field in ["name", "mitreid", "tactic", "objective", "actions", "tools", "tags"]:
+        for field in ["name", "mitreid", "tactic", "objective", "actions", "tools", "uuid", "tags"]:
             if field in testcase:
                 if field not in ["tools", "tags"]:
                     newcase[field] = testcase[field]
@@ -138,7 +138,7 @@ def importentire():
         testcaseID = str(newTestcase.id)
 
         for field in ["name", "objective", "actions", "rednotes", "bluenotes",
-                      "mitreid", "tactic", "state", "prevented", "preventedrating",
+                      "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
                       "priority", "priorityurgency", "visible", "outcome"]:
             newTestcase[field] = oldTestcase[field]

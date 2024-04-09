@@ -50,7 +50,7 @@ $ cd PurpleOps
 # Alter PurpleOps settings (if you want to customize anything but should work out the box)
 $ nano .env
 
-# Run the app with docker
+# Run the app with docker (add `-d` to run in background)
 $ sudo docker compose up
 
 # PurpleOps should now by available on http://localhost:5000, it is recommended to add a reverse proxy such as nginx or Apache in front of it if you want to expose this to the outside world.
@@ -70,7 +70,7 @@ $ cd PurpleOps
 # Alter PurpleOps settings (if you want to customize anything but should work out the box)
 $ nano .env
 
-# Run the app with docker
+# Run the app with docker (add `-d` to run in background)
 $ sudo docker-compose up
 
 # PurpleOps should now by available on http://localhost:5000, it is recommended to add a reverse proxy such as nginx or Apache in front of it if you want to expose this to the outside world.
