@@ -28,6 +28,7 @@ function formatRow(response) {
 		preventscore: response.preventedrating !== null ? response.preventedrating : "",
 		detectscore: response.detectionrating !== null ? response.detectionrating : "",
 		outcome: response.outcome,
+		uuid: response.uuid,
 		actions: "",
 	}
 }
