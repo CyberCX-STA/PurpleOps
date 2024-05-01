@@ -110,6 +110,19 @@ def testcasesave(id):
     else:
         testcase.outcome = ""
 
+    # This is some sanity check code where we check if some of the UI elements are out of sync with the backend. This is trggered by the horrible tabs bug
+    # Todo: Turns this BS code into a single mongoengine query against the subdocument list
+    assessment = Assessment.objects(id=testcase.assessmentid).first()
+    tag_ids = []
+    valid_tags = []
+    for t in assessment.tags:
+        tag_ids.append(str(t.id))
+        
+    for tag in testcase.tags:
+        if tag in tag_ids:
+            valid_tags.append(tag)
+
+    testcase.tags = valid_tags
     testcase.save()
 
     return "", 200
