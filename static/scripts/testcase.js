@@ -38,7 +38,8 @@ $('.multiButton').click(function(event) {
 				pill = type == "tags" ? `data-content="<span class='badge rounded-pill' style='background:${i.colour}'>${i.name}</span>"` : ""
 				$(`#${type}`).append(`<option ${selected} class="dynopt-${type}" value="${i.id}" ${pill}>${i.name}</option>`);
 			})
-			$(`#${type}`).selectpicker('refresh');
+			$(`#${type}`).selectpicker('destroy');
+			$(`#${type}`).selectpicker();
 		}
 	});
 })
