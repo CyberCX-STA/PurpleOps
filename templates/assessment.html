@@ -55,6 +55,7 @@
                 <th data-field="detectscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter" class="text-center">Detection</th>
                 <th data-field="outcome" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter">Outcome</th>
                 <th data-field="actions" class="text-center" data-width="10" data-width-unit="%" data-switchable="false"{% if current_user.has_role("Blue") or current_user.has_role("Spectator") %} data-visible="false"{% endif %} data-formatter="actionFormatter">Actions</th>
+		<th data-field="uuid" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input">UUID</th>
             </tr>
         </thead>
 
@@ -75,6 +76,7 @@
                 <td>{{ t.preventedrating or "" }}</td>
                 <td>{{ t.detectionrating or "" }}</td>
                 <td>{{ t.outcome }}</td>
+		<td>{{ t.uuid }}</td>
                 <td></td>
             </tr>
             {% endif %}

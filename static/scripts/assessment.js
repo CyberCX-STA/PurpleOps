@@ -23,6 +23,7 @@ function formatRow(response) {
 		state: response.state,
 		visible: response.visible,
 		tags: response.tags.join(","),
+		uuid: response.uuid,
 		start: response.starttime != "None" ? response.starttime : "",
 		modified: response.modifytime,
 		preventscore: response.preventedrating !== null ? response.preventedrating : "",
