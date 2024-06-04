@@ -99,7 +99,7 @@ $ sudo docker compose up
   Replace 2x `purpleops.example.com` with your FQDN and ensure your box is open internet-wide on 80/443.
   
   ```bash
-  sudo apt install nginx certbot python3-certbot-nginx
+  sudo apt install nginx certbot python3-certbot-nginx -y
   sudo nano /etc/nginx/sites-available/purpleops # Paste below file
   sudo ln -s /etc/nginx/sites-available/purpleops /etc/nginx/sites-enabled/
   sudo certbot --nginx -d purpleops.example.com
@@ -117,6 +117,19 @@ $ sudo docker compose up
         proxy_set_header X-Real-IP $remote_addr;
     }
   }
+  ```
+</details>
+
+<details>
+  <summary><h3>IP Whitelisting with ufw</h3></summary>
+  
+  ```bash
+  sudo apt install ufw -y
+  sudo ufw allow 22
+  sudo ufw deny 80
+  sudo ufw deny 443
+  sudo ufw insert 1 allow from 100.100.100.100/24 to any port 443
+  sudo ufw enable
   ```
 </details>
 
