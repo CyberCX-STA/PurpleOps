@@ -40,6 +40,8 @@ How PurpleOps is different:
 
 ## Installation
 
+### Default
+
 ```bash
 # Clone this repository
 $ git clone https://github.com/CyberCX-STA/PurpleOps
@@ -56,33 +58,68 @@ $ sudo docker compose up
 # PurpleOps should now by available on http://localhost:5000, it is recommended to add a reverse proxy such as nginx or Apache in front of it if you want to expose this to the outside world.
 ```
 
-### Kali 2024.1
-```bash
-# Install docker-compose
-sudo apt install docker-compose -y
+<details>
+  <summary><h3>Kali</h3></summary>
+  
+  ```bash
+  # Install docker-compose
+  sudo apt install docker-compose -y
+  
+  # Clone this repository
+  $ git clone https://github.com/CyberCX-STA/PurpleOps
+  
+  # Go into the repository
+  $ cd PurpleOps
+  
+  # Alter PurpleOps settings (if you want to customize anything but should work out the box)
+  $ nano .env
+  
+  # Run the app with docker (add `-d` to run in background)
+  $ sudo docker-compose up
+  
+  # PurpleOps should now by available on http://localhost:5000, it is recommended to add a reverse proxy such as nginx or Apache in front of it if you want to expose this to the outside world.
+  ```
+</details>
 
-# Clone this repository
-$ git clone https://github.com/CyberCX-STA/PurpleOps
+<details>
+  <summary><h3>Manual</h3></summary>
+  
+  ```bash
+  # Alternatively
+  $ sudo docker run --name mongodb -d -p 27017:27017 mongo
+  $ pip3 install -r requirements.txt
+  $ python3 seeder.py
+  $ python3 purpleops.py
+  ```
+</details>
 
-# Go into the repository
-$ cd PurpleOps
+<details>
+  <summary><h3>NGINX Reverse Proxy + Certbot</h3></summary>
 
-# Alter PurpleOps settings (if you want to customize anything but should work out the box)
-$ nano .env
+  Replace 2x `purpleops.example.com` with your FQDN and ensure your box is open internet-wide on 80/443.
+  
+  ```bash
+  sudo apt install nginx certbot python3-certbot-nginx
+  sudo nano /etc/nginx/sites-available/purpleops # Paste below file
+  sudo ln -s /etc/nginx/sites-available/purpleops /etc/nginx/sites-enabled/
+  sudo certbot --nginx -d purpleops.example.com
+  sudo service nginx restart
+  ```
 
-# Run the app with docker (add `-d` to run in background)
-$ sudo docker-compose up
+  ```
+  server {
+    listen 80;
+    server_name purpleops.example.com;
 
-# PurpleOps should now by available on http://localhost:5000, it is recommended to add a reverse proxy such as nginx or Apache in front of it if you want to expose this to the outside world.
-```
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+  }
+  ```
+</details>
 
-```bash
-# Alternatively
-$ sudo docker run --name mongodb -d -p 27017:27017 mongo
-$ pip3 install -r requirements.txt
-$ python3 seeder.py
-$ python3 purpleops.py
-```
 ## Contact Us
 
 We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or ping us pops@purpleops.app | `@_w_m__` 
