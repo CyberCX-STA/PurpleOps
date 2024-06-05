@@ -14,7 +14,7 @@ blueprint_assessment_utils = Blueprint('blueprint_assessment_utils', __name__)
 @roles_accepted('Admin', 'Red', 'Blue')
 @user_assigned_assessment
 def assessmentmulti(id, field):
-    if field not in ["sources", "targets", "tools", "controls", "tags"]:
+    if field not in ["sources", "targets", "tools", "controls", "tags", "preventionsources", "detectionsources"]:
         return '', 418
     
     assessment = Assessment.objects(id=id).first()
@@ -27,6 +27,8 @@ def assessmentmulti(id, field):
             "tools": Tool(),
             "controls": Control(),
             "tags": Tag(),
+            "preventionsources": Preventionsource(),
+            "detectionsources": Detectionsource(),
         }[field]
 
         # If pre-existing, then edit pre-existing to preserve ID
@@ -94,7 +96,7 @@ def assessmentstats(id):
     # Initalise metrics that are captured
     stats = {
         "All": {
-            "Prevented": 0, "Alerted": 0, "Logged": 0, "Missed": 0,
+            "Prevented and Alerted": 0, "Prevented": 0, "Alerted": 0, "Logged": 0, "Missed": 0,
             "Critical": 0, "High": 0, "Medium": 0, "Low": 0, "Informational": 0,
             "scoresPrevent": [], "scoresDetect": [],
             "priorityType": [], "priorityUrgency": [],
@@ -140,7 +142,7 @@ def assessmentstats(id):
     for tactic in stats:
         if tactic == "All":
             continue
-        for key in ["Prevented", "Alerted", "Logged", "Missed", "Critical", "High", "Medium", "Low", "Informational"]:
+        for key in ["Prevented and Alerted", "Prevented", "Alerted", "Logged", "Missed", "Critical", "High", "Medium", "Low", "Informational"]:
             stats["All"][key] += stats[tactic][key]
         for key in ["scoresPrevent", "scoresDetect", "priorityType", "priorityUrgency", "controls"]:
             stats["All"][key].extend(stats[tactic][key])
@@ -172,7 +174,8 @@ def assessmenthexagons(id):
             })
             continue
             
-        score = (TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Prevented").count() +
+        score = ( TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Prevented and Alerted").count() +
+                TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Prevented").count() +
                 TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Alerted").count() -
                 TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Missed").count())
         if score > 1:

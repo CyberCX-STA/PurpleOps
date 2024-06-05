@@ -131,6 +131,7 @@ dmypy.json
 # Dev artifacts
 *.xlsx
 files/
+custom/
 
 supervisord.pid
 sampledata/sigma/*

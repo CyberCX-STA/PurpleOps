@@ -105,11 +105,15 @@ $('input[name="prevented"]').on('change', function() {
 	if (["No", "N/A", ""].includes(current)) {
 		$("#preventedrating").val(current.replace("No", "0.0"))
 		$("#preventedrating-container").hide()
+		$("#preventionsources-container").hide()
+		$("#preventiontime-container").hide()
 	} else {
 		if (["0.0", "N/A"].includes($("#preventedrating").val())) {
 			$("#preventedrating").val("")
 		}
-		$("#preventedrating-container").show()
+		$("#preventedrating-container").hide()
+		$("#preventionsources-container").show()
+		$("#preventiontime-container").show()
 	}
 }).trigger('change')
 
@@ -132,7 +136,8 @@ $('input[name="alerted"]').on('change', function() {
 	current = $('input[name="alerted"]:checked').val()
 	if (current == "Yes") {
 		$("#alert-container").show()
-		$("#detection-container").show()
+		$("#detectionsources-container").show()
+		$("#detection-container").hide()
 		$("#logged-container").hide()
 		$('input[name="logged"]').prop('checked', false)
 		$('#log-yes').prop("checked", true)
@@ -141,11 +146,13 @@ $('input[name="alerted"]').on('change', function() {
 		}
 	} else if (current == "No") {
 		$("#alert-container").hide()
+		$("#detectionsources-container").hide()
 		$("#alertseverity").val("")
 		$("#logged-container").show()
 		$("#detection-container").hide()
 	} else {
 		$("#alert-container").hide()
+		$("#detectionsources-container").hide()
 		$("#logged-container").hide()
 		$("#detection-container").hide()
 	}
@@ -194,6 +201,19 @@ $( document ).ready(function() {
 		endTime.setMinutes(endTime.getMinutes() - offset * 2);
 		$("#time-end").val(endTime.toISOString().slice(0,16))
 	}
+
+	if ($("#time-alerttime").val()) {
+		endTime = new Date($("#time-alerttime").val());
+		endTime.setMinutes(endTime.getMinutes() - offset * 2);
+		$("#time-alerttime").val(endTime.toISOString().slice(0,16))
+	}
+
+	if ($("#time-preventtime").val()) {
+		endTime = new Date($("#time-preventtime").val());
+		endTime.setMinutes(endTime.getMinutes() - offset * 2);
+		$("#time-preventtime").val(endTime.toISOString().slice(0,16))
+	}
+
 });
 
 // Alter timestamps, button labels and state when hitting run button

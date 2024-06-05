@@ -200,7 +200,10 @@ function bgFormatter(value) {
 		bg = "warning"
 	} else if (["Alerted", "3.0", "3.5"].includes(value)) {
 		bg = "success"
-	} else if (["Prevented", "4.0", "4.5", "5.0"].includes(value)) {
+	} else if (["Prevented", "4.0", "4.5"].includes(value)) {
+		bg = "info"
+		text = "light"
+	} else if (["Prevented and Alerted", "5.0"].includes(value)) {
 		bg = "info"
 		text = "light"
 	} else if (["Complete"].includes(value)) {

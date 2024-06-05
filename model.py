@@ -84,6 +84,30 @@ class Tag(db.EmbeddedDocument):
             "colour": esc(self.colour, raw) # AU spelling is non-negotiable xx
         }
 
+class Preventionsource(db.EmbeddedDocument):    
+    id = db.ObjectIdField( required=True, default=ObjectId )
+    name = db.StringField()
+    description = db.StringField(default="")
+
+    def to_json(self, raw=False):
+        return {
+            "id": str(self.id),
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
+        }
+
+class Detectionsource(db.EmbeddedDocument):    
+    id = db.ObjectIdField( required=True, default=ObjectId )
+    name = db.StringField()
+    description = db.StringField(default="")
+
+    def to_json(self, raw=False):
+        return {
+            "id": str(self.id),
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
+        }
+
 
 class File(db.EmbeddedDocument):
     name = db.StringField()
@@ -114,7 +138,9 @@ class TestCaseTemplate(db.Document):
     rednotes = db.StringField(default="")
     uuid = db.StringField(default="")
     provider = db.StringField(default="")
-
+    priority = db.StringField(default="")    
+    priorityurgency = db.StringField(default="")
+    expectedalertseverity = db.StringField(default="")  
 
 class TestCase(db.Document):
     assessmentid = db.StringField()
@@ -131,6 +157,8 @@ class TestCase(db.Document):
     tools = db.ListField(db.StringField())
     controls = db.ListField(db.StringField())
     tags = db.ListField(db.StringField())
+    preventionsources = db.ListField(db.StringField())
+    detectionsources = db.ListField(db.StringField())
     state = db.StringField(default="Pending")
     prevented = db.StringField()
     preventedrating = db.StringField()
@@ -140,9 +168,12 @@ class TestCase(db.Document):
     detectionrating = db.StringField()
     priority = db.StringField()
     priorityurgency = db.StringField()
+    expectedalertseverity = db.StringField()
     starttime = db.DateTimeField()
     endtime = db.DateTimeField()
     detecttime = db.DateTimeField()
+    alerttime = db.DateTimeField()
+    preventtime = db.DateTimeField()
     redfiles = db.EmbeddedDocumentListField(File)
     bluefiles = db.EmbeddedDocumentListField(File)
     visible = db.BooleanField(default=False)
@@ -154,11 +185,11 @@ class TestCase(db.Document):
         for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
                       "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
-                      "priority", "priorityurgency", "visible", "outcome"]:
+                      "priority", "priorityurgency", "expectedalertseverity", "visible", "outcome"]:
             jsonDict[field] = esc(self[field], raw)
-        for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
+        for field in ["id", "detecttime", "modifytime", "starttime", "endtime", "alerttime", "preventtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
-        for field in ["tags", "sources", "targets", "tools", "controls"]:
+        for field in ["tags", "sources", "targets", "tools", "controls", "preventionsources", "detectionsources"]:
             jsonDict[field] = self.to_json_multi(field)
         for field in ["redfiles", "bluefiles"]:
             files = []
@@ -187,6 +218,8 @@ class Assessment(db.Document):
     tools = db.EmbeddedDocumentListField(Tool)
     controls = db.EmbeddedDocumentListField(Control)
     tags = db.EmbeddedDocumentListField(Tag)
+    preventionsources = db.EmbeddedDocumentListField(Preventionsource)
+    detectionsources = db.EmbeddedDocumentListField(Detectionsource)
     navigatorexport = db.StringField(default="")
 
     def get_progress(self):
@@ -195,7 +228,7 @@ class Assessment(db.Document):
         if testcases == 0:
             return "0|0|0|0|0"
         outcomes = []
-        for outcome in ["Prevented", "Alerted", "Logged", "Missed"]:
+        for outcome in ["Prevented and Alerted", "Prevented", "Alerted", "Logged", "Missed"]:
             outcomes.append(str(round(
                 TestCase.objects(assessmentid=str(self.id), outcome=outcome).count() / 
                 testcases * 100

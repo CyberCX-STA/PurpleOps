@@ -39,20 +39,61 @@
 						</select>
 					</div>
 				</div>
+				<div id="preventiontime-container" class="input-group input-group-sm mt-3">
+					<span class="input-group-text text-danger" title="Prevention time">
+						<i class="bi-clock-history">&zwnj;</i>
+					</span>
+					<input type="hidden" name="timezone" id="timezone">
+					<input id='time-preventtime' name="preventtime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.preventtime %}{{ testcase.preventtime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" {% if current_user.has_role("Spectator") %} disabled{% endif %}>
+				</div>
+				<div id="preventionsources-container" class="input-group input-group-sm mt-3">
+					<span class="input-group-text text-primary" id="preventionsource-label" data-bs-toggle="modal" data-bs-target="#multiPreventionsourceModal"
+						style="cursor:pointer;" title="Manage Prevention Source" >
+						<i class="bi-send">&zwnj;</i>
+					</span>
+					<select class="selectpicker form-control" multiple data-live-search="true" title="Prevention Source(s)"
+						data-style="" data-style-base="form-control-sm form-control"
+						data-live-search-placeholder="Search..." data-width="auto" id="preventionsources"
+						name="preventionsources" autocomplete="off" data-size="10">
+						{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
+						<option data-divider="true"></option>
+						{% for preventionsource in multi.preventionsources %}
+							<option {% if preventionsource.id|string in testcase.preventionsources %}selected{% endif %} class="dynopt-preventionsources" value="{{ preventionsource.id }}">{{ preventionsource.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
 			</div>
-			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Priority</span>
+			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Expected Result</span>
 			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ededed">
-				<label class="col-6 col-form-label">Focus</label>
+				<div id="urgency-container" class="row m-0 p-0 my-1">
+					<label for="priorityurgency" class="col-6 col-form-label">Priority</label>
+					<div class="col-6">
+						<select class="form-select p-1" id="priorityurgency" name="priorityurgency" value="{{testcase.priorityurgency or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+							<option value="" hidden></option>
+							<option value="N/A" hidden>N/A</option>
+							{% for val in ["Low", "Medium", "High"] %}
+								<option value="{{ val }}" {% if testcase.priorityurgency==val %} selected{% endif%}>{{ val }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="my-1"></div>
+				<label class="col-6 col-form-label">State</label>
 				<div class="col-6">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="priority-prevent-detect" name="priority" value="Prevent and Alert"
+							{% if testcase.priority=="Prevent and Alert" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<label class="form-check-label" for="priority-prevent-detect">Prevented & Alerted</label>
+					</div>					
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-prevent" name="priority" value="Prevent"
 							{% if testcase.priority=="Prevent" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
-						<label class="form-check-label" for="priority-prevent">Prevent</label>
+						<label class="form-check-label" for="priority-prevent">Prevented</label>
 					</div>
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-detect" name="priority" value="Detect"
 							{% if testcase.priority=="Detect" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
-						<label class="form-check-label" for="priority-detect">Detect</label>
+						<label class="form-check-label" for="priority-detect">Alerted</label>
 					</div>
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-na" name="priority" value="N/A"
@@ -62,14 +103,14 @@
 					<input class="form-check-input" type="radio" id="priority-null" name="priority" value=""{% if testcase.priority==none %} checked{% endif%} hidden>
 				</div>
 				<div class="my-1"></div>
-				<div id="urgency-container" class="row m-0 p-0 my-1">
-					<label for="priorityurgency" class="col-6 col-form-label">Urgency</label>
+				<div id="expectedalertseverity-container" class="row m-0 p-0 my-1">
+					<label for="expectedalertseverity" class="col-6 col-form-label">Severity</label>
 					<div class="col-6">
-						<select class="form-select p-1" id="priorityurgency" name="priorityurgency" value="{{testcase.priorityurgency or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<select class="form-select p-1" id="expectedalertseverity" name="expectedalertseverity" value="{{testcase.expectedalertseverity or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
 							<option value="N/A" hidden>N/A</option>
-							{% for val in ["Low", "Medium", "High"] %}
-								<option value="{{ val }}" {% if testcase.priorityurgency==val %} selected{% endif%}>{{ val }}</option>
+							{% for val in ["Informational", "Low", "Medium", "High", "Critical"] %}
+								<option value="{{ val }}" {% if testcase.expectedalertseverity==val %} selected{% endif%}>{{ val }}</option>
 							{% endfor %}
 						</select>
 					</div>
@@ -103,6 +144,13 @@
 							{% endfor %}
 						</select>
 					</div>
+					<div class="input-group input-group-sm mt-3">
+						<span class="input-group-text text-danger" title="Alert time">
+							<i class="bi-clock-history">&zwnj;</i>
+						</span>
+						<input type="hidden" name="timezone" id="timezone">
+						<input id='time-alerttime' name="alerttime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.alerttime %}{{ testcase.alerttime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" {% if current_user.has_role("Spectator") %} disabled{% endif %}>
+					</div>
 				</div>
 				<div id="logged-container" class="row m-0 p-0 my-1">
 					<label class="col-6 col-form-label">Logged</label>
@@ -120,7 +168,7 @@
 						<input class="form-check-input" type="radio" id="logged-null" name="logged" value=""{% if testcase.logged==None %} checked{% endif%} hidden>
 					</div>
 				</div>
-				<div id="detection-container" class="row m-0 p-0 my-1">
+				<div id="detection-container" class="row m-0 p-0 my-1" hidden=true>
 					<label for="colFormLabel" class="col-6 col-form-label">Detection Rating</label>
 					<div class="col-6">
 						<select class="form-select p-1" id="detectionrating" name="detectionrating" value="{{ testcase.detectionrating or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
@@ -131,14 +179,30 @@
 						</select>
 					</div>
 				</div>
+				<div id="detectionsources-container" class="input-group input-group-sm mt-3">
+					<span class="input-group-text text-primary" id="detectionsource-label" data-bs-toggle="modal" data-bs-target="#multiDetectionsourceModal"
+						style="cursor:pointer;" title="Manage Detection Source" >
+						<i class="bi-send">&zwnj;</i>
+					</span>
+					<select class="selectpicker form-control" multiple data-live-search="true" title="Detection Source(s)"
+						data-style="" data-style-base="form-control-sm form-control"
+						data-live-search-placeholder="Search..." data-width="auto" id="detectionsources"
+						name="detectionsources" autocomplete="off" data-size="10">
+						{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
+						<option data-divider="true"></option>
+						{% for detectionsource in multi.detectionsources %}
+							<option {% if detectionsource.id|string in testcase.detectionsources %}selected{% endif %} class="dynopt-detectionsources" value="{{ detectionsource.id }}">{{ detectionsource.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
 				<div class="input-group input-group-sm d-none">
 					<span class="input-group-text text-primary">
 						<i class="bi-clock-fill">&zwnj;</i>
 					</span>
 				</div>
 			</div>
-			<div class="input-group input-group-sm mt-3">
-				<span class="input-group-text text-primary" id="controls-label" data-bs-toggle="modal" data-bs-target="#multiControlModal"
+			<div class="input-group input-group-sm mt-3" hidden=true>
+				<span class="input-group-text text-primary" id="controls-label" data-bs-toggle="modal" data-bs-target="#multiControlModal" 
 					style="cursor:pointer;" title="Manage Controls">
 					<i class="bi-pause-circle">&zwnj;</i>
 				</span>

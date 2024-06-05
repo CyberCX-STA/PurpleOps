@@ -28,7 +28,7 @@ def exportassessment(assessment, filetype):
     
     # Otherwise flatten JSON arrays into comma delimited strings
     for t, testcase in enumerate(jsonDict):
-        for field in ["sources", "targets", "tools", "controls", "tags", "redfiles", "bluefiles"]:
+        for field in ["sources", "targets", "tools", "controls", "tags", "redfiles", "bluefiles", "preventionsources", "detectionsources"]:
             jsonDict[t][field] = ",".join(testcase[field])
 
     # Convert the JSON dict to CSV and deliver
@@ -109,15 +109,15 @@ def exportnavigator(id):
 
         if testcases:
             count = 0
-            outcomes = {"Prevented": 0, "Alerted": 0, "Logged": 0, "Missed": 0}
+            outcomes = {"Prevented and Alerted": 0, "Prevented": 0, "Alerted": 0, "Logged": 0, "Missed": 0}
             for testcase in testcases:
                 if testcase.outcome in outcomes.keys():
                     count += 1
                     outcomes[testcase.outcome] += 1
 
             if count:
-                score = int((outcomes["Prevented"] * 3 + outcomes["Alerted"] * 2 +
-                            outcomes["Logged"]) / (count * 3) * 100)
+                score = int((outcomes["Prevented and Alerted"] * 4 + outcomes["Prevented"] * 3 + outcomes["Alerted"] * 2 +
+                            outcomes["Logged"]) / (count * 4) * 100)
                 ttp["score"] = score
 
             for tactic in technique.tactics:
