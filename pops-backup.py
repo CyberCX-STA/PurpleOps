@@ -97,34 +97,43 @@ def exportnavigator(id):
         },
         "showTacticRowBackground": True,
         "tacticRowBackground": "#593196",
-        "selectTechniquesAcrossTactics": True,
+        "selectTechniquesAcrossTactics": False,
         "selectSubtechniquesWithParent": False
     }
 
-    for technique in Technique.objects().all():
-        testcases = TestCase.objects(assessmentid=id, mitreid=technique.mitreid).all()
-        ttp = {
-            "techniqueID": technique.mitreid
-        }
+    if current_user.has_role("Blue"):
+        testcases = TestCase.objects(assessmentid=id, visible=True).all()
+    else:
+        testcases = TestCase.objects(assessmentid=id).all()
 
-        if testcases:
+    results = {}
+    for testcase in testcases:
+        if not testcase.tactic in results:
+                results[testcase.tactic] = {}
+        
+        if not testcase.mitreid in results[testcase.tactic]:
+                results[testcase.tactic][testcase.mitreid] = {"Prevented and Alerted": 0, "Prevented": 0, "Alerted": 0, "Logged": 0, "Missed": 0}
+
+        if testcase.outcome in results[testcase.tactic][testcase.mitreid].keys():
+            results[testcase.tactic][testcase.mitreid][testcase.outcome] += 1  
+
+    for tactic_key, techniques in results.items():
+        for technique_key,outcomes in techniques.items():
             count = 0
-            outcomes = {"Prevented and Alerted": 0, "Prevented": 0, "Alerted": 0, "Logged": 0, "Missed": 0}
-            for testcase in testcases:
-                if testcase.outcome in outcomes.keys():
-                    count += 1
-                    outcomes[testcase.outcome] += 1
+            for outcome_key, outcome in outcomes.items():
+                count += outcome
 
             if count:
                 score = int((outcomes["Prevented and Alerted"] * 4 + outcomes["Prevented"] * 3 + outcomes["Alerted"] * 2 +
                             outcomes["Logged"]) / (count * 4) * 100)
-                ttp["score"] = score
+            
+            ttp = {
+                "techniqueID": technique_key, 
+                "tactic": tactic_key.lower().strip().replace(" ", "-"),
+                "score": score
+            }
+            navigator["techniques"].append(ttp)
 
-            for tactic in technique.tactics:
-                tactic = tactic.lower().strip().replace(" ", "-")
-                tacticTTP = dict(ttp)
-                tacticTTP["tactic"] = tactic
-                navigator["techniques"].append(tacticTTP)
 
     with open(f"{args.backupdir}/{id}/navigator.json", 'w') as f:
         json.dump(navigator, f, indent=4)  
