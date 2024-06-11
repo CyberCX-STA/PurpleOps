@@ -176,12 +176,12 @@ def exportnavigator(id):
                 score = int((outcomes["Prevented and Alerted"] * 4 + outcomes["Prevented"] * 3 + outcomes["Alerted"] * 2 +
                             outcomes["Logged"]) / (count * 4) * 100)
             
-            ttp = {
-                "techniqueID": technique_key, 
-                "tactic": tactic_key.lower().strip().replace(" ", "-"),
-                "score": score
-            }
-            navigator["techniques"].append(ttp)
+                ttp = {
+                    "techniqueID": technique_key, 
+                    "tactic": tactic_key.lower().strip().replace(" ", "-"),
+                    "score": score
+                }
+                navigator["techniques"].append(ttp)
 
     with open(f'files/{id}/navigator.json', 'w') as f:
         json.dump(navigator, f, indent=4)  
