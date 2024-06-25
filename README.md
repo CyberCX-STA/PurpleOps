@@ -135,7 +135,7 @@ $ sudo docker compose up
 
 ## Contact Us
 
-We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or connect to us on [PurpleOps Discord](https://discord.gg/2xeA6FB3GJ) or pops@purpleops.app | `@_w_m__` 
+We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or connect to us on the [PurpleOps Discord](https://discord.gg/2xeA6FB3GJ) or email us at pops@purpleops.app | `@_w_m__` 
 
 ## Credits
 

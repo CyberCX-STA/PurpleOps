@@ -58,7 +58,10 @@ def deletefile(id, colour, file):
         return 403
     
     testcase = TestCase.objects(id=id).first()
-    os.remove(f"files/{testcase.assessmentid}/{testcase.id}/{secure_filename(file)}")
+    # Sanity check to prevent death if the image has already been removed
+    path = f"files/{testcase.assessmentid}/{testcase.id}/{secure_filename(file)}"
+    if os.path.isfile(path):
+        os.remove(path)
 
     files = []
     for f in testcase["redfiles" if colour == "red" else "bluefiles"]:
