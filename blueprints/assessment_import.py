@@ -176,6 +176,9 @@ def importentire():
                 origFilePath, caption = file.split("|")
                 _, _, oldTestcaseID, name = [secure_filename(i) for i in origFilePath.split("/")]
                 origFilePath = f'files/{assessmentID}/tmp/{oldTestcaseID}/{name}'
+                # If an exported attachment is corrupt, don't import and continue
+                if not os.path.exists(origFilePath):
+                    continue
                 if not os.path.exists(f"files/{assessmentID}/{testcaseID}"):
                     os.makedirs(f"files/{assessmentID}/{testcaseID}")
                 newFilePath = f"files/{assessmentID}/{testcaseID}/{name}"
