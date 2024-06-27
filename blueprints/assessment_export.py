@@ -123,6 +123,11 @@ def exportnavigator(id):
     _ = Assessment.objects(id=id).first()
     navigator = {
         "name": Assessment.objects(id=id).first().name,
+        "versions": {
+            # "attack": "13",       "Required" but no warning - so ignoring
+            # "navigator": "4.9.1", "Required" but no warning - so ignoring
+            "layer": "4.5"
+        },
         "domain": "enterprise-attack",
         "sorting": 3,
         "layout": {

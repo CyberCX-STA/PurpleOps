@@ -222,7 +222,7 @@ $("#run-button").click(function(){
 	clickTime.setMinutes(clickTime.getMinutes() - clickTime.getTimezoneOffset());
 	clickTime = clickTime.toISOString().slice(0, 16)
 
-	if ($("#run-button").text() == "Start" || $("#run-button").text() == "Restart") {
+	if ($("#run-button").text() == "Start") {
 		$("#time-start").val(clickTime)
 		$("#time-end").val("")
 		$("#run-button").text("Stop")
@@ -242,7 +242,17 @@ $("#run-button").click(function(){
 		$("#state").addClass("bg-primary")
 		$("#state").removeClass("text-dark")
 		$("#state").addClass("text-white")
-	}
+	} else if ($("#run-button").text() == "Restart") {
+		$("#time-start").val("")
+		$("#time-end").val("")
+		$("#run-button").text("Start")
+		$("#run-button").removeClass("btn-outline-danger")
+		$("#run-button").removeClass("btn-outline-warning")
+		$("#run-button").addClass("btn-outline-success")
+		$("#state").val("Pending")
+		$("#state").removeClass("bg-primary")
+		$("#state").removeClass("text-white")
+	} 
 });
 
 // Delete evidence AJAX handler

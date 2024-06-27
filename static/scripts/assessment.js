@@ -1,5 +1,8 @@
-// Delay table showing until page is loaded to prevent jumping
+// Onload
 $(function () {
+	// The cookie extension oddly somtimes force shows the ID column, so force it hidden
+	$('#assessmentTable').bootstrapTable('hideColumn', 'id')
+	// Delay table showing until page is loaded to prevent jumping
 	$('#assessmentTable').show()
 })
 
