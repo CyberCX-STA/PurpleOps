@@ -63,7 +63,7 @@ def testcasesave(id):
     directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity"]
     listFields = ["sources", "targets", "tools", "controls", "tags", "preventionsources", "detectionsources"]
     boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]
-    timeFields = ["starttime", "endtime"]
+    timeFields = ["starttime", "endtime", "alerttime", "preventtime"]
     fileFields = ["redfiles", "bluefiles"] if not isBlue else ["bluefiles"]
 
     testcase = applyFormData(testcase, request.form, directFields)

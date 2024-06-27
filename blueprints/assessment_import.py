@@ -145,7 +145,7 @@ def importentire():
                       "priority", "priorityurgency", "visible", "outcome"]:
             newTestcase[field] = oldTestcase[field]
 
-        for field in ["starttime", "endtime", "detecttime", "modifytime"]:
+        for field in ["starttime", "endtime", "detecttime", "modifytime", "alerttime", "preventtime"]:
             if oldTestcase[field] != "None":
                 newTestcase[field] = datetime.datetime.strptime(oldTestcase[field].split(".")[0], "%Y-%m-%d %H:%M:%S")
 

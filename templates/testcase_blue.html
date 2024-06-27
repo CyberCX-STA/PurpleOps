@@ -39,6 +39,13 @@
 						</select>
 					</div>
 				</div>
+				<div id="preventiontime-container" class="input-group input-group-sm mt-3">
+					<span class="input-group-text text-danger" title="Prevention time">
+						<i class="bi-clock-history">&zwnj;</i>
+					</span>
+					<input type="hidden" name="timezone" id="timezone">
+					<input id='time-preventtime' name="preventtime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.preventtime %}{{ testcase.preventtime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" {% if current_user.has_role("Spectator") %} disabled{% endif %}>
+				</div>
 				<div id="preventionsources-container" class="input-group input-group-sm mt-3">
 					<span class="input-group-text text-primary" id="preventionsource-label" data-bs-toggle="modal" data-bs-target="#multiPreventionsourceModal"
 						style="cursor:pointer;" title="Manage Prevention Source" >
@@ -146,6 +153,13 @@
 							{% endfor %}
 						</select>
 					</div>
+				</div>
+				<div id="alerttime-container" class="input-group input-group-sm mt-3">
+					<span class="input-group-text text-danger" title="Alert time">
+						<i class="bi-clock-history">&zwnj;</i>
+					</span>
+					<input type="hidden" name="timezone" id="timezone">
+					<input id='time-alerttime' name="alerttime" type="datetime-local" class='form-control' autocomplete="off" value="{% if testcase.alerttime %}{{ testcase.alerttime.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" {% if current_user.has_role("Spectator") %} disabled{% endif %}>
 				</div>
 				<div id="detectionsources-container" class="input-group input-group-sm mt-3">
 					<span class="input-group-text text-primary" id="detectionsource-label" data-bs-toggle="modal" data-bs-target="#multiDetectionsourceModal"

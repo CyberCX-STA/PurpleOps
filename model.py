@@ -170,6 +170,8 @@ class TestCase(db.Document):
     starttime = db.DateTimeField()
     endtime = db.DateTimeField()
     detecttime = db.DateTimeField()
+    alerttime = db.DateTimeField()
+    preventtime = db.DateTimeField()
     redfiles = db.EmbeddedDocumentListField(File)
     bluefiles = db.EmbeddedDocumentListField(File)
     visible = db.BooleanField(default=False)
@@ -183,7 +185,7 @@ class TestCase(db.Document):
                       "alerted", "alertseverity", "logged", "detectionrating",
                       "priority", "priorityurgency", "visible", "outcome"]:
             jsonDict[field] = esc(self[field], raw)
-        for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
+        for field in ["id", "detecttime", "modifytime", "starttime", "endtime", "alerttime", "preventtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
         for field in ["tags", "sources", "targets", "tools", "controls", "preventionsources", "detectionsources"]:
             jsonDict[field] = self.to_json_multi(field)
