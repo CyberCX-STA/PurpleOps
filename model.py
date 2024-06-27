@@ -139,6 +139,9 @@ class TestCaseTemplate(db.Document):
     rednotes = db.StringField(default="")
     uuid = db.StringField(default="")
     provider = db.StringField(default="")
+    priority = db.StringField(default="")    
+    priorityurgency = db.StringField(default="")
+    expectedalertseverity = db.StringField(default="")  
 
 
 class TestCase(db.Document):
@@ -167,6 +170,7 @@ class TestCase(db.Document):
     detectionrating = db.StringField()
     priority = db.StringField()
     priorityurgency = db.StringField()
+    expectedalertseverity = db.StringField()
     starttime = db.DateTimeField()
     endtime = db.DateTimeField()
     detecttime = db.DateTimeField()
@@ -183,7 +187,7 @@ class TestCase(db.Document):
         for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
                       "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
-                      "priority", "priorityurgency", "visible", "outcome"]:
+                      "priority", "priorityurgency", "expectedalertseverity", "visible", "outcome"]:
             jsonDict[field] = esc(self[field], raw)
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime", "alerttime", "preventtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]

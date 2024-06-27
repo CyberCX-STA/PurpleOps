@@ -152,7 +152,10 @@ def parseCustomTestcases ():
             tactic = yml["tactic"],
             objective = yml["objective"],
             actions = yml["actions"],
-            provider = yml["provider"]
+            provider = yml["provider"],
+            priority = yml["priority"],
+            priorityurgency = yml["priorityurgency"],
+            expectedalertseverity = yml["expectedalertseverity"]
         ).save()
 
 def parseCustomKBs ():

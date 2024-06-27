@@ -65,8 +65,26 @@
 			</div>
 			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Priority</span>
 			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ededed">
+				<div id="urgency-container" class="row m-0 p-0 my-1">
+					<label for="priorityurgency" class="col-6 col-form-label">Urgency</label>
+					<div class="col-6">
+						<select class="form-select p-1" id="priorityurgency" name="priorityurgency" value="{{testcase.priorityurgency or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+							<option value="" hidden></option>
+							<option value="N/A" hidden>N/A</option>
+							{% for val in ["Low", "Medium", "High"] %}
+								<option value="{{ val }}" {% if testcase.priorityurgency==val %} selected{% endif%}>{{ val }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="my-1"></div>
 				<label class="col-6 col-form-label">Focus</label>
 				<div class="col-6">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="priority-prevent-alert" name="priority" value="Prevent and Alert"
+							{% if testcase.priority=="Prevent and Alert" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<label class="form-check-label" for="priority-prevent-alert">Prevented & Alerted</label>
+					</div>	
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-prevent" name="priority" value="Prevent"
 							{% if testcase.priority=="Prevent" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
@@ -85,14 +103,14 @@
 					<input class="form-check-input" type="radio" id="priority-null" name="priority" value=""{% if testcase.priority==none %} checked{% endif%} hidden>
 				</div>
 				<div class="my-1"></div>
-				<div id="urgency-container" class="row m-0 p-0 my-1">
-					<label for="priorityurgency" class="col-6 col-form-label">Urgency</label>
+				<div id="expectedalertseverity-container" class="row m-0 p-0 my-1">
+					<label for="expectedalertseverity" class="col-6 col-form-label">Expected Severity</label>
 					<div class="col-6">
-						<select class="form-select p-1" id="priorityurgency" name="priorityurgency" value="{{testcase.priorityurgency or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<select class="form-select p-1" id="expectedalertseverity" name="expectedalertseverity" value="{{testcase.expectedalertseverity or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
 							<option value="N/A" hidden>N/A</option>
-							{% for val in ["Low", "Medium", "High"] %}
-								<option value="{{ val }}" {% if testcase.priorityurgency==val %} selected{% endif%}>{{ val }}</option>
+							{% for val in ["Informational", "Low", "Medium", "High", "Critical"] %}
+								<option value="{{ val }}" {% if testcase.expectedalertseverity==val %} selected{% endif%}>{{ val }}</option>
 							{% endfor %}
 						</select>
 					</div>
