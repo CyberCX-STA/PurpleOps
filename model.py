@@ -226,7 +226,7 @@ class Assessment(db.Document):
         if testcases == 0:
             return "0|0|0|0|0"
         outcomes = []
-        for outcome in ["Prevented", "Alerted", "Logged", "Missed"]:
+        for outcome in ["Prevented and Alerted", "Prevented", "Alerted", "Logged", "Missed"]:
             outcomes.append(str(round(
                 TestCase.objects(assessmentid=str(self.id), outcome=outcome).count() / 
                 testcases * 100

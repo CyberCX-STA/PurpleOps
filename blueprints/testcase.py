@@ -102,7 +102,10 @@ def testcasesave(id):
         testcase.detecttime = datetime.utcnow()
 
     if testcase.prevented in ["Yes", "Partial"]:
-        testcase.outcome = "Prevented"
+        if testcase.alerted: 
+            testcase.outcome = "Prevented and Alerted"
+        else:
+            testcase.outcome = "Prevented"
     elif testcase.alerted:
         testcase.outcome = "Alerted"
     elif testcase.logged:

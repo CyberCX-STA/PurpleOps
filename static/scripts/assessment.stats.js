@@ -83,7 +83,7 @@ var barChartOptionsCustom = {
 	},
 	xaxis: {
 		type: 'category',
-		categories: ["Prevented","Alerted","Logged","Missed"],
+		categories: ["Prevented and Alerted", "Prevented","Alerted","Logged","Missed"],
 		labels: {
                 	show: false,
                 	rotate: -45,
@@ -165,7 +165,7 @@ function boxPlotVals(data) {
 // Outcomes pie chart
 var resultsPie = JSON.parse(JSON.stringify(pieChartOptions));
 resultsPie.title.text = "Outcomes"
-keys = ["Prevented", "Alerted", "Logged", "Missed"]
+keys = ["Prevented and Alerted", "Prevented", "Alerted", "Logged", "Missed"]
 resultsPie.series = keys.map((t) => {
 	return tacticStats["All"][t]
 })
@@ -177,7 +177,7 @@ chart.render();
 // Outcome bar chart (Excluding "All")
 var results = JSON.parse(JSON.stringify(barChartOptions));
 results.title.text = "Outcome per Tactic"
-results.series = ["Prevented", "Alerted", "Logged", "Missed"].map((t) => {
+results.series = ["Prevented and Alerted", "Prevented", "Alerted", "Logged", "Missed"].map((t) => {
 	return {
 		name: t,
 		data: Object.keys(tacticStats).filter((i) => i !== "All").map((i) => {
@@ -272,7 +272,7 @@ function renderTacticChart(name, filteredTacticStats, chartContainerId) {
     results.title.text = name + " Results";
     if (isObjectNotEmpty(filteredTacticStats)) {
             // Loop over each element and set each value from filteredTacticStats
-            results.series = ["Prevented", "Alerted", "Logged", "Missed"].map((t) => {
+            results.series = ["Prevented and Alerted", "Prevented", "Alerted", "Logged", "Missed"].map((t) => {
                 return {
                     name: t,
                     data: [filteredTacticStats[t]] // Put the count of each outcome into an array
