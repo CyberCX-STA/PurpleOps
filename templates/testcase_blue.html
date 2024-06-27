@@ -63,10 +63,10 @@
 					</select>
 				</div>
 			</div>
-			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Priority</span>
+			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Expected Result</span>
 			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ededed">
 				<div id="urgency-container" class="row m-0 p-0 my-1">
-					<label for="priorityurgency" class="col-6 col-form-label">Urgency</label>
+					<label for="priorityurgency" class="col-6 col-form-label">Priority</label>
 					<div class="col-6">
 						<select class="form-select p-1" id="priorityurgency" name="priorityurgency" value="{{testcase.priorityurgency or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
@@ -78,7 +78,7 @@
 					</div>
 				</div>
 				<div class="my-1"></div>
-				<label class="col-6 col-form-label">Focus</label>
+				<label class="col-6 col-form-label">State</label>
 				<div class="col-6">
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-prevent-alert" name="priority" value="Prevent and Alert"
@@ -104,7 +104,7 @@
 				</div>
 				<div class="my-1"></div>
 				<div id="expectedalertseverity-container" class="row m-0 p-0 my-1">
-					<label for="expectedalertseverity" class="col-6 col-form-label">Expected Severity</label>
+					<label for="expectedalertseverity" class="col-6 col-form-label">Severity</label>
 					<div class="col-6">
 						<select class="form-select p-1" id="expectedalertseverity" name="expectedalertseverity" value="{{testcase.expectedalertseverity or ''}}"{% if current_user.has_role("Blue") %} disabled{% endif %}>
 							<option value="" hidden></option>
