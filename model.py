@@ -85,6 +85,31 @@ class Tag(db.EmbeddedDocument):
         }
 
 
+class Preventionsource(db.EmbeddedDocument):    
+    id = db.ObjectIdField( required=True, default=ObjectId )
+    name = db.StringField()
+    description = db.StringField(default="")
+
+    def to_json(self, raw=False):
+        return {
+            "id": str(self.id),
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
+        }
+
+class Detectionsource(db.EmbeddedDocument):    
+    id = db.ObjectIdField( required=True, default=ObjectId )
+    name = db.StringField()
+    description = db.StringField(default="")
+
+    def to_json(self, raw=False):
+        return {
+            "id": str(self.id),
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
+        }
+
+
 class File(db.EmbeddedDocument):
     name = db.StringField()
     path = db.StringField()
@@ -131,6 +156,8 @@ class TestCase(db.Document):
     tools = db.ListField(db.StringField())
     controls = db.ListField(db.StringField())
     tags = db.ListField(db.StringField())
+    preventionsources = db.ListField(db.StringField())
+    detectionsources = db.ListField(db.StringField())
     state = db.StringField(default="Pending")
     prevented = db.StringField()
     preventedrating = db.StringField()
@@ -158,7 +185,7 @@ class TestCase(db.Document):
             jsonDict[field] = esc(self[field], raw)
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
-        for field in ["tags", "sources", "targets", "tools", "controls"]:
+        for field in ["tags", "sources", "targets", "tools", "controls", "preventionsources", "detectionsources"]:
             jsonDict[field] = self.to_json_multi(field)
         for field in ["redfiles", "bluefiles"]:
             files = []
@@ -187,6 +214,8 @@ class Assessment(db.Document):
     tools = db.EmbeddedDocumentListField(Tool)
     controls = db.EmbeddedDocumentListField(Control)
     tags = db.EmbeddedDocumentListField(Tag)
+    preventionsources = db.EmbeddedDocumentListField(Preventionsource)
+    detectionsources = db.EmbeddedDocumentListField(Detectionsource)
     navigatorexport = db.StringField(default="")
 
     def get_progress(self):

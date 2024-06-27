@@ -28,7 +28,7 @@ def exportassessment(assessment, filetype):
     
     # Otherwise flatten JSON arrays into comma delimited strings
     for t, testcase in enumerate(jsonDict):
-        for field in ["sources", "targets", "tools", "controls", "tags", "redfiles", "bluefiles"]:
+        for field in ["sources", "targets", "tools", "controls", "tags", "redfiles", "bluefiles", "preventionsources", "detectionsources"]:
             jsonDict[t][field] = ",".join(testcase[field])
 
     # Convert the JSON dict to CSV and deliver

@@ -128,7 +128,9 @@ def importentire():
         "targets": {},
         "tools": {},
         "controls": {},
-        "tags": {}
+        "tags": {},
+        "preventionsources": {},
+        "detectionsources": {}
     }
 
     for oldTestcase in export:
@@ -147,7 +149,7 @@ def importentire():
             if oldTestcase[field] != "None":
                 newTestcase[field] = datetime.datetime.strptime(oldTestcase[field].split(".")[0], "%Y-%m-%d %H:%M:%S")
 
-        for field in ["sources", "targets", "tools", "controls", "tags"]:
+        for field in ["sources", "targets", "tools", "controls", "tags", "preventionsources", "detectionsources"]:
             newTestcase[field] = []
             
             for multi in oldTestcase[field]:
@@ -165,6 +167,10 @@ def importentire():
                         newMulti = Control(name=name, description=details)
                     elif field == "tags":
                         newMulti = Tag(name=name, colour=details)
+                    elif field == "preventionsources":
+                        newMulti = Preventionsource(name=name, description=details)
+                    elif field == "detectionsources":
+                        newMulti = Detectionsource(name=name, description=details)
                     assessment[field].append(newMulti)
                     assessment[field].save()
                     assessmentMultis[field][f"{newMulti.name}|{newMulti.description if field != 'tags' else newMulti.colour}"] = str(assessment[field][-1].id)

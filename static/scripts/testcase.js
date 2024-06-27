@@ -105,11 +105,13 @@ $('input[name="prevented"]').on('change', function() {
 	if (["No", "N/A", ""].includes(current)) {
 		$("#preventedrating").val(current.replace("No", "0.0"))
 		$("#preventedrating-container").hide()
+		$("#preventionsources-container").hide()
 	} else {
 		if (["0.0", "N/A"].includes($("#preventedrating").val())) {
 			$("#preventedrating").val("")
 		}
 		$("#preventedrating-container").show()
+		$("#preventionsources-container").show()
 	}
 }).trigger('change')
 
@@ -133,6 +135,7 @@ $('input[name="alerted"]').on('change', function() {
 	if (current == "Yes") {
 		$("#alert-container").show()
 		$("#detection-container").show()
+		$("#detectionsources-container").show()
 		$("#logged-container").hide()
 		$('input[name="logged"]').prop('checked', false)
 		$('#log-yes').prop("checked", true)
@@ -141,11 +144,13 @@ $('input[name="alerted"]').on('change', function() {
 		}
 	} else if (current == "No") {
 		$("#alert-container").hide()
+		$("#detectionsources-container").hide()
 		$("#alertseverity").val("")
 		$("#logged-container").show()
 		$("#detection-container").hide()
 	} else {
 		$("#alert-container").hide()
+		$("#detectionsources-container").hide()
 		$("#logged-container").hide()
 		$("#detection-container").hide()
 	}

@@ -39,6 +39,22 @@
 						</select>
 					</div>
 				</div>
+				<div id="preventionsources-container" class="input-group input-group-sm mt-3">
+					<span class="input-group-text text-primary" id="preventionsource-label" data-bs-toggle="modal" data-bs-target="#multiPreventionsourceModal"
+						style="cursor:pointer;" title="Manage Prevention Source" >
+						<i class="bi-send">&zwnj;</i>
+					</span>
+					<select class="selectpicker form-control" multiple data-live-search="true" title="Prevention Source(s)"
+						data-style="" data-style-base="form-control-sm form-control"
+						data-live-search-placeholder="Search..." data-width="auto" id="preventionsources"
+						name="preventionsources" autocomplete="off" data-size="10">
+						{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
+						<option data-divider="true"></option>
+						{% for preventionsource in multi.preventionsources %}
+							<option {% if preventionsource.id|string in testcase.preventionsources %}selected{% endif %} class="dynopt-preventionsources" value="{{ preventionsource.id }}">{{ preventionsource.name }}</option>
+						{% endfor %}
+					</select>
+				</div>
 			</div>
 			<span class="input-group-text text-primary mt-3 rounded-0 rounded-top border-bottom-0">Priority</span>
 			<div class="form-group row m-0 py-2 rounded-bottom" style="border: 1px solid #ededed">
@@ -130,6 +146,22 @@
 							{% endfor %}
 						</select>
 					</div>
+				</div>
+				<div id="detectionsources-container" class="input-group input-group-sm mt-3">
+					<span class="input-group-text text-primary" id="detectionsource-label" data-bs-toggle="modal" data-bs-target="#multiDetectionsourceModal"
+						style="cursor:pointer;" title="Manage Detection Source" >
+						<i class="bi-send">&zwnj;</i>
+					</span>
+					<select class="selectpicker form-control" multiple data-live-search="true" title="Detection Source(s)"
+						data-style="" data-style-base="form-control-sm form-control"
+						data-live-search-placeholder="Search..." data-width="auto" id="detectionsources"
+						name="detectionsources" autocomplete="off" data-size="10">
+						{% if not current_user.has_role("Spectator") %}<option data-icon="bi-gear">Manage</option>{% endif %}
+						<option data-divider="true"></option>
+						{% for detectionsource in multi.detectionsources %}
+							<option {% if detectionsource.id|string in testcase.detectionsources %}selected{% endif %} class="dynopt-detectionsources" value="{{ detectionsource.id }}">{{ detectionsource.name }}</option>
+						{% endfor %}
+					</select>
 				</div>
 				<div class="input-group input-group-sm d-none">
 					<span class="input-group-text text-primary">

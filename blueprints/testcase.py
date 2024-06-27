@@ -43,7 +43,9 @@ def runtestcasepost(id):
             "targets": assessment.targets,
             "tools": assessment.tools,
             "controls": assessment.controls,
-            "tags": assessment.tags
+            "tags": assessment.tags,
+            "preventionsources": assessment.preventionsources,
+            "detectionsources": assessment.detectionsources
         }
     )
 
@@ -59,7 +61,7 @@ def testcasesave(id):
         return ("", 403)
 
     directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity"]
-    listFields = ["sources", "targets", "tools", "controls", "tags"]
+    listFields = ["sources", "targets", "tools", "controls", "tags", "preventionsources", "detectionsources"]
     boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]
     timeFields = ["starttime", "endtime"]
     fileFields = ["redfiles", "bluefiles"] if not isBlue else ["bluefiles"]
