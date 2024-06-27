@@ -110,7 +110,7 @@ def exportreport(id):
     doc.render({
         "assessment": assessment,
         "testcases": testcases
-    })
+    }, autoescape=True)
     doc.save(f'files/{id}/report.docx')
 
     return send_from_directory('files', f"{id}/report.docx", as_attachment=True)
