@@ -111,18 +111,18 @@ def testcasesave(id):
         testcase.outcome = ""
 
     # This is some sanity check code where we check if some of the UI elements are out of sync with the backend. This is trggered by the horrible tabs bug
+    # Does not fix user not saving test case before navigating away
     # Todo: Turns this BS code into a single mongoengine query against the subdocument list
     assessment = Assessment.objects(id=testcase.assessmentid).first()
-    tag_ids = []
-    valid_tags = []
-    for t in assessment.tags:
-        tag_ids.append(str(t.id))
-        
-    for tag in testcase.tags:
-        if tag in tag_ids:
-            valid_tags.append(tag)
-
-    testcase.tags = valid_tags
+    for field in listFields:
+        ids = []
+        valid_ids = []
+        for t in assessment[field]:
+            ids.append(str(t.id))
+        for field_id in testcase[field]:
+            if field_id in ids:
+                valid_ids.append(field_id)
+        testcase[field] = valid_ids
     testcase.save()
 
     return "", 200
