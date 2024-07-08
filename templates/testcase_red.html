@@ -2,8 +2,8 @@
 	<div class="row my-2 align-items-center">
 		<div class="col-2">
 			<button id="run-button" name="run-button" type="button"
-				class="btn {% if testcase.state=="Pending" %}btn-outline-success{% endif%}{% if testcase.state=="Running" %}btn-outline-danger{% endif%}{% if testcase.state=="Complete" %}btn-outline-warning{% endif%} btn-sm w-100" aria-pressed="false"
-				value="{{ testcase.state }}" {% if current_user.has_role("Blue") %} disabled{% endif %}>{% if testcase.state=="Pending" %}Start{% endif%}{% if testcase.state=="Running" %}Stop{% endif%}{% if testcase.state=="Complete" %}Restart{% endif%}</button>
+				class="btn {% if testcase.state=="Pending" or testcase.state=="Ready" %}btn-outline-success{% endif%}{% if testcase.state=="Running" %}btn-outline-danger{% endif%}{% if testcase.state=="Complete" or testcase.state=="Waiting Blue" or testcase.state=="Waiting Red" %}btn-outline-warning{% endif%} btn-sm w-100" aria-pressed="false"
+				value="{{ testcase.state }}" {% if current_user.has_role("Blue") %} disabled{% endif %}>{% if testcase.state=="Pending" or testcase.state=="Ready" %}Start{% endif%}{% if testcase.state=="Running" %}Stop{% endif%}{% if testcase.state=="Complete" or testcase.state=="Waiting Blue" or testcase.state=="Waiting Red"%}Restart{% endif%}</button>
 		</div>
 		<div class="col-4">
 			<div class="input-group input-group-sm">

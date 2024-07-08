@@ -31,6 +31,7 @@ function formatRow(response) {
 		modified: response.modifytime,
 		preventscore: response.preventedrating !== null ? response.preventedrating : "",
 		detectscore: response.detectionrating !== null ? response.detectionrating : "",
+		testcasescore: response.testcasescore,
 		outcome: response.outcome,
 		actions: "",
 	}
@@ -197,21 +198,19 @@ function timeFormatter(utc) {
 function bgFormatter(value) {
 	bg = ""
 	text = ""
-	if (["Missed", "1.0", "1.5"].includes(value)) {
+	if (["Waiting Red","0"].includes(value)) {
 		bg = "danger"
-	} else if (["Running", "Logged", "2.0", "2.5"].includes(value)) {
+	} else if (["Running", "25","50","75"].includes(value)) {
 		bg = "warning"
-	} else if (["Alerted", "3.0", "3.5"].includes(value)) {
+	} else if (["100"].includes(value)) {
 		bg = "success"
-	} else if (["Prevented", "4.0", "4.5"].includes(value)) {
-		bg = "info"
-		text = "light"
-	} else if (["Prevented and Alerted", "5.0"].includes(value)) {
-		bg = "info"
-		text = "light"
-	} else if (["Complete"].includes(value)) {
+	} else if (["Waiting Blue"].includes(value)){
+		bg = "info"	
+	} else if (["Complete", "Aborted"].includes(value)) {
 		bg = "primary"
 		text = "light"
+	} else if (["Ready"].includes(value)){
+		bg = "secondary"	
 	} else if (["Pending"].includes(value)) {
 		bg = "light"
 	} else if (["False", false, "0.0", "0.5"].includes(value)) {

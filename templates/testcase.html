@@ -38,10 +38,18 @@
                     </select>
                 </div>
             </div>
-            <div class="col-{% if current_user.has_role('Spectator') %}3{% else %}2{% endif %}">
-                <div class="input-group">
+            <div class="col-2">
+                <div class="input-group mb-3">
                     <span class="input-group-text">Status</span>
-                    <input id="state" name="state" type="text" class="form-control {% if testcase.state=="Running" %}bg-warning{% endif%}{% if testcase.state=="Complete" %}bg-primary text-white{% endif%}" value="{{ testcase.state }}" {% if current_user.has_role("Blue") %} disabled{% endif %}>
+                    <select id="state" name="state" class="form-select {% if testcase.state=="Ready" %} bg-secondary{% endif %}{% if testcase.state=="Running" %} bg-warning{% endif %}{% if testcase.state=="Waiting Blue" %} bg-info{% endif %}{% if testcase.state=="Waiting Red" %} bg-danger{% endif %} {% if testcase.state=="Complete" or testcase.state=="Aborted"%} bg-primary{% endif %}"{% if current_user.has_role("Spectator") %} disabled{% endif %}>
+                        <option value="Pending" {% if testcase.state=="Pending" %} selected {% endif %} {% if current_user.has_role("Blue") %} disabled{% endif %}>Pending</option>
+                        <option value="Ready" {% if testcase.state=="Ready" %} selected {% endif %} {% if current_user.has_role("Blue") %} disabled{% endif %}>Ready</option>
+                        <option value="Running" {% if testcase.state=="Running" %} selected{% endif %}  {% if current_user.has_role("Blue") %} disabled{% endif %}>Running</option>
+                        <option value="Waiting Blue" {% if testcase.state=="Waiting Blue" %} selected{% endif %}>Waiting Blue</option>
+                        <option value="Waiting Red" {% if testcase.state=="Waiting Red" %} selected {% endif %}  >Waiting Red</option>
+                        <option value="Complete" {% if testcase.state=="Complete" %} selected {% endif %}  {% if current_user.has_role("Blue") %} disabled{% endif %}>Complete</option>
+                        <option value="Aborted" {% if testcase.state=="Aborted" %} selected{% endif %}  {% if current_user.has_role("Blue") %} disabled{% endif %}>Aborted</option>
+                    </select>
                 </div>
             </div>
             {% if not current_user.has_role("Spectator") %}

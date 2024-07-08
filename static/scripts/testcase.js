@@ -237,9 +237,9 @@ $("#run-button").click(function(){
 		$("#run-button").text("Restart")
 		$("#run-button").removeClass("btn-outline-danger")
 		$("#run-button").addClass("btn-outline-warning")
-		$("#state").val("Complete")
+		$("#state").val("Waiting Blue")
 		$("#state").removeClass("bg-warning")
-		$("#state").addClass("bg-primary")
+		$("#state").addClass("bg-info")
 		$("#state").removeClass("text-dark")
 		$("#state").addClass("text-white")
 	} else if ($("#run-button").text() == "Restart") {

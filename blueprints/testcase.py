@@ -60,7 +60,13 @@ def testcasesave(id):
     if not testcase.visible and isBlue:
         return ("", 403)
 
-    directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency", "expectedalertseverity"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity"]
+    if not isBlue:
+        directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency", "expectedalertseverity"]
+    elif testcase.state=="Waiting Blue" or testcase.state=="Waiting Red": 
+        directFields = ["bluenotes", "prevented", "alerted", "alertseverity","state"] 
+    else: 
+        directFields = ["bluenotes", "prevented", "alerted", "alertseverity"]
+
     listFields = ["sources", "targets", "tools", "controls", "tags", "preventionsources", "detectionsources"]
     boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]
     timeFields = ["starttime", "endtime", "alerttime", "preventtime"]
