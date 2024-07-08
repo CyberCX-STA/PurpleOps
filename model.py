@@ -166,7 +166,7 @@ class TestCase(db.Document):
     alertseverity = db.StringField()
     logged = db.BooleanField()
     detectionrating = db.StringField()
-    priority = db.StringField()
+    priority = db.StringField(default="Prevent and Alert")
     priorityurgency = db.StringField()
     expectedalertseverity = db.StringField()
     starttime = db.DateTimeField()
@@ -179,13 +179,14 @@ class TestCase(db.Document):
     visible = db.BooleanField(default=False)
     modifytime = db.DateTimeField(default=datetime.datetime.utcnow)
     outcome = db.StringField(default="")
+    testcasescore = db.IntField()
 
     def to_json(self, raw=False):
         jsonDict = {}
         for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
                       "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
-                      "priority", "priorityurgency", "expectedalertseverity", "visible", "outcome"]:
+                      "priority", "priorityurgency", "expectedalertseverity", "visible", "outcome", "testcasescore"]:
             jsonDict[field] = esc(self[field], raw)
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime", "alerttime", "preventtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
@@ -227,13 +228,14 @@ class Assessment(db.Document):
         testcases = TestCase.objects(assessmentid=str(self.id)).count()
         if testcases == 0:
             return "0|0|0|0|0"
-        outcomes = []
-        for outcome in ["Prevented and Alerted", "Prevented", "Alerted", "Logged", "Missed"]:
-            outcomes.append(str(round(
-                TestCase.objects(assessmentid=str(self.id), outcome=outcome).count() / 
+        
+        scores = []
+        for score in ["100", "75","50","25","0"]:
+            scores.append(str(round(
+                TestCase.objects(assessmentid=str(self.id), state=str("Complete"), testcasescore=score).count() /
                 testcases * 100
-            , 2)))
-        return "|".join(outcomes)
+                )))      
+        return "|".join(scores)
 
     def to_json(self, raw=False):
         return {

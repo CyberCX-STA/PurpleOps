@@ -81,9 +81,9 @@
 				<label class="col-6 col-form-label">State</label>
 				<div class="col-6">
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="priority-prevent-detect" name="priority" value="Prevent and Alert"
+						<input class="form-check-input" type="radio" id="priority-prevent-alert" name="priority" value="Prevent and Alert"
 							{% if testcase.priority=="Prevent and Alert" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
-						<label class="form-check-label" for="priority-prevent-detect">Prevented & Alerted</label>
+						<label class="form-check-label" for="priority-prevent-alert">Prevented & Alerted</label>
 					</div>					
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-prevent" name="priority" value="Prevent"
@@ -91,9 +91,9 @@
 						<label class="form-check-label" for="priority-prevent">Prevented</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="priority-detect" name="priority" value="Detect"
-							{% if testcase.priority=="Detect" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
-						<label class="form-check-label" for="priority-detect">Alerted</label>
+						<input class="form-check-input" type="radio" id="priority-alert" name="priority" value="Alert"
+							{% if testcase.priority=="Alert" %} checked{% endif%}{% if current_user.has_role("Blue") %} disabled{% endif %}>
+						<label class="form-check-label" for="priority-alert">Alerted</label>
 					</div>
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="radio" id="priority-na" name="priority" value="N/A"

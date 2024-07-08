@@ -166,20 +166,18 @@ def exportnavigator(id):
                 results[testcase.tactic] = {}
         
         if not testcase.mitreid in results[testcase.tactic]:
-                results[testcase.tactic][testcase.mitreid] = {"Prevented and Alerted": 0, "Prevented": 0, "Alerted": 0, "Logged": 0, "Missed": 0}
+                results[testcase.tactic][testcase.mitreid] = {"cumulatedtechniquescore": 0, "count": 0}
 
-        if testcase.outcome in results[testcase.tactic][testcase.mitreid].keys():
-            results[testcase.tactic][testcase.mitreid][testcase.outcome] += 1  
+        if testcase.testcasescore is not None:
+            results[testcase.tactic][testcase.mitreid]['count'] += 1
+            results[testcase.tactic][testcase.mitreid]['cumulatedtechniquescore'] += testcase.testcasescore 
+            
 
     for tactic_key, techniques in results.items():
-        for technique_key,outcomes in techniques.items():
-            count = 0
-            for outcome_key, outcome in outcomes.items():
-                count += outcome
+        for technique_key, scores in techniques.items():
+            if scores['count']:
 
-            if count:
-                score = int((outcomes["Prevented and Alerted"] * 4 + outcomes["Prevented"] * 3 + outcomes["Alerted"] * 2 +
-                            outcomes["Logged"]) / (count * 4) * 100)
+                score = int(scores['cumulatedtechniquescore'] / scores['count'])
             
                 ttp = {
                     "techniqueID": technique_key, 

@@ -115,6 +115,49 @@ def testcasesave(id):
     else:
         testcase.outcome = ""
 
+    # Calculate Testcase Score based on expected result
+    if testcase.priority == "Prevent and Alert":
+        match testcase.outcome:
+            case "Prevented and Alerted":
+                testcase.testcasescore = 100
+            case "Prevented":
+                testcase.testcasescore = 75
+            case "Alerted":
+                testcase.testcasescore = 50
+            case "Logged":
+                testcase.testcasescore = 25
+            case "Missed":
+                testcase.testcasescore = 0
+
+    elif testcase.priority == "Prevent":
+        match testcase.outcome:
+            case "Prevented and Alerted":
+                testcase.testcasescore = 100
+            case "Prevented":
+                testcase.testcasescore = 100
+            case "Alerted":
+                testcase.testcasescore = 75
+            case "Logged":
+                testcase.testcasescore = 25
+            case "Missed":
+                testcase.testcasescore = 0
+
+    elif testcase.priority == "Alert":
+        match testcase.outcome:
+            case "Prevented and Alerted":
+                testcase.testcasescore = 100
+            case "Prevented":
+                testcase.testcasescore = 75
+            case "Alerted":
+                testcase.testcasescore = 100
+            case "Logged":
+                testcase.testcasescore = 25
+            case "Missed":
+                testcase.testcasescore = 0
+    else:
+     testcase.testcasescore = None
+ 
+
     # This is some sanity check code where we check if some of the UI elements are out of sync with the backend. This is trggered by the horrible tabs bug
     # Does not fix user not saving test case before navigating away
     # Todo: Turns this BS code into a single mongoengine query against the subdocument list

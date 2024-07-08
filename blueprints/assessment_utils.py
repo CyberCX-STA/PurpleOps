@@ -158,8 +158,8 @@ def assessmentstats(id):
 @auth_required()
 @user_assigned_assessment
 def assessmenthexagons(id):
-    # Use SVG to create the hexagon graph because making a hex grid in HTML is a no
-    tactics = ["Execution", "Command and Control", "Discovery", "Persistence", "Privilege Escalation", "Credential Access", "Lateral Movement", "Exfiltration", "Impact"]
+    # Use SVG to create the hexagon graph because making a hex grid in HTML is a no. Note this are not all, not sure why those have been choosen maybe bcs. they fit the killchain
+    tactics = [ "Execution", "Command and Control", "Discovery", "Persistence", "Privilege Escalation", "Credential Access", "Lateral Movement", "Exfiltration", "Impact"]
 
     shownHexs = []
     hiddenHexs = []
@@ -173,25 +173,41 @@ def assessmenthexagons(id):
                 "text": ""
             })
             continue
-            
-        score = ( TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Prevented and Alerted").count() +
-                TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Prevented").count() +
-                TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Alerted").count() -
-                TestCase.objects(assessmentid=id, tactic=tactics[i], outcome="Missed").count())
-        if score > 1:
-            color = "#B8DF43"
-        elif score < -1:
-            color = "#FB6B64"
-        else:
-            color = "#FFC000"
+        
+        cumulatedscore = 0
+        count = 0
 
-        shownHexs.append({
-            "display": "block",
-            "stroke": color,
-            "fill": "#eeeeee",
-            "arrow": "rgb(0, 0, 0)",
-            "text": tactics[i]
-        })
+        for testcase in TestCase.objects(assessmentid=id, tactic=tactics[i]):
+            if testcase.testcasescore is not None:
+                cumulatedscore += testcase.testcasescore
+                count += 1
+
+        if count is not 0:
+            score = cumulatedscore / count
+
+            if score == 100:
+                color = "#B8DF43"
+            elif score == 0:
+                color = "#FB6B64"
+            else:
+                color = "#FFC000"
+
+            shownHexs.append({
+                "display": "block",
+                "stroke": color,
+                "fill": "#eeeeee",
+                "arrow": "rgb(0, 0, 0)",
+                "text": tactics[i]
+            })
+        else:
+            hiddenHexs.append({
+                "display": "none",
+                "stroke": "#ffffff",
+                "fill": "#ffffff",
+                "arrow": "rgba(0, 0, 0, 0)",
+                "text": ""
+            })
+
 
     # Dynamic SVG height and width depending on # hexs as CSS has no visibility
     # over which hexs are shown so we can center it for prettyness
