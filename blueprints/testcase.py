@@ -60,17 +60,18 @@ def testcasesave(id):
     if not testcase.visible and isBlue:
         return ("", 403)
 
-    if not isBlue:
-        directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency", "expectedalertseverity"]
-    elif testcase.state=="Waiting Blue" or testcase.state=="Waiting Red": 
-        directFields = ["bluenotes", "prevented", "alerted", "alertseverity","state"] 
-    else: 
-        directFields = ["bluenotes", "prevented", "alerted", "alertseverity"]
-
+    directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency", "expectedalertseverity"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity","state"] 
     listFields = ["sources", "targets", "tools", "controls", "tags", "preventionsources", "detectionsources"]
     boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]
     timeFields = ["starttime", "endtime", "alerttime", "preventtime"]
     fileFields = ["redfiles", "bluefiles"] if not isBlue else ["bluefiles"]
+
+    # only allow state update from blue if correct state is sent and testcase is in changable state
+    if isBlue:
+        if request.form.get("state") != 'Waiting Blue' and request.form.get("state") != 'Waiting Red' and request.form.get("state"):
+            return ("Not allowed state value", 403)
+        if testcase.state != 'Waiting Blue' and testcase.state != 'Waiting Red':
+            return ("State cannot be changed at the moment", 403)
 
     testcase = applyFormData(testcase, request.form, directFields)
     testcase = applyFormListData(testcase, request.form, listFields)
