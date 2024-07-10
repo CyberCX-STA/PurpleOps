@@ -106,16 +106,16 @@ $('input[name="prevented"]').on('change', function() {
 		$("#preventedrating").val(current.replace("No", "0.0"))
 		$("#preventedrating-container").hide()
 		$("#preventionsources-container").hide()
+		$("#preventionsources").val("")
 		$("#preventiontime-container").hide()
+		$("#time-preventtime").val("")
 	} else {
 		if (["0.0", "N/A"].includes($("#preventedrating").val())) {
 			$("#preventedrating").val("")
 		}
 		$("#preventedrating-container").hide()
 		$("#preventionsources-container").show()
-		$("#preventionsources").val("")
 		$("#preventiontime-container").show()
-		$("#time-preventtime").val("")
 	}
 }).trigger('change')
 
