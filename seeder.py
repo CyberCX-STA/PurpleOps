@@ -126,7 +126,7 @@ def parseAtomicRedTeam ():
                 baseCommand = artTestcase["executor"]["command"].strip()
                 # If there's variables in the command, populate it with the
                 # default sample variables e.g. #{dumpname} > lsass.dmp
-                if "input_arguments" in artTestcase:
+                if "input_arguments" in artTestcase and isinstance(artTestcase["input_arguments"], dict):
                     for i in artTestcase["input_arguments"].keys():
                         k = "#{" + i + "}"
                         baseCommand = baseCommand.replace(k, str(artTestcase["input_arguments"][i]["default"]))
