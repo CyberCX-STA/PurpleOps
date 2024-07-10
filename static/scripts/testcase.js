@@ -106,7 +106,9 @@ $('input[name="prevented"]').on('change', function() {
 		$("#preventedrating").val(current.replace("No", "0.0"))
 		$("#preventedrating-container").hide()
 		$("#preventionsources-container").hide()
+		$("#preventionsources").val("")
 		$("#preventiontime-container").hide()
+		$("#time-preventtime").val("")
 	} else {
 		if (["0.0", "N/A"].includes($("#preventedrating").val())) {
 			$("#preventedrating").val("")
@@ -148,7 +150,9 @@ $('input[name="alerted"]').on('change', function() {
 	} else if (current == "No") {
 		$("#alert-container").hide()
 		$("#alerttime-container").hide()
+		$("#time-alerttime").val("")
 		$("#detectionsources-container").hide()
+		$("#detectionsources").val("")
 		$("#alertseverity").val("")
 		$("#logged-container").show()
 		$("#detection-container").hide()
