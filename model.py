@@ -225,7 +225,7 @@ class Assessment(db.Document):
     navigatorexport = db.StringField(default="")
 
     def get_progress(self):
-        # Returns string with % of "missed|logged|alerted|prevented|pending"
+        # Returns string with % of "Prevented and Alerted|Prevented|Alerted|Logged|Missed"
         testcases = TestCase.objects(assessmentid=str(self.id)).count()
         if testcases == 0:
             return "0|0|0|0|0"
