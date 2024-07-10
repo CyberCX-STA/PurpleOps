@@ -113,7 +113,9 @@ $('input[name="prevented"]').on('change', function() {
 		}
 		$("#preventedrating-container").hide()
 		$("#preventionsources-container").show()
+		$("#preventionsources").val("")
 		$("#preventiontime-container").show()
+		$("#time-preventtime").val("")
 	}
 }).trigger('change')
 
@@ -147,6 +149,9 @@ $('input[name="alerted"]').on('change', function() {
 	} else if (current == "No") {
 		$("#alert-container").hide()
 		$("#detectionsources-container").hide()
+		$("#time-alerttime").val("")
+		$("#detectionsources").val("")
+		$("#detectionsources").val("")
 		$("#alertseverity").val("")
 		$("#logged-container").show()
 		$("#detection-container").hide()
