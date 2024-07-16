@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from bson.objectid import ObjectId
 from flask import escape
 from flask_mongoengine import MongoEngine
@@ -149,7 +150,7 @@ class TestCase(db.Document):
     actions = db.StringField(default="")
     rednotes = db.StringField(default="")
     bluenotes = db.StringField(default="")
-    uuid = db.StringField(default="")
+    uuid = db.StringField(default=lambda: str(uuid.uuid4()).upper()[:8])
     mitreid = db.StringField()
     tactic = db.StringField()
     sources = db.ListField(db.StringField())
