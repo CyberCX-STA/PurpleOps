@@ -137,19 +137,26 @@ function cloneTest(event) {
 	});
 };
 
-// Testcase delete AJAX POST and remove from table
-function deleteTest(event) {
-	event.stopPropagation();
+function deleteTestcaseModal(event) {
+	// Globally store the clicked row for AJAX operations
 	row = $(event.target).closest("tr")
 	rowData = $('#assessmentTable').bootstrapTable('getData')[row.data("index")]
+	$('#deleteTestcaseForm').attr('action', `/testcase/${rowData.id}/delete`) 
+	$('#deleteTestcaseWarning').text(`Really Delete ${rowData.name}?`)
+	$('#deleteTestcaseModal').modal('show')
+}
+
+// AJAX DELETE testcase call and remove from table
+$('#deleteTestcaseButton').click(function() {
 	$.ajax({
 		url: `/testcase/${rowData.id}/delete`,
 		type: 'GET',
-		success: function(body) {
+		success: function(result) {
 			$('#assessmentTable').bootstrapTable('removeByUniqueId', rowData.id)
+			$('#deleteTestcaseModal').modal('hide')
 		}
 	});
-};
+});
 
 // Table formatters
 function nameFormatter(name, row) {
@@ -177,7 +184,7 @@ function actionFormatter() {
 			<button type="button" class="btn btn-warning py-0" onclick="cloneTest(event)" title="Clone">
 				<i class="bi-files">&zwnj;</i>
 			</button>
-			<button type="button" class="btn btn-danger py-0" onclick="deleteTest(event)" title="Delete">
+			<button type="button" class="btn btn-danger py-0" onclick="deleteTestcaseModal(event)" title="Delete">
 				<i class="bi-trash-fill">&zwnj;</i>
 			</button>
 		</div>

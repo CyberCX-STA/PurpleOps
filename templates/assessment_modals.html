@@ -93,3 +93,8 @@
     </div>
     {{ macros.modalTail(name="exportReport", cancelLabel="Close", actionLabel="Generate") }}
 </form>
+
+<!-- Delete testcase confirmation modal -->
+{{ macros.modalHead(name="deleteTestcase", title="Delete Testcase") }}
+<div class="mb-3" id="deleteTestcaseWarning">ERROR</div>
+{{ macros.modalTail(name="deleteTestcase", cancelLabel="No", actionLabel="Delete") }}
