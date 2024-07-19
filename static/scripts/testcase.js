@@ -184,6 +184,8 @@ $("#ttpform").submit(function(e){
 		if (response.status == 200) {
 			displayNewEvidence(new FormData(e.target))
 			new bootstrap.Toast(document.querySelector('#toast')).show();
+		} else if (response.status == 409) {
+			alert("Testcase save error - Testcase was saved in the meantime")
 		} else {
 			alert("Testcase save error - contact admin to review log")
 		}

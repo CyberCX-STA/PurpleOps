@@ -21,6 +21,7 @@
                         {% endfor %}
                     </select>
                     <input type="text" name="name" id="name" class="form-control" value="{{ testcase.name }}" required{% if current_user.has_role("Blue") %} disabled{% endif %}>
+                    <input type="hidden" name="modifytime" id="modifytime" class="form-control" value="{{ testcase.modifytime }}">
                     <button class="btn btn-secondary" type="button" title="Info" data-bs-toggle="modal" data-bs-target="#ttpInfoModal">
                         <i class="bi-info-square-fill">&zwnj;</i>
                     </button>

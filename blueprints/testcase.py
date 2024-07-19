@@ -73,6 +73,13 @@ def testcasesave(id):
         if testcase.state != 'Waiting Blue' and testcase.state != 'Waiting Red':
             return ("State cannot be changed at the moment", 403)
 
+    # do not update testcase if it was modified in the meantime
+    if request.form.get("modifytime"):
+        requestmodifytime = request.form.get("modifytime")
+        # ugly string compare of date
+        if requestmodifytime != str(testcase.modifytime):
+            return ("", 409)
+
     testcase = applyFormData(testcase, request.form, directFields)
     testcase = applyFormListData(testcase, request.form, listFields)
     testcase = applyFormBoolData(testcase, request.form, boolFields)
@@ -122,7 +129,7 @@ def testcasesave(id):
     else:
         testcase.outcome = ""
 
-    # Calculate Testcase Score based on expected result
+    # Calculate Testcase Outcome Score based on expected result
     if testcase.priority == "Prevent and Alert":
         match testcase.outcome:
             case "Prevented and Alerted":
