@@ -112,6 +112,10 @@ def testcasesave(id):
             testcase.update(set__bluefiles=files)
 
     testcase.modifytime = datetime.utcnow()
+
+    # replace last three digits in the string with "000". Required for comparing utcnow vs. mongodb timestamp
+    mongomodifytime = str(testcase.modifytime)[:-3] + "000"
+
     if "logged" in request.form and request.form["logged"] == "Yes" and not testcase.detecttime:
         testcase.detecttime = datetime.utcnow()
 
@@ -187,4 +191,5 @@ def testcasesave(id):
         testcase[field] = valid_ids
     testcase.save()
 
-    return "", 200
+
+    return (str(mongomodifytime), 200)

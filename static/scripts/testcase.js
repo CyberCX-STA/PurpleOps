@@ -175,21 +175,38 @@ $('input[name="logged"]').on('change', function() {
 }).trigger('change')
 
 // AJAX submit and pop toast on save success
-$("#ttpform").submit(function(e){
-	e.preventDefault();
-	fetch(e.target.action, {
-		method: 'POST',
-		body: new FormData(e.target)
-	}).then(response => {
-		if (response.status == 200) {
-			displayNewEvidence(new FormData(e.target))
-			new bootstrap.Toast(document.querySelector('#toast')).show();
-		} else if (response.status == 409) {
-			alert("Testcase save error - Testcase was saved in the meantime")
-		} else {
-			alert("Testcase save error - contact admin to review log")
-		}
-	})
+$("#ttpform").submit(function(e) {
+  e.preventDefault();
+
+  fetch(e.target.action, {
+    method: 'POST',
+    body: new FormData(e.target)
+  })
+  .then(response => {
+    if (response.status === 200) { // Use === for strict comparison
+      return response.text(); // Chain .text() for text response
+    } else {
+      throw new Error(`Error: ${response.status}`);
+    }
+  })
+  .then(text => {
+    displayNewEvidence(new FormData(e.target));
+    new bootstrap.Toast(document.querySelector('#toast')).show();
+    const modifyTimeInput = document.getElementById('modifytime');
+    if (modifyTimeInput) {
+      modifyTimeInput.value = text; // Set the response text as the new value
+    }else {
+      console.error("Could not find input field with ID 'modifytime'");
+    }
+  })
+  .catch(error => {
+    if (error.message.includes('409')) {
+      alert("Testcase save error - Testcase was saved in the meantime");
+    } else {
+      alert("Testcase save error - contact admin to review log");
+      console.error(error); // Log the error for debugging
+    }
+  });
 });
 
 // Convert UTC DB time to local time
