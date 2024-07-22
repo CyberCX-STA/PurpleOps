@@ -145,7 +145,7 @@ def importentire():
         for field in ["name", "objective", "actions", "rednotes", "bluenotes",
                       "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
-                      "priority", "priorityurgency", "expectedalertseverity", "visible", "outcome", "testcasescore"]:
+                      "priority", "priorityurgency", "expectedalertseverity", "visible", "outcome", "testcasescore", "alertseverityscore"]:
             newTestcase[field] = oldTestcase[field]
 
         for field in ["starttime", "endtime", "detecttime", "modifytime", "alerttime", "preventtime"]:

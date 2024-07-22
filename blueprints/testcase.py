@@ -174,7 +174,25 @@ def testcasesave(id):
                 testcase.testcasescore = 0
     else:
      testcase.testcasescore = None
- 
+
+    # Calculate alertseverityscore based on expectedalertseverity
+    if testcase.alertseverity and testcase.expectedalertseverity and testcase.priority != "N/A":
+        if testcase.expectedalertseverity == "Critical":
+            acceptedseveritylist = ["Critical"]
+        if testcase.expectedalertseverity == "High":
+            acceptedseveritylist = ["Critical", "High"]
+        if testcase.expectedalertseverity == "Medium":
+            acceptedseveritylist = ["Critical", "High", "Medium"]
+        if testcase.expectedalertseverity == "Low":
+            acceptedseveritylist = ["Critical", "High", "Medium", "Low"]
+        if testcase.expectedalertseverity == "Informational":
+            acceptedseveritylist = ["Critical", "High", "Medium", "Low", "Informational"]
+        if testcase.alertseverity in acceptedseveritylist:
+            testcase.alertseverityscore = 100
+        else:
+            testcase.alertseverityscore = 0
+    else:
+        testcase.alertseverityscore = None
 
     # This is some sanity check code where we check if some of the UI elements are out of sync with the backend. This is trggered by the horrible tabs bug
     # Does not fix user not saving test case before navigating away

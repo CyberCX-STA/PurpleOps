@@ -181,13 +181,14 @@ class TestCase(db.Document):
     modifytime = db.DateTimeField(default=datetime.datetime.utcnow)
     outcome = db.StringField(default="")
     testcasescore = db.IntField()
+    alertseverityscore = db.IntField()
 
     def to_json(self, raw=False):
         jsonDict = {}
         for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
                       "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
-                      "priority", "priorityurgency", "expectedalertseverity", "visible", "outcome", "testcasescore"]:
+                      "priority", "priorityurgency", "expectedalertseverity", "visible", "outcome", "testcasescore", "alertseverityscore"]:
             jsonDict[field] = esc(self[field], raw)
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime", "alerttime", "preventtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
