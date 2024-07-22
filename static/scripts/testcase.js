@@ -195,8 +195,6 @@ $("#ttpform").submit(function(e) {
     const modifyTimeInput = document.getElementById('modifytime');
     if (modifyTimeInput) {
       modifyTimeInput.value = text; // Set the response text as the new value
-    }else {
-      console.error("Could not find input field with ID 'modifytime'");
     }
   })
   .catch(error => {
