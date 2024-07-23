@@ -48,7 +48,7 @@
                 <th data-field="state" data-sortable="true" data-width="15" data-width-unit="%" data-filter-control="select" data-cell-style="bgFormatter">State</th>
                 <th data-field="visible" data-sortable="true" data-filter-control="select" data-formatter="visibleFormatter" data-cell-style="bgFormatter" class="text-center" {% if current_user.has_role("Blue") %} data-visible="false" data-switchable="false"{% endif %}><i class="bi-eye"></i></th>
                 <th data-field="tags" data-width="15" data-width-unit="%" data-filter-control="input" data-formatter="tagFormatter">Tags</th>
-                <th data-field="start" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-formatter="timeFormatter">Start</th>
+                <th data-field="start" data-sortable="true" data-width="10" data-width-unit="%" data-visible="{% if current_user.has_role('Blue') %}true{% else %}false{% endif %}" data-filter-control="input" data-formatter="timeFormatter">Start</th>
                 <th data-field="modified" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-formatter="timeFormatter">Modified</th>
                 <th data-field="preventscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter" class="text-center">Prevention</th>
                 <th data-field="detectscore" data-sortable="true" data-width="10" data-width-unit="%" data-visible="false" data-filter-control="input" data-cell-style="bgFormatter" class="text-center">Detection</th>
