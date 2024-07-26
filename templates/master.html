@@ -54,6 +54,7 @@
             padding-top: 12px;
         }
     </style>
+    <link rel="stylesheet" href="/static/style/custom.css">
     <link rel="stylesheet" href="/static/style/bootstrap.min.css">
     <link rel="stylesheet" href="/static/style/bootstrappulse.min.css">
     <link rel="stylesheet" href="/static/style/bootstrap-table.min.css">
@@ -70,6 +71,7 @@
     <script src="/static/scripts/bootstrap-table-cookie.min.js"></script>
     <script src="/static/scripts/bootstrap-select.min.js"></script>
     <script src="/static/scripts/popper.min.js"></script>
+    <script src="/static/scripts/toast.js"></script>
 
     {% include 'master_modals.html' %}
 
@@ -106,5 +108,7 @@
     </nav>
 
     {% block content %}{% endblock %}
+
+    {{ macros.toast(title="toast") }}
 </body>
 </html>

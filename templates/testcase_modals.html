@@ -1,6 +1,3 @@
-<!-- Testcase Saved Toast -->
-{{ macros.toast(title="Testcase Saved") }}
-
 {% macro multiContent(type, description="description") -%}
 <div class="mb-3">
     <div id="{{ type }}Toolbar">
@@ -57,3 +54,14 @@
     <li><a href='{{ "https://attack.mitre.org/techniques/" ~ testcase.mitreid | replace(".", "/" )}}' target="_blank">MITRE Reference</a></li>
 </ul>
 {{ macros.modalTail(name="ttpInfo", cancelLabel="Close") }}
+
+<!-- Compass Testcase Knowhow -->
+{{ macros.modalHead(name="testcaseKB", title=testcase.mitreid ~ " Testcase KB", xl=True) }}
+
+{% if testcasekb.mdtext %}
+{{ testcasekb.mdtext | safe }}
+{% else %}
+No data
+{% endif %}
+
+{{ macros.modalTail(name="testcaseKB", cancelLabel="Close") }}

@@ -130,8 +130,11 @@ dmypy.json
 
 # Dev artifacts
 *.xlsx
+*.docx
+*.crt
+*.key
 files/
-custom/
+custom/testcases
 
 supervisord.pid
 sampledata/sigma/*

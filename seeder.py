@@ -13,6 +13,8 @@ from git import Repo
 from glob import glob
 from flask import Flask
 from openpyxl import load_workbook
+import markdown
+import bleach
 
 dotenvFile = dotenv.find_dotenv()
 dotenv.load_dotenv(dotenvFile)
@@ -142,7 +144,7 @@ def parseAtomicRedTeam ():
                 ).save()
 
 def parseCustomTestcases ():
-    for customTestcase in glob(f'{PWD}/custom/testcases/*.yaml'):
+    for customTestcase in glob(f'{PWD}/custom/testcases/**/*.yaml', recursive=True):
         with open(customTestcase, "r") as customTestcaseFile:
             yml = yaml.safe_load(customTestcaseFile)
 
@@ -169,6 +171,26 @@ def parseCustomKBs ():
         KB.advice = yml["advice"]
         KB.provider = yml["provider"]
         KB.save()
+
+def parseCustomTestcaseKBs():
+  for customtestcasekb in glob(f'{PWD}/custom/testcaseskb/*.md'):
+    try:
+      with open(customtestcasekb, "r") as customtestcaseKBFile:
+        text = customtestcaseKBFile.read()
+        escapedtext = bleach.clean(text)
+
+        md = markdown.Markdown(extensions=['meta', 'nl2br', 'pymdownx.superfences','pymdownx.details','pymdownx.blocks.tab'])
+        html = md.convert(escapedtext)
+        if not "mitreid" in md.Meta:
+            raise ValueError(f"File '{customtestcasekb}' is missing mitreid metadata. Skipped.")
+
+      TestcaseKnowlegeBase(
+          mitreid=md.Meta["mitreid"][0],
+          mdtext=html,
+      ).save()
+    except ValueError as e:
+      print(e)
+
 
 def prepareRolesAndAdmin ():
     if Role.objects().count() == 0:
@@ -221,6 +243,7 @@ if Tactic.objects.count() == 0:
     Sigma.objects.delete()
     TestCaseTemplate.objects.delete()
     KnowlegeBase.objects.delete()
+    TestcaseKnowlegeBase.objects.delete()
     # Role.objects.delete()
     # User.objects.delete()
 
@@ -238,6 +261,9 @@ if Tactic.objects.count() == 0:
 
     print("Parsing Custom testcases")
     parseCustomTestcases()
+
+    print("Parsing Custom testcase KB")
+    parseCustomTestcaseKBs()
 
     print("Parsing Custom KBs")
     parseCustomKBs()

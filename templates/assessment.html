@@ -5,6 +5,7 @@
 
 <div class="m-2 mt-0">
     <div id="toolbar">
+        <div id="assessmentid" class="d-none"> {{ assessment.id }}</div>
         <p class="d-inline-block" style="font-size:1.3em;margin: 0 10px 0 5px;font-weight:bold">{{ assessment.name }}</p>
         {% if current_user.has_role("Admin") or current_user.has_role("Red") %}
         <button id="newTestcase" class="btn btn-primary">New</button>
@@ -14,6 +15,7 @@
                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#testcaseTemplatesModal">Testcase(s) From Template</a></li>
                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#testcaseNavigatorModal">Mitre ATT&CK Navigator Layer</a></li>
                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#testcaseCampaignModal">Campaign Template</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#variablesModal">Variables</a></li>
             </ul>
         </div>
         {% endif %}

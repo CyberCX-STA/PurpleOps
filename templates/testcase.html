@@ -9,6 +9,7 @@
 
 {% block content %}
 {% include 'testcase_modals.html' %}
+<div id="assessmentid" class="d-none"> {{ assessment.id }}</div>
 <form action="/testcase/{{ testcase.id }}" method="Post" id="ttpform" value="{{ testcase.id }}" style="max-width: 1600px; margin: 0 auto" enctype="multipart/form-data">
     <div class="container-fluid">
         <div class="row mt-3" style="margin: 0 -1px 0 -2px">
@@ -24,6 +25,9 @@
                     <input type="hidden" name="modifytime" id="modifytime" class="form-control" value="{{ testcase.modifytime }}">
                     <button class="btn btn-secondary" type="button" title="Info" data-bs-toggle="modal" data-bs-target="#ttpInfoModal">
                         <i class="bi-info-square-fill">&zwnj;</i>
+                    </button>
+                    <button class="btn btn-secondary" type="button" title="Info" data-bs-toggle="modal" data-bs-target="#testcaseKBModal">
+                        <i class="bi bi-compass-fill">&zwnj;</i>
                     </button>
                 </div>
             </div>
@@ -76,4 +80,5 @@
     </div>
 </form>
 <script src="/static/scripts/testcase.js"></script> 
+
 {% endblock %}

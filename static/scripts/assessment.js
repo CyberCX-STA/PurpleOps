@@ -64,6 +64,7 @@ $('#testcaseTemplatesButton').click(function() {
 		success: function(result) {
 			result.forEach(result => {
 				$('#assessmentTable').bootstrapTable('append', [formatRow(result)])
+				showToast('Testcase Added');
 			})
 			$('#testcaseTemplatesModal').modal('hide')
 		}
@@ -133,6 +134,7 @@ function cloneTest(event) {
 				index: row.data("index") + 1,
 				row: formatRow(body)
 			})
+			showToast('Testcase Cloned');
 		}
 	});
 };
@@ -154,6 +156,7 @@ $('#deleteTestcaseButton').click(function() {
 		success: function(result) {
 			$('#assessmentTable').bootstrapTable('removeByUniqueId', rowData.id)
 			$('#deleteTestcaseModal').modal('hide')
+			showToast('Testcase Deleted');
 		}
 	});
 });
@@ -242,3 +245,65 @@ $('#assessmentTable').on( 'check.bs.table uncheck.bs.table check-all.bs.table un
 		$("#selected-count").hide()
 	}
 } );
+
+// upload variables to session storage
+$("#variablesForm").submit(function(e){
+	e.preventDefault();
+	const fileUpload = document.getElementById('variablesFile');
+
+	if (fileUpload.files.length === 0) {
+		alert("Please select a JSON file.")
+		return;
+	}
+
+	const file = fileUpload.files[0];
+
+	const reader = new FileReader();
+
+	reader.onload = function(event) {
+		try {
+			const jsonData = JSON.parse(event.target.result);
+      // Valid JSON, proceed with storing data
+
+			if (typeof jsonData !== 'object' || jsonData === null) {
+				alert("Invalid JSON format.")
+				return;
+			}
+
+      assessmentid = document.getElementById('assessmentid').textContent;
+
+      //clear session storage with items from this assessment
+      clearSessionStorageByKeyPrefix(assessmentid)
+
+      for (const key in jsonData) {
+      	if (jsonData.hasOwnProperty(key)) {
+      		sessionStorage.setItem(assessmentid+"_"+key, jsonData[key]);
+      	}
+      }
+
+      alert("JSON data uploaded and stored in session storage.")
+      $('#variablesModal').modal('hide')
+  } catch (error) {
+  	alert("Error parsing JSON: " + error.message)
+  }
+};
+
+reader.onerror = function(error) {
+	alert("Error reading file: " + error.message)
+};
+
+reader.readAsText(file);
+
+});
+
+function clearSessionStorageByKeyPrefix(prefix) {
+  const keysToRemove = [];
+
+  for (let key in sessionStorage) {
+    if (key.startsWith(prefix)) {
+      keysToRemove.push(key);
+    }
+  }
+
+  keysToRemove.forEach(key => sessionStorage.removeItem(key));
+}

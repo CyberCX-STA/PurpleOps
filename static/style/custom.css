@@ -1,0 +1,152 @@
+#testcaseKBModal .modal-body h1 {
+  font-size: 1.4rem;
+  margin-bottom: 1.4rem;
+  margin-top: 1.4rem;
+
+}
+
+#testcaseKBModal .modal-body h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  margin-top: 0.8rem;
+}
+
+#testcaseKBModal .modal-body h3 {
+  font-size: 1.0rem;
+  margin-bottom: 1rem;
+  margin-top: 0.8rem;
+}
+
+#testcaseKBModal .modal-body p {
+  margin-bottom: 0rem;
+}
+
+.highlight {
+  background-color: #2b2e3b;
+  overflow: auto; /* Allow horizontal scrolling for long code lines */
+  position: relative; /* Enable relative positioning for buttons */
+  margin-bottom: .5rem;
+}
+
+/* Code styling starts here */
+
+.highlight code {
+  color: #ffffff;
+  font-family: Consolas, monaco, 'Courier New', monospace;
+}
+
+.highlight pre {
+  margin: 0; /* Remove default margin from pre tag */
+  padding: 0; /* Remove default padding from pre tag */
+  padding: 40px 10px 10px 10px; /* Adjust padding for button space */
+  font-family: monospace; /* Set monospaced font for code */
+}
+
+.highlight span {
+  display: inline-block; /* Allow wrapping of code within spans */
+}
+
+.highlight button.bi-code {
+  position: absolute; /* Make buttons positioned within block */
+  top: 0.2rem; /* Adjust vertical position from top */
+  right: 0.2rem; /* Adjust horizontal position from right */
+  background-color: #ddd; /* Button background color */
+  border: none; /* Remove default button border */
+  padding: 4px 8px 2px 8px; /* Set button padding */
+  cursor: pointer; /* Indicate clickable element */
+}
+
+.highlight button.bi-toggles {
+  position: absolute; /* Make buttons positioned within block */
+  top: 0.2rem; /* Adjust vertical position from top */
+  right: 2.0rem; /* Adjust horizontal position from right */
+  background-color: #ddd; /* Button background color */
+  border: none; /* Remove default button border */
+  padding: 4px 8px 2px 8px; /* Set button padding */
+  cursor: pointer; /* Indicate clickable element */
+}
+
+.highlight .filename {
+  position: relative;
+  padding: 0 .5rem 0 .5rem;
+  display: block;
+  color: #ffffff;
+  background-color: black;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding-bottom: 16px;
+  padding-top: 16px;
+}
+
+/* Tab style starts here */
+
+.tabbed-set {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1em 0;
+  border-radius: 0.1rem;
+}
+
+.tabbed-set > input {
+  display: none;
+}
+
+.tabbed-set label {
+  width: auto;
+  padding: 0.9375em 1.25em 0.78125em;
+  font-weight: 700;
+  font-size: 0.84em;
+  white-space: nowrap;
+  border-bottom: 0.15rem solid transparent;
+  border-top-left-radius: 0.1rem;
+  border-top-right-radius: 0.1rem;
+  cursor: pointer;
+  transition: background-color 250ms, color 250ms;
+}
+
+.tabbed-set .tabbed-content {
+  width: 100%;
+  display: none;
+  box-shadow: 0 -.05rem #ddd;
+}
+
+.tabbed-set input {
+  position: absolute;
+  opacity: 0;
+}
+
+.tabbed-set input:checked:nth-child(n+1) + label {
+  border-color: #593196;
+}
+
+@media screen {
+  .tabbed-set input:nth-child(n+1):checked + label + .tabbed-content {
+    order: 99;
+    display: block;
+  }
+}
+
+@media print {
+  .tabbed-content {
+    display: contents;
+  }
+}
+
+/* Details style starts here */
+details {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+details[open] summary {
+  background-color: #f0f0f0;
+}

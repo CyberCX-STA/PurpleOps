@@ -35,6 +35,7 @@ def runtestcasepost(id):
         tactics = Tactic.objects().all(),
         assessment = assessment,
         kb = KnowlegeBase.objects(mitreid=testcase.mitreid).first(),
+        testcasekb = TestcaseKnowlegeBase.objects(mitreid=testcase.mitreid).first(),
         templates = TestCaseTemplate.objects(mitreid=testcase["mitreid"]),
         mitres = [[m["mitreid"], m["name"]] for m in Technique.objects()],
         sigmas = Sigma.objects(mitreid=testcase["mitreid"]),

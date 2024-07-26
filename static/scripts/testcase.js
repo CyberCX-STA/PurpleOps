@@ -191,7 +191,7 @@ $("#ttpform").submit(function(e) {
   })
   .then(text => {
     displayNewEvidence(new FormData(e.target));
-    new bootstrap.Toast(document.querySelector('#toast')).show();
+    showToast('Testcase Saved');
     const modifyTimeInput = document.getElementById('modifytime');
     if (modifyTimeInput) {
       modifyTimeInput.value = text; // Set the response text as the new value
@@ -326,3 +326,67 @@ function displayNewEvidence(form) {
 		}) 
 	})
 }
+
+//add copy code button to testcaseKB
+function copyCodeBlocks() {
+  const testcaseKBModalDIV = document.getElementById('testcaseKBModal');
+  const codeBlocks = testcaseKBModalDIV.querySelectorAll('code');
+
+  codeBlocks.forEach(codeBlock => {
+    const copyButton = document.createElement('button');
+    copyButton.classList.add("btn", "btn-secondary", "bi-code");
+
+    // Add click event listener to the button
+    copyButton.addEventListener('click', () => {
+      const text = codeBlock.textContent;
+      navigator.clipboard.writeText(text)
+        .then(() => {
+        	showToast('Code Copied')
+        })
+        .catch(err => {
+        	alert('Failed to copy code: '+ err)
+        });
+    });
+
+    // Append the button directly within the loop
+    codeBlock.parentNode.insertBefore(copyButton, codeBlock.nextSibling);
+  });
+}
+//execute the function. Not sure where to put it else.
+copyCodeBlocks()
+
+
+//add toggle button to testcaseKB
+function toggleVariablesinCodeBlocks() {
+
+	const testcaseKBModalDIV = document.getElementById('testcaseKBModal');
+  const codeBlocks = testcaseKBModalDIV.querySelectorAll('code');
+  const assessmentid = document.getElementById('assessmentid').textContent;
+
+  codeBlocks.forEach(codeBlock => {
+    const toggleButton = document.createElement('button');
+    toggleButton.classList.add("btn", "btn-secondary", "bi-toggles", "mx-sm-2");
+    let isToggled = codeBlock.dataset.isToggled === 'true';
+
+    toggleButton.addEventListener('click', () => {
+      isToggled = !isToggled;
+
+      if (isToggled) {
+        const content = codeBlock.textContent;
+        const regex = /\{\{([^}]+)\}\}/g; // Global flag for multiple matches
+        codeBlock.dataset.originalTextContent = content;
+
+        codeBlock.textContent = content.replace(regex, (match, variable) => {
+          const value = sessionStorage.getItem(assessmentid + "_" + variable);
+          return value !== null ? value : match;
+        });
+      } else if (codeBlock.dataset.originalTextContent) {
+        codeBlock.textContent = codeBlock.dataset.originalTextContent;
+      }
+    });
+
+    codeBlock.parentNode.insertBefore(toggleButton, codeBlock.nextSibling);
+  });
+}
+//execute the function. Not sure where to put it else.
+toggleVariablesinCodeBlocks()

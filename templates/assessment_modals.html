@@ -1,6 +1,3 @@
-<!-- Testcase Delete Toast -->
-{{ macros.toast(title="Testcase Deleted") }}
-
 <!-- New Test Modal-->
 <form action="/testcase/{{ assessment.id }}/single" method="POST" class="m-0" id="newTestcaseForm">
     {{ macros.modalHead(name="newTestcase", title="New Testcase") }}
@@ -98,3 +95,13 @@
 {{ macros.modalHead(name="deleteTestcase", title="Delete Testcase") }}
 <div class="mb-3" id="deleteTestcaseWarning">ERROR</div>
 {{ macros.modalTail(name="deleteTestcase", cancelLabel="No", actionLabel="Delete") }}
+
+<!-- import variables modal -->
+<form action="" class="m-0" id="variablesForm">
+    {{ macros.modalHead(name="variables", title="Import Variables") }}
+    <div class="mb-3">
+        <label for="variablesFile" class="form-label">Import Variables from <code>Json File</code>.</label>
+        <input type="file" id="variablesFile" name="file" accept=".json,application/json">
+    </div>
+    {{ macros.modalTail(name="variables", cancelLabel="Close", actionLabel="Import") }}
+</form>

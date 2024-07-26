@@ -6,9 +6,11 @@ from flask_security import Security, auth_required, current_user
 
 from blueprints import access, assessment, assessment_utils, assessment_import, assessment_export, testcase, testcase_utils
 
+
 load_dotenv()
 
 app = Flask(__name__)
+
 app.config.from_pyfile("flask.cfg")
 
 app.register_blueprint(access.blueprint_access)

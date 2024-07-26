@@ -122,13 +122,15 @@ class KnowlegeBase(db.Document):
     advice = db.StringField()
     provider = db.StringField()
 
+class TestcaseKnowlegeBase(db.Document):
+    mitreid = db.StringField()
+    mdtext = db.StringField()
 
 class Sigma(db.Document):
     mitreid = db.StringField()
     name = db.StringField()
     description = db.StringField()
     url = db.StringField()
-
 
 class TestCaseTemplate(db.Document):
     name = db.StringField()
