@@ -34,7 +34,7 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./nginx/custom_certs:/etc/nginx/ssl
+      - ./nginx/certs:/etc/nginx/ssl
     depends_on:
       - purpleops
     networks:
