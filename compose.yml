@@ -14,7 +14,7 @@ services:
     container_name: purpleops
     command: gunicorn --bind 0.0.0.0:5000 --forwarded-allow-ips="*" purpleops:app
     ports:
-      - '127.0.0.1:5000:5000'
+      - 127.0.0.1:5000:5000
     env_file:
       - ./.env
     depends_on:
@@ -31,8 +31,8 @@ services:
       dockerfile: Dockerfile
     container_name: nginx
     ports:
-      - '80:80'
-      - '443:443'
+      - 80:80
+      - 443:443
     volumes:
       - ./nginx/custom_certs:/etc/nginx/ssl
     depends_on:
