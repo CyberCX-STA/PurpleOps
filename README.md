@@ -133,13 +133,22 @@ $ sudo docker compose up
   ```
 </details>
 
+<details>
+  <summary><h3>Resetting MFA</h3></summary>
+  
+  ```bash
+  sudo docker exec -it purpleops flask --app purpleops.py shell
+  from model import User; user = User.objects(email="userto@reset.here").first(); user.tf_totp_secret = None; user.save()
+  ```
+</details>
+
 ## Contact Us
 
 We would love to hear back from you, if something is broken or have and idea to make it better add a ticket or connect to us on the [PurpleOps Discord](https://discord.gg/2xeA6FB3GJ) or email us at pops@purpleops.app | `@_w_m__` 
 
 ## Credits
 
-- Atomic Red Team [(LICENSE)](https://github.com/redcanaryco/atomic-red-team/blob/master/LICENSE.txt) for sample commands
+- Atomic Red Team ([LICENSE](https://github.com/redcanaryco/atomic-red-team/blob/master/LICENSE.txt)) for sample commands
 - [CyberCX](https://cybercx.com.au/) for foundational support
 
 ## License
