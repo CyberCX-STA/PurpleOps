@@ -1,19 +1,20 @@
-version: '3.8'
-
 services:
   mongodb:
     image: mongo:7.0-rc
     container_name: mongodb
     ports:
-      - 27017
+      - 127.0.0.1:27017:27017
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - app-network
+
   purpleops:
     build: .
     container_name: purpleops
-    command: gunicorn --bind 0.0.0.0:5000 purpleops:app
+    command: gunicorn --bind 0.0.0.0:5000 --forwarded-allow-ips="*" purpleops:app
     ports:
-      - "5000:5000"
+      - 127.0.0.1:5000:5000
     env_file:
       - ./.env
     depends_on:
@@ -21,6 +22,28 @@ services:
     volumes:
       - purpleops_data:/usr/src/app/
       - ./custom:/usr/src/app/custom
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/certs:/etc/nginx/ssl
+    depends_on:
+      - purpleops
+    networks:
+      - app-network
+
 volumes:
   mongodb_data:
   purpleops_data:
+
+networks:
+  app-network:
+    driver: bridge
