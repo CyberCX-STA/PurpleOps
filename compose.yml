@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   mongodb:
+    restart: always
     image: mongo:7.0-rc
     container_name: mongodb
     ports:
@@ -9,6 +10,7 @@ services:
     volumes:
       - mongodb_data:/data/db
   purpleops:
+    restart: always
     build: .
     container_name: purpleops
     command: gunicorn --bind 0.0.0.0:5000 purpleops:app
