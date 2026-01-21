@@ -38,8 +38,7 @@ $('.multiButton').click(function(event) {
 				pill = type == "tags" ? `data-content="<span class='badge rounded-pill' style='background:${i.colour}'>${i.name}</span>"` : ""
 				$(`#${type}`).append(`<option ${selected} class="dynopt-${type}" value="${i.id}" ${pill}>${i.name}</option>`);
 			})
-			$(`#${type}`).selectpicker('destroy');
-			$(`#${type}`).selectpicker();
+			$(`#${type}`).selectpicker('refresh');
 		}
 	});
 })
@@ -202,7 +201,7 @@ $("#run-button").click(function(){
 	clickTime.setMinutes(clickTime.getMinutes() - clickTime.getTimezoneOffset());
 	clickTime = clickTime.toISOString().slice(0, 16)
 
-	if ($("#run-button").text() == "Start") {
+	if ($("#run-button").text() == "Start" || $("#run-button").text() == "Restart") {
 		$("#time-start").val(clickTime)
 		$("#time-end").val("")
 		$("#run-button").text("Stop")
@@ -222,17 +221,7 @@ $("#run-button").click(function(){
 		$("#state").addClass("bg-primary")
 		$("#state").removeClass("text-dark")
 		$("#state").addClass("text-white")
-	} else if ($("#run-button").text() == "Restart") {
-		$("#time-start").val("")
-		$("#time-end").val("")
-		$("#run-button").text("Start")
-		$("#run-button").removeClass("btn-outline-danger")
-		$("#run-button").removeClass("btn-outline-warning")
-		$("#run-button").addClass("btn-outline-success")
-		$("#state").val("Pending")
-		$("#state").removeClass("bg-primary")
-		$("#state").removeClass("text-white")
-	} 
+	}
 });
 
 // Delete evidence AJAX handler
@@ -258,6 +247,7 @@ function displayNewEvidence(form) {
 			if (file.name == "") {
 				return
 			}
+			const cleanedFilename = santiseFilename(file.name);
 			testcaseId = window.location.pathname.split("/").slice(-1)[0]
 			html = `
 				<li class="list-group-item">
@@ -274,7 +264,7 @@ function displayNewEvidence(form) {
 						<a href="/testcase/${testcaseId}/evidence/${file.name}" target="_blank">
 							<img class="img-fluid img-thumbnail" style="max-width: 80%" src="/testcase/${testcaseId}/evidence/${file.name}"/>
 						</a>
-						<input style="margin-left: 6em; width:80%;" class="form-control form-control-sm" type="text" placeholder="Caption..." value="" id="${colour.toUpperCase()}${file.name}" name="${colour.toUpperCase()}${file.name}"/>
+						<input style="margin-left: 6em; width:80%;" class="form-control form-control-sm" type="text" placeholder="Caption..." value="" id="${colour.toUpperCase()}${cleanedFilename}" name="${colour.toUpperCase()}${cleanedFilename}"/>
 					`
 				} else {
 					html += `<span class="name small">${ file.name }</span>`
@@ -283,4 +273,12 @@ function displayNewEvidence(form) {
 			$(`#${colour}files`).val("")
 		}) 
 	})
+}
+
+function santiseFilename(filename) {
+    return filename
+        .split('/').pop().split('\\').pop()  // Remove paths
+        .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')  // ASCII
+        .replace(/[^\w.-]/g, '_')  // Replace unsafe chars
+        .replace(/^[._-]+|[._-]+$/g, '') || 'unnamed';  // Clean edges
 }
