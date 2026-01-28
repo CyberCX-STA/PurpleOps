@@ -131,11 +131,16 @@ def parseAtomicRedTeam ():
                         k = "#{" + i + "}"
                         baseCommand = baseCommand.replace(k, str(artTestcase["input_arguments"][i]["default"]))
                 
+                # Infer the relevant tactic from the first match from MITRE techniques
+                technique = Technique.objects(mitreid=yml["attack_technique"]).first()
+                if not technique or not technique.tactics:
+                    # Skip if technique doesn't exist or has no tactics
+                    continue
+                
                 TestCaseTemplate(
                     name = artTestcase["name"],
                     mitreid = yml["attack_technique"],
-                    # Infer the relevant tactic from the first match from MITRE techniques
-                    tactic = Technique.objects(mitreid=yml["attack_technique"]).first()["tactics"][0],
+                    tactic = technique.tactics[0],
                     objective = artTestcase["description"],
                     actions = baseCommand,
                     provider = "ART"
