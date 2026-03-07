@@ -40,12 +40,19 @@
 					</div>
 				</div>
 				<div id="preventionsource-container" class="row m-0 p-0 my-1">
-					<label for="preventionsource" class="col-6 col-form-label">Prevention Source</label>
+					<label for="preventionsource" class="col-6 col-form-label">
+						Prevention Source
+						{% if not current_user.has_role("Spectator") %}
+						<a href="#" class="ms-1" data-bs-toggle="modal" data-bs-target="#multiPreventionsourceModal" title="Manage Prevention Sources">
+							<i class="bi-gear-fill small text-primary"></i>
+						</a>
+						{% endif %}
+					</label>
 					<div class="col-6">
 						<select class="form-select p-1" id="preventionsource" name="preventionsource">
 							<option value="" {% if not testcase.preventionsource %}selected{% endif %}></option>
-							{% for ds in multi.datasources %}
-							<option value="{{ ds.id }}" {% if testcase.preventionsource == ds.id|string %}selected{% endif %}>{{ ds.name }}</option>
+							{% for ps in multi.preventionsources %}
+							<option value="{{ ps.id }}" {% if testcase.preventionsource == ps.id|string %}selected{% endif %}>{{ ps.name }}</option>
 							{% endfor %}
 						</select>
 						<div class="form-check mt-1">
@@ -148,11 +155,18 @@
 					</div>
 				</div>
 				<div id="detectionsource-container" class="row m-0 p-0 my-1">
-					<label for="detectionsource" class="col-6 col-form-label">Detection Source</label>
+					<label for="detectionsource" class="col-6 col-form-label">
+						Detection Source
+						{% if not current_user.has_role("Spectator") %}
+						<a href="#" class="ms-1" data-bs-toggle="modal" data-bs-target="#multiDetectionsourceModal" title="Manage Detection Sources">
+							<i class="bi-gear-fill small text-primary"></i>
+						</a>
+						{% endif %}
+					</label>
 					<div class="col-6">
 						<select class="form-select p-1" id="detectionsource" name="detectionsource">
 							<option value="" {% if not testcase.detectionsource %}selected{% endif %}></option>
-							{% for ds in multi.datasources %}
+							{% for ds in multi.detectionsources %}
 							<option value="{{ ds.id }}" {% if testcase.detectionsource == ds.id|string %}selected{% endif %}>{{ ds.name }}</option>
 							{% endfor %}
 						</select>

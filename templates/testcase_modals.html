@@ -39,6 +39,14 @@
     {{ macros.modalTail(name="multi" ~ i, cancelLabel="Cancel", actionLabel="Save", buttonClass="multiButton") }}
 {% endfor %}
 
+{{ macros.modalHead(name="multiDetectionsource", title="Manage Detection Sources", xl=True) }}
+    {{ multiContent(type="detectionsources") }}
+{{ macros.modalTail(name="multiDetectionsource", cancelLabel="Cancel", actionLabel="Save", buttonClass="multiButton") }}
+
+{{ macros.modalHead(name="multiPreventionsource", title="Manage Prevention Sources", xl=True) }}
+    {{ multiContent(type="preventionsources") }}
+{{ macros.modalTail(name="multiPreventionsource", cancelLabel="Cancel", actionLabel="Save", buttonClass="multiButton") }}
+
 {{ macros.modalHead(name="ttpInfo", title=testcase.mitreid ~ " TTP Information", xl=True) }}
 <h3>Description</h3>
 <pre style="white-space: pre-wrap;word-wrap: break-word;">{{ kb.overview | safe }}</pre>

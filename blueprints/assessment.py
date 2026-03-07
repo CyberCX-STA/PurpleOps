@@ -64,6 +64,8 @@ def loadassessment(id):
         reports = [f.split("/")[-1] for f in sorted(glob("custom/reports/*.docx"))],
         multi = {
             "datasources": assessment.datasources,
-            "rules": assessment.rules
+            "rules": assessment.rules,
+            "detectionsources": assessment.detectionsources,
+            "preventionsources": assessment.preventionsources
         }
     )

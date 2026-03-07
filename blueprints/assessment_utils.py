@@ -14,7 +14,8 @@ blueprint_assessment_utils = Blueprint('blueprint_assessment_utils', __name__)
 @roles_accepted('Admin', 'Red', 'Blue')
 @user_assigned_assessment
 def assessmentmulti(id, field):
-    if field not in ["sources", "targets", "tools", "controls", "tags", "datasources", "rules"]:
+    if field not in ["sources", "targets", "tools", "controls", "tags", "datasources", "rules",
+                     "detectionsources", "preventionsources"]:
         return '', 418
 
     assessment = Assessment.objects(id=id).first()
@@ -29,6 +30,8 @@ def assessmentmulti(id, field):
             "tags": Tag(),
             "datasources": Datasource(),
             "rules": DetectionRule(),
+            "detectionsources": Datasource(),
+            "preventionsources": Datasource(),
         }[field]
 
         # If pre-existing, then edit pre-existing to preserve ID

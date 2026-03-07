@@ -98,28 +98,40 @@ $('#objective, #actions, #rednotes, #bluenotes').on('input', function(event) {
 	event.target.style.height = event.target.scrollHeight + 5 + 'px';
 }).trigger('input')
 
-// "Same as detection source" checkbox — keep preventionsource in sync with detectionsource
+// "Same as detection source" — match by name across separate detection/prevention source pools
+function syncPreventionToDetection() {
+	const detectionName = $('#detectionsource option:selected').text().trim()
+	const match = $('#preventionsource option').filter(function() {
+		return $(this).text().trim() === detectionName
+	})
+	$('#preventionsource').val(match.length ? match.val() : '')
+}
+
 $('#samesource').on('change', function() {
 	if ($(this).is(':checked')) {
-		$('#preventionsource').val($('#detectionsource').val())
+		syncPreventionToDetection()
 		$('#preventionsource').addClass('text-muted').css('pointer-events', 'none')
 	} else {
 		$('#preventionsource').removeClass('text-muted').css('pointer-events', '')
 	}
 })
 
-// When detection source changes, mirror to prevention source if linked
+// When detection source changes, re-sync if linked
 $('#detectionsource').on('change', function() {
 	if ($('#samesource').is(':checked')) {
-		$('#preventionsource').val($(this).val())
+		syncPreventionToDetection()
 	}
 })
 
-// If prevention source is manually changed to something different, unlink the checkbox
+// If prevention source is manually changed, unlink the checkbox
 $('#preventionsource').on('change', function() {
-	if ($('#samesource').is(':checked') && $(this).val() !== $('#detectionsource').val()) {
-		$('#samesource').prop('checked', false)
-		$('#preventionsource').removeClass('text-muted').css('pointer-events', '')
+	if ($('#samesource').is(':checked')) {
+		const detectionName = $('#detectionsource option:selected').text().trim()
+		const preventionName = $(this).find('option:selected').text().trim()
+		if (detectionName !== preventionName) {
+			$('#samesource').prop('checked', false)
+			$('#preventionsource').removeClass('text-muted').css('pointer-events', '')
+		}
 	}
 })
 

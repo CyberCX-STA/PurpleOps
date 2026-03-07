@@ -220,6 +220,8 @@ class Assessment(db.Document):
     tags = db.EmbeddedDocumentListField(Tag)
     datasources = db.EmbeddedDocumentListField(Datasource)
     rules = db.EmbeddedDocumentListField(DetectionRule)
+    detectionsources = db.EmbeddedDocumentListField(Datasource)
+    preventionsources = db.EmbeddedDocumentListField(Datasource)
     navigatorexport = db.StringField(default="")
 
     def get_progress(self):

@@ -45,7 +45,9 @@ def runtestcasepost(id):
             "controls": assessment.controls,
             "tags": assessment.tags,
             "datasources": assessment.datasources,
-            "rules": assessment.rules
+            "rules": assessment.rules,
+            "detectionsources": assessment.detectionsources,
+            "preventionsources": assessment.preventionsources
         }
     )
 
