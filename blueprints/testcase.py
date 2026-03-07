@@ -43,7 +43,9 @@ def runtestcasepost(id):
             "targets": assessment.targets,
             "tools": assessment.tools,
             "controls": assessment.controls,
-            "tags": assessment.tags
+            "tags": assessment.tags,
+            "datasources": assessment.datasources,
+            "rules": assessment.rules
         }
     )
 
@@ -58,8 +60,8 @@ def testcasesave(id):
     if not testcase.visible and isBlue:
         return ("", 403)
 
-    directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity"]
-    listFields = ["sources", "targets", "tools", "controls", "tags"]
+    directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency", "detectionsource", "preventionsource"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity", "detectionsource", "preventionsource"]
+    listFields = ["sources", "targets", "tools", "controls", "tags", "datasources", "rules"]
     boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]
     timeFields = ["starttime", "endtime"]
     fileFields = ["redfiles", "bluefiles"] if not isBlue else ["bluefiles"]

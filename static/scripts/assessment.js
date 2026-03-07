@@ -222,6 +222,58 @@ function bgFormatter(value) {
 	return {css: css}
 }
 
+// Multi-field management (datasources, rules) from the assessment toolbar
+
+// Add a new row to a multi-modal table
+$('.multiNew').click(function(event) {
+	type = event.target.id.replace("NewButton", "")
+	newRow = { id: `tmp-${Date.now()}`, name: "", description: "", delete: "" }
+	$(`#${type}Table`).bootstrapTable("append", [newRow])
+})
+
+// Save changes to datasources or rules
+$('.assessmentMultiButton').click(function(event) {
+	type = event.target.id.replace("manage", "").replace("Button", "").toLowerCase()
+	$.ajax({
+		url: `${window.location.href}/multi/${type}`,
+		type: 'POST',
+		data: JSON.stringify({ data: $(`#${type}Table`).bootstrapTable("getData") }),
+		dataType: 'json',
+		contentType: "application/json; charset=utf-8",
+		success: function(result) {
+			result.map(row => row.delete = "")
+			$(`#${type}Table`).bootstrapTable("load", result)
+			$(event.target).closest(".modal").modal("hide")
+		}
+	});
+})
+
+// Update table cell when name/description inputs change
+$('.multiTable').on('change', '.multi', function(event) {
+	$(event.delegateTarget).bootstrapTable("updateCellByUniqueId", {
+		id: $(event.target).closest("tr").data("uniqueid"),
+		field: event.target.name,
+		value: event.target.value
+	})
+});
+
+// Delete a row from a multi-modal table
+function multiDeleteRow(event) {
+	tableId = $(event.target).closest("table")[0].id
+	$(`#${tableId}`).bootstrapTable("removeByUniqueId", $(event.target).closest("tr").data("uniqueid"))
+}
+
+// Formatters for multi-modal tables
+function multiNameFormatter(val) {
+	return `<input type="text" name="name" value="${val}" class="multi" placeholder="Name..."/>`
+}
+function multiDescriptionFormatter(val) {
+	return `<input type="text" name="description" value="${val}" class="multi" placeholder="Description..."/>`
+}
+function multiDeleteFormatter() {
+	return `<button type="button" class="btn btn-danger py-0" onclick="multiDeleteRow(event)" title="Delete"><i class="bi-trash-fill">&zwnj;</i></button>`
+}
+
 // Show # selected testcases
 $('#assessmentTable').on( 'check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function (e) {
 	selectedIds = $("#assessmentTable").bootstrapTable('getSelections').map(i => i.id)

@@ -79,6 +79,64 @@
     {{ macros.modalTail(name="testcaseCampaign", cancelLabel="Close", actionLabel="Import") }}
 </form>
 
+<!-- Manage Datasources Modal -->
+{{ macros.modalHead(name="manageDatasources", title="Manage Datasources", xl=True) }}
+<div class="mb-3">
+    <div id="datasourcesToolbar">
+        <button id="datasourcesNewButton" class="btn btn-primary multiNew">New</button>
+    </div>
+    <table data-toggle="table" id="datasourcesTable" class="multiTable" data-unique-id="id" data-id-field="id" data-toolbar="#datasourcesToolbar">
+        <thead>
+            <tr>
+                <th data-field="id" data-visible="false">ID</th>
+                <th data-field="name" data-formatter="multiNameFormatter">Name</th>
+                <th data-field="description" data-formatter="multiDescriptionFormatter">Description</th>
+                <th data-field="delete" data-align="center" data-formatter="multiDeleteFormatter">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ds in multi.datasources %}
+            <tr data-uniqueid="{{ ds.id }}">
+                <td>{{ ds.id }}</td>
+                <td>{{ ds.name }}</td>
+                <td>{{ ds.description }}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{{ macros.modalTail(name="manageDatasources", cancelLabel="Cancel", actionLabel="Save", buttonClass="assessmentMultiButton") }}
+
+<!-- Manage Rules Modal -->
+{{ macros.modalHead(name="manageRules", title="Manage Rules", xl=True) }}
+<div class="mb-3">
+    <div id="rulesToolbar">
+        <button id="rulesNewButton" class="btn btn-primary multiNew">New</button>
+    </div>
+    <table data-toggle="table" id="rulesTable" class="multiTable" data-unique-id="id" data-id-field="id" data-toolbar="#rulesToolbar">
+        <thead>
+            <tr>
+                <th data-field="id" data-visible="false">ID</th>
+                <th data-field="name" data-formatter="multiNameFormatter">Name</th>
+                <th data-field="description" data-formatter="multiDescriptionFormatter">Description</th>
+                <th data-field="delete" data-align="center" data-formatter="multiDeleteFormatter">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rule in multi.rules %}
+            <tr data-uniqueid="{{ rule.id }}">
+                <td>{{ rule.id }}</td>
+                <td>{{ rule.name }}</td>
+                <td>{{ rule.description }}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{{ macros.modalTail(name="manageRules", cancelLabel="Cancel", actionLabel="Save", buttonClass="assessmentMultiButton") }}
+
 <!-- Template Modal -->
 <form action="/assessment/{{ assessment.id }}/export/report" enctype="multipart/form-data" method="POST" class="m-0" id="exportReportForm">
     {{ macros.modalHead(name="exportReport", title="Generate Engagement Report") }}

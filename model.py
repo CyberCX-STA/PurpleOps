@@ -85,6 +85,32 @@ class Tag(db.EmbeddedDocument):
         }
 
 
+class Datasource(db.EmbeddedDocument):
+    id = db.ObjectIdField( required=True, default=ObjectId )
+    name = db.StringField()
+    description = db.StringField(default="")
+
+    def to_json(self, raw=False):
+        return {
+            "id": str(self.id),
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
+        }
+
+
+class DetectionRule(db.EmbeddedDocument):
+    id = db.ObjectIdField( required=True, default=ObjectId )
+    name = db.StringField()
+    description = db.StringField(default="")
+
+    def to_json(self, raw=False):
+        return {
+            "id": str(self.id),
+            "name": esc(self.name, raw),
+            "description": esc(self.description, raw)
+        }
+
+
 class File(db.EmbeddedDocument):
     name = db.StringField()
     path = db.StringField()
@@ -131,6 +157,10 @@ class TestCase(db.Document):
     tools = db.ListField(db.StringField())
     controls = db.ListField(db.StringField())
     tags = db.ListField(db.StringField())
+    datasources = db.ListField(db.StringField())
+    rules = db.ListField(db.StringField())
+    detectionsource = db.StringField(default="")
+    preventionsource = db.StringField(default="")
     state = db.StringField(default="Pending")
     prevented = db.StringField()
     preventedrating = db.StringField()
@@ -154,11 +184,12 @@ class TestCase(db.Document):
         for field in ["assessmentid", "name", "objective", "actions", "rednotes", "bluenotes",
                       "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating",
                       "alerted", "alertseverity", "logged", "detectionrating",
-                      "priority", "priorityurgency", "visible", "outcome"]:
+                      "priority", "priorityurgency", "visible", "outcome",
+                      "detectionsource", "preventionsource"]:
             jsonDict[field] = esc(self[field], raw)
         for field in ["id", "detecttime", "modifytime", "starttime", "endtime"]:
             jsonDict[field] = str(self[field]).split(".")[0]
-        for field in ["tags", "sources", "targets", "tools", "controls"]:
+        for field in ["tags", "sources", "targets", "tools", "controls", "datasources", "rules"]:
             jsonDict[field] = self.to_json_multi(field)
         for field in ["redfiles", "bluefiles"]:
             files = []
@@ -172,10 +203,10 @@ class TestCase(db.Document):
         strs = []
         for i in self[field]:
             # Pipe delimit name and desc/colour for export/display
-            if field != "tags":
-                strs.append([f"{j.name}|{j.description}" for j in assessment[field] if str(j.id) == i][0])
-            else:
+            if field == "tags":
                 strs.append([f"{j.name}|{j.colour}" for j in assessment[field] if str(j.id) == i][0])
+            else:
+                strs.append([f"{j.name}|{j.description}" for j in assessment[field] if str(j.id) == i][0])
         return strs
 
 class Assessment(db.Document):
@@ -187,6 +218,8 @@ class Assessment(db.Document):
     tools = db.EmbeddedDocumentListField(Tool)
     controls = db.EmbeddedDocumentListField(Control)
     tags = db.EmbeddedDocumentListField(Tag)
+    datasources = db.EmbeddedDocumentListField(Datasource)
+    rules = db.EmbeddedDocumentListField(DetectionRule)
     navigatorexport = db.StringField(default="")
 
     def get_progress(self):

@@ -33,6 +33,15 @@
                 <li><a class="dropdown-item" href="/assessment/{{ assessment.id }}/export/entire">Entire Assessment</a></li>
             </ul>
         </div>
+        {% if not current_user.has_role("Spectator") %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Manage...</button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#manageDatasourcesModal"><i class="bi-database me-1"></i>Datasources</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#manageRulesModal"><i class="bi-shield-check me-1"></i>Rules</a></li>
+            </ul>
+        </div>
+        {% endif %}
         <a type="button" class="btn btn-secondary" href="/assessment/{{ assessment.id }}/stats">Statistics</a>
         <a type="button" class="btn btn-secondary" href="/assessment/{{ assessment.id }}/navigator">ATT&amp;CK Navigator</a>
         <span id="selected-count" class="ms-1"></span>

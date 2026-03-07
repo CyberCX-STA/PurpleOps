@@ -49,10 +49,11 @@ def deleteassessment(id):
 @auth_required()
 @user_assigned_assessment
 def loadassessment(id):
+    assessment = Assessment.objects(id=id).first()
     return render_template(
         'assessment.html',
         testcases = TestCase.objects(assessmentid=id).all(),
-        assessment = Assessment.objects(id=id).first(),
+        assessment = assessment,
         templates = TestCaseTemplate.objects(),
         mitres = sorted(
             [[m["mitreid"], m["name"]] for m in Technique.objects()],
@@ -60,5 +61,9 @@ def loadassessment(id):
         ),
         tactics = [tactic["name"] for tactic in Tactic.objects()],
         hexagons = assessmenthexagons(id),
-        reports = [f.split("/")[-1] for f in sorted(glob("custom/reports/*.docx"))]
+        reports = [f.split("/")[-1] for f in sorted(glob("custom/reports/*.docx"))],
+        multi = {
+            "datasources": assessment.datasources,
+            "rules": assessment.rules
+        }
     )
