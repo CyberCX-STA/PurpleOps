@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mongodb:
@@ -13,7 +13,7 @@ services:
     container_name: purpleops
     command: gunicorn --bind 0.0.0.0:5000 purpleops:app
     ports:
-      - "5000:5000"
+      - "8080:5000"
     env_file:
       - ./.env
     depends_on:
