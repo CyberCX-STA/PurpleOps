@@ -23,7 +23,7 @@ Flask-Mail==0.9.1
 flask-mailman==0.3.0
 flask-mongoengine==1.0.0
 Flask-Principal==0.4.0
-Flask-Security==3.0.0
+Flask-Security==5.5.1
 Flask-Security-Too==5.0.2
 Flask-SQLAlchemy==3.0.5
 Flask-WTF==1.1.1
