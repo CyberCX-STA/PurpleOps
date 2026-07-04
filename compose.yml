@@ -10,7 +10,7 @@ services:
     volumes:
       - mongodb_data:/data/db
   purpleops:
-    restart: always
+    restart: unless-stopped
     build: .
     container_name: purpleops
     command: gunicorn --bind 0.0.0.0:5000 purpleops:app
