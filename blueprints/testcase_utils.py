@@ -53,9 +53,9 @@ def testcasedelete(id):
 @user_assigned_assessment
 def deletefile(id, colour, file):
     if colour not in ["red", "blue"]:
-        return 401
+        return "", 401
     if colour == "red" and current_user.has_role("Blue"):
-        return 403
+        return "", 403
     
     testcase = TestCase.objects(id=id).first()
     # Sanity check to prevent death if the image has already been removed

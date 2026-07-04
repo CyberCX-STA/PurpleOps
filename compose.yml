@@ -21,6 +21,14 @@ services:
     volumes:
       - purpleops_data:/usr/src/app/
       - ./custom:/usr/src/app/custom
+  test:
+    build: .
+    entrypoint: ""
+    command: python -m pytest -v
+    profiles:
+      - test
+    volumes:
+      - .:/usr/src/app
 volumes:
   mongodb_data:
   purpleops_data:

@@ -17,7 +17,7 @@ blueprint_assessment_export = Blueprint('blueprint_assessment_export', __name__)
 @user_assigned_assessment
 def exportassessment(id, filetype):
     if filetype not in ["json", 'csv']:
-        return 401
+        return "", 401
     
     assessment = Assessment.objects(id=id).first()
     if current_user.has_role("Blue"):

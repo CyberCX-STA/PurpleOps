@@ -194,7 +194,7 @@ def assessmenthexagons(id):
     # over which hexs are shown so we can center it for prettyness
     if len(shownHexs) == 0:
         height = 0
-    if len(shownHexs) <= 4:
+    elif len(shownHexs) <= 4:
         height = 115
     elif len(shownHexs) <= 7:
         height = 230
@@ -203,7 +203,7 @@ def assessmenthexagons(id):
 
     if len(shownHexs) == 0:
         width = 0
-    if len(shownHexs) == 1:
+    elif len(shownHexs) == 1:
         width = 100
     elif len(shownHexs) == 2:
         width = 240

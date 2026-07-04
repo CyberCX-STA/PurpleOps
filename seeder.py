@@ -194,7 +194,8 @@ def prepareRolesAndAdmin ():
         print("\n\n\n==============================================================")
 
 def populateSecrets ():
-    if Role.objects().count() == 0:
+    existing = dotenv.dotenv_values(dotenvFile)
+    if not existing.get("FLASK_SECRET_KEY"):
         dotenv.set_key(
             dotenvFile,
             "FLASK_SECURITY_PASSWORD_SALT",
@@ -213,11 +214,14 @@ def populateSecrets ():
 
 #####
 
+populateSecrets()
+prepareRolesAndAdmin()
+
 if Tactic.objects.count() == 0:
     print("==============================================================\n\n\n")
     print(f"\t NEW INSTANCE DETECTED, LETS GET THE DATA WE NEED")
     print("\n\n\n==============================================================")
-    
+
     Tactic.objects.delete()
     Technique.objects.delete()
     Sigma.objects.delete()
@@ -243,9 +247,3 @@ if Tactic.objects.count() == 0:
 
     print("Parsing Custom KBs")
     parseCustomKBs()
-
-    print("Populating (randomising) secrets")
-    populateSecrets()
-
-    print("Preparing roles and initial admin")
-    prepareRolesAndAdmin()
