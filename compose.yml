@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongodb:
-    restart: always
+    restart: unless-stopped
     image: mongo:7.0-rc
     container_name: mongodb
     ports:
