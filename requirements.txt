@@ -9,7 +9,7 @@ certifi==2023.7.22
 cffi==1.15.1
 charset-normalizer==3.2.0
 click==8.1.6
-cryptography==46.0.5
+cryptography==41.0.6
 dnspython==2.4.0
 docxcompose==1.4.0
 docxtpl==0.16.7
@@ -23,7 +23,7 @@ Flask-Mail==0.9.1
 flask-mailman==0.3.0
 flask-mongoengine==1.0.0
 Flask-Principal==0.4.0
-Flask-Security==5.5.1
+Flask-Security==3.0.0
 Flask-Security-Too==5.0.2
 Flask-SQLAlchemy==3.0.5
 Flask-WTF==1.1.1
