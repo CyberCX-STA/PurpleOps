@@ -212,38 +212,41 @@ def populateSecrets ():
             f"{{1: {passlib.totp.generate_secret()}}}"
         )
 
+def seedReferenceData ():
+    if Tactic.objects.count() == 0:
+        print("==============================================================\n\n\n")
+        print(f"\t NEW INSTANCE DETECTED, LETS GET THE DATA WE NEED")
+        print("\n\n\n==============================================================")
+
+        Tactic.objects.delete()
+        Technique.objects.delete()
+        Sigma.objects.delete()
+        TestCaseTemplate.objects.delete()
+        KnowlegeBase.objects.delete()
+        # Role.objects.delete()
+        # User.objects.delete()
+
+        print("Pulling MITRE tactics")
+        parseMitreTactics()
+
+        print("Pulling MITRE techniques")
+        parseMitreTechniques()
+
+        print("Pulling SIGMA detections")
+        parseSigma()
+
+        print("Pulling Atomic Red Team testcases")
+        parseAtomicRedTeam()
+
+        print("Parsing Custom testcases")
+        parseCustomTestcases()
+
+        print("Parsing Custom KBs")
+        parseCustomKBs()
+
 #####
 
-populateSecrets()
-prepareRolesAndAdmin()
-
-if Tactic.objects.count() == 0:
-    print("==============================================================\n\n\n")
-    print(f"\t NEW INSTANCE DETECTED, LETS GET THE DATA WE NEED")
-    print("\n\n\n==============================================================")
-
-    Tactic.objects.delete()
-    Technique.objects.delete()
-    Sigma.objects.delete()
-    TestCaseTemplate.objects.delete()
-    KnowlegeBase.objects.delete()
-    # Role.objects.delete()
-    # User.objects.delete()
-
-    print("Pulling MITRE tactics")
-    parseMitreTactics()
-
-    print("Pulling MITRE techniques")
-    parseMitreTechniques()
-
-    print("Pulling SIGMA detections")
-    parseSigma()
-
-    print("Pulling Atomic Red Team testcases")
-    parseAtomicRedTeam()
-
-    print("Parsing Custom testcases")
-    parseCustomTestcases()
-
-    print("Parsing Custom KBs")
-    parseCustomKBs()
+if __name__ == "__main__":
+    populateSecrets()
+    prepareRolesAndAdmin()
+    seedReferenceData()
