@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install system dependencies
-RUN apt-get update && apt-get install -y netcat-openbsd git
+RUN apt-get update && apt-get install -y netcat git
 
 # install dependencies
 RUN pip install --upgrade pip
