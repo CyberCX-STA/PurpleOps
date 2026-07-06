@@ -194,7 +194,8 @@ def prepareRolesAndAdmin ():
         print("\n\n\n==============================================================")
 
 def populateSecrets ():
-    if Role.objects().count() == 0:
+    existing = dotenv.dotenv_values(dotenvFile)
+    if not existing.get("FLASK_SECRET_KEY"):
         dotenv.set_key(
             dotenvFile,
             "FLASK_SECURITY_PASSWORD_SALT",
@@ -211,41 +212,41 @@ def populateSecrets ():
             f"{{1: {passlib.totp.generate_secret()}}}"
         )
 
+def seedReferenceData ():
+    if Tactic.objects.count() == 0:
+        print("==============================================================\n\n\n")
+        print(f"\t NEW INSTANCE DETECTED, LETS GET THE DATA WE NEED")
+        print("\n\n\n==============================================================")
+
+        Tactic.objects.delete()
+        Technique.objects.delete()
+        Sigma.objects.delete()
+        TestCaseTemplate.objects.delete()
+        KnowlegeBase.objects.delete()
+        # Role.objects.delete()
+        # User.objects.delete()
+
+        print("Pulling MITRE tactics")
+        parseMitreTactics()
+
+        print("Pulling MITRE techniques")
+        parseMitreTechniques()
+
+        print("Pulling SIGMA detections")
+        parseSigma()
+
+        print("Pulling Atomic Red Team testcases")
+        parseAtomicRedTeam()
+
+        print("Parsing Custom testcases")
+        parseCustomTestcases()
+
+        print("Parsing Custom KBs")
+        parseCustomKBs()
+
 #####
 
-if Tactic.objects.count() == 0:
-    print("==============================================================\n\n\n")
-    print(f"\t NEW INSTANCE DETECTED, LETS GET THE DATA WE NEED")
-    print("\n\n\n==============================================================")
-    
-    Tactic.objects.delete()
-    Technique.objects.delete()
-    Sigma.objects.delete()
-    TestCaseTemplate.objects.delete()
-    KnowlegeBase.objects.delete()
-    # Role.objects.delete()
-    # User.objects.delete()
-
-    print("Pulling MITRE tactics")
-    parseMitreTactics()
-
-    print("Pulling MITRE techniques")
-    parseMitreTechniques()
-
-    print("Pulling SIGMA detections")
-    parseSigma()
-
-    print("Pulling Atomic Red Team testcases")
-    parseAtomicRedTeam()
-
-    print("Parsing Custom testcases")
-    parseCustomTestcases()
-
-    print("Parsing Custom KBs")
-    parseCustomKBs()
-
-    print("Populating (randomising) secrets")
+if __name__ == "__main__":
     populateSecrets()
-
-    print("Preparing roles and initial admin")
     prepareRolesAndAdmin()
+    seedReferenceData()
