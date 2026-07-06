@@ -29,7 +29,7 @@
 </div>
 {%- endmacro %}
 
-{% for i in ["Source", "Target", "Tool", "Control", "Tag"] %}
+{% for i in ["Source", "Target", "Tool", "Control", "Tag", "Preventionsource", "Detectionsource"] %}
     {{ macros.modalHead(name="multi" ~ i, title="Manage " ~ i ~ "s", xl=True) }}
         {% if i != "Tag" %}
             {{ multiContent(type=i | lower ~ "s") }}

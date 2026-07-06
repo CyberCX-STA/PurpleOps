@@ -43,7 +43,9 @@ def runtestcasepost(id):
             "targets": assessment.targets,
             "tools": assessment.tools,
             "controls": assessment.controls,
-            "tags": assessment.tags
+            "tags": assessment.tags,
+            "preventionsources": assessment.preventionsources,
+            "detectionsources": assessment.detectionsources
         }
     )
 
@@ -58,10 +60,10 @@ def testcasesave(id):
     if not testcase.visible and isBlue:
         return ("", 403)
 
-    directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity"]
-    listFields = ["sources", "targets", "tools", "controls", "tags"]
+    directFields = ["name", "objective", "actions", "rednotes", "bluenotes", "uuid", "mitreid", "tactic", "state", "prevented", "preventedrating", "alertseverity", "logged", "detectionrating", "priority", "priorityurgency", "expectedalertseverity"] if not isBlue else ["bluenotes", "prevented", "alerted", "alertseverity"]
+    listFields = ["sources", "targets", "tools", "controls", "tags", "preventionsources", "detectionsources"]
     boolFields = ["alerted", "logged", "visible"] if not isBlue else ["alerted", "logged"]
-    timeFields = ["starttime", "endtime"]
+    timeFields = ["starttime", "endtime", "alerttime", "preventtime"]
     fileFields = ["redfiles", "bluefiles"] if not isBlue else ["bluefiles"]
 
     testcase = applyFormData(testcase, request.form, directFields)
@@ -100,7 +102,10 @@ def testcasesave(id):
         testcase.detecttime = datetime.utcnow()
 
     if testcase.prevented in ["Yes", "Partial"]:
-        testcase.outcome = "Prevented"
+        if testcase.alerted: 
+            testcase.outcome = "Prevented and Alerted"
+        else:
+            testcase.outcome = "Prevented"
     elif testcase.alerted:
         testcase.outcome = "Alerted"
     elif testcase.logged:
