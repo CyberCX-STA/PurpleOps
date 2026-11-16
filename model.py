@@ -4,7 +4,9 @@ from flask import escape
 from flask_mongoengine import MongoEngine
 from flask_security import UserMixin, RoleMixin, MongoEngineUserDatastore
 
+
 db = MongoEngine()
+
 
 class Tactic(db.Document):
     mitreid = db.StringField()
@@ -21,7 +23,7 @@ class Technique(db.Document):
 
 # TODO how to generalise? 4x same object
 class Source(db.EmbeddedDocument):
-    id = db.ObjectIdField( required=True, default=ObjectId )
+    id = db.ObjectIdField(required=True, default=ObjectId)
     name = db.StringField()
     description = db.StringField(default="")
 
@@ -34,7 +36,7 @@ class Source(db.EmbeddedDocument):
 
 
 class Target(db.EmbeddedDocument):
-    id = db.ObjectIdField( required=True, default=ObjectId )
+    id = db.ObjectIdField(required=True, default=ObjectId)
     name = db.StringField()
     description = db.StringField(default="")
 
@@ -47,7 +49,7 @@ class Target(db.EmbeddedDocument):
 
 
 class Tool(db.EmbeddedDocument):
-    id = db.ObjectIdField( required=True, default=ObjectId )
+    id = db.ObjectIdField(required=True, default=ObjectId)
     name = db.StringField()
     description = db.StringField(default="")
 
@@ -60,7 +62,7 @@ class Tool(db.EmbeddedDocument):
 
 
 class Control(db.EmbeddedDocument):
-    id = db.ObjectIdField( required=True, default=ObjectId )
+    id = db.ObjectIdField(required=True, default=ObjectId)
     name = db.StringField()
     description = db.StringField(default="")
 
@@ -73,7 +75,7 @@ class Control(db.EmbeddedDocument):
 
 
 class Tag(db.EmbeddedDocument):
-    id = db.ObjectIdField( required=True, default=ObjectId )
+    id = db.ObjectIdField(required=True, default=ObjectId)
     name = db.StringField()
     colour = db.StringField(default="#ff0000")
 
@@ -81,7 +83,7 @@ class Tag(db.EmbeddedDocument):
         return {
             "id": str(self.id),
             "name": esc(self.name, raw),
-            "colour": esc(self.colour, raw) # AU spelling is non-negotiable xx
+            "colour": esc(self.colour, raw)  # AU spelling is non-negotiable xx
         }
 
 
@@ -89,6 +91,7 @@ class File(db.EmbeddedDocument):
     name = db.StringField()
     path = db.StringField()
     caption = db.StringField(default="")
+    order = db.IntField(default=0)
 
 
 class KnowlegeBase(db.Document):
@@ -166,7 +169,7 @@ class TestCase(db.Document):
                 files.append(f"{file.path}|{file.caption}")
             jsonDict[field] = files
         return jsonDict
-    
+
     def to_json_multi(self, field):
         assessment = Assessment.objects(id=self.assessmentid).first()
         strs = []
@@ -177,6 +180,7 @@ class TestCase(db.Document):
             else:
                 strs.append([f"{j.name}|{j.colour}" for j in assessment[field] if str(j.id) == i][0])
         return strs
+
 
 class Assessment(db.Document):
     name = db.StringField()
@@ -197,7 +201,7 @@ class Assessment(db.Document):
         outcomes = []
         for outcome in ["Prevented", "Alerted", "Logged", "Missed"]:
             outcomes.append(str(round(
-                TestCase.objects(assessmentid=str(self.id), outcome=outcome).count() / 
+                TestCase.objects(assessmentid=str(self.id), outcome=outcome).count() /
                 testcases * 100
             , 2)))
         return "|".join(outcomes)
@@ -210,7 +214,7 @@ class Assessment(db.Document):
             "progress": self.get_progress(),
             "created": str(self.created).split(".")[0]
         }
-                    
+
     def multi_to_json(self, field, raw=False):
         return [item.to_json(raw=raw) for item in self[field]]
 
@@ -244,7 +248,7 @@ class User(db.Document, UserMixin):
             return [a.id for a in Assessment.objects()]
         else:
             return [a.id for a in self.assessments]
-        
+
     def to_json(self, raw=False):
         return {
             "id": str(self.id),
@@ -258,6 +262,7 @@ class User(db.Document, UserMixin):
 
 
 user_datastore = MongoEngineUserDatastore(db, User, Role)
+
 
 def esc(s, raw):
     if raw:
