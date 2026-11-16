@@ -16,7 +16,6 @@ $('.multiButton').click(function(event) {
 	$.ajax({
 		url: `${$("#assessment-crumb-button").attr("href")}/multi/${type}`,
 		type: 'POST',
-		
 		data: JSON.stringify({
 			data: $(`#${type}Table`).bootstrapTable("getData")
 		}),
@@ -31,7 +30,7 @@ $('.multiButton').click(function(event) {
 			// Selectpicker plugin doesn't support populating a dropdown with
 			// values and names seperately so we need to populate the HTML
 			// manually and force it to refresh
-			selectedIDs = $(`#${type}`).val()
+			selectedIDs = $(`#${type}`).val() || []
 			$(".dynopt-" + type).remove();
 			result.forEach(function(i) {
 				selected = selectedIDs.includes(i.id) ? "selected" : ""
@@ -46,7 +45,7 @@ $('.multiButton').click(function(event) {
 // If "manage" is selected in a multi dropdown, remove the selection and pop manage modal
 $('.selectpicker').change(function(event) {
 	type = event.target.id
-	if ($(`#${type}`).val().includes("Manage")) {
+	if (($(`#${type}`).val() || []).includes("Manage")) {
 		$(event.target).selectpicker('val', $(`#${type}`).val().filter(item => item !== "Manage"))
 		$(event.target).selectpicker('toggle');
 		$(`#multi${type[0].toUpperCase() + type.slice(1, -1)}Modal`).modal('show')
@@ -65,10 +64,7 @@ $('.multiTable').on('change', '.multi', function(event) {
 // When a source/target etc. is deleted, nuke the row from the table
 function deleteMultiRow(event) {
 	tableId = $(event.target).closest("table")[0].id
-	$(`#${tableId}`).bootstrapTable(
-		"removeByUniqueId",
-		$(event.target).closest("tr").data("uniqueid")
-	)
+	$(`#${tableId}`).bootstrapTable("removeByUniqueId", $(event.target).closest("tr").data("uniqueid"))
 }
 
 // Multi modal formatters
@@ -161,15 +157,62 @@ $('input[name="logged"]').on('change', function() {
 	}
 }).trigger('change')
 
+// Add accessible move controls to existing evidence and keep persisted order values in sync.
+function syncEvidenceOrder(colour) {
+	const list = $(`#evidence-${colour}`)
+	list.children(".evidence-item").each(function(index, element) {
+		const item = $(element)
+		const hidden = item.find(".evidence-order-input")
+		hidden.attr("name", `${colour}files_order`).val(item.attr("data-filename"))
+	})
+}
+
+function initializeEvidenceOrder() {
+	["red", "blue"].forEach(colour => {
+		const list = $(`#evidence-${colour}`)
+		list.children("li").not(":has(input[type=file])").each(function() {
+			const item = $(this)
+			if (item.hasClass("evidence-item")) return
+			const download = item.find('a[href*="?download=true"]').first()
+			if (!download.length) return
+			const filename = decodeURIComponent(download.attr("href").split("/evidence/").pop().split("?")[0])
+			item.addClass(`evidence-item evidence-${colour}`).attr("data-filename", filename)
+			const controls = $(`<div class="btn-group btn-group-sm me-2" role="group">
+				<button type="button" class="btn btn-outline-secondary evidence-move-up" title="Move earlier" aria-label="Move evidence earlier"><i class="bi-arrow-up">&zwnj;</i></button>
+				<button type="button" class="btn btn-outline-secondary evidence-move-down" title="Move later" aria-label="Move evidence later"><i class="bi-arrow-down">&zwnj;</i></button>
+			</div>`)
+			item.prepend(controls)
+			item.append(`<input type="hidden" class="evidence-order-input" name="${colour}files_order" value="${filename}">`)
+		})
+		syncEvidenceOrder(colour)
+	})
+}
+
+$(document).on("click", ".evidence-move-up", function(event) {
+	const item = $(event.currentTarget).closest(".evidence-item")
+	const previous = item.prevAll(".evidence-item").first()
+	if (previous.length) previous.before(item)
+	syncEvidenceOrder(item.hasClass("evidence-red") ? "red" : "blue")
+})
+
+$(document).on("click", ".evidence-move-down", function(event) {
+	const item = $(event.currentTarget).closest(".evidence-item")
+	const next = item.nextAll(".evidence-item").first()
+	if (next.length) next.after(item)
+	syncEvidenceOrder(item.hasClass("evidence-red") ? "red" : "blue")
+})
+
 // AJAX submit and pop toast on save success
 $("#ttpform").submit(function(e){
 	e.preventDefault();
+	["red", "blue"].forEach(syncEvidenceOrder)
+	const form = new FormData(e.target)
 	fetch(e.target.action, {
 		method: 'POST',
-		body: new FormData(e.target)
+		body: form
 	}).then(response => {
 		if (response.status == 200) {
-			displayNewEvidence(new FormData(e.target))
+			displayNewEvidence(form)
 			new bootstrap.Toast(document.querySelector('#toast')).show();
 		} else {
 			alert("Testcase save error - contact admin to review log")
@@ -178,9 +221,9 @@ $("#ttpform").submit(function(e){
 });
 
 // Convert UTC DB time to local time
-$( document ).ready(function() {
+$(document).ready(function() {
 	offset = new Date().getTimezoneOffset()
-    $("#timezone").val(offset)
+	$("#timezone").val(offset)
 
 	if ($("#time-start").val()) {
 		startTime = new Date($("#time-start").val());
@@ -193,6 +236,7 @@ $( document ).ready(function() {
 		endTime.setMinutes(endTime.getMinutes() - offset * 2);
 		$("#time-end").val(endTime.toISOString().slice(0,16))
 	}
+	initializeEvidenceOrder()
 });
 
 // Alter timestamps, button labels and state when hitting run button
@@ -201,77 +245,62 @@ $("#run-button").click(function(){
 	clickTime.setMinutes(clickTime.getMinutes() - clickTime.getTimezoneOffset());
 	clickTime = clickTime.toISOString().slice(0, 16)
 
-	if ($("#run-button").text() == "Start" || $("#run-button").text() == "Restart") {
+	if (["Start", "Restart"].includes($("#run-button").text())) {
 		$("#time-start").val(clickTime)
 		$("#time-end").val("")
-		$("#run-button").text("Stop")
-		$("#run-button").removeClass("btn-outline-success")
-		$("#run-button").addClass("btn-outline-danger")
-		$("#state").val("Running")
-		$("#state").addClass("bg-warning")
-		$("#state").removeClass("text-white")
-		$("#state").addClass("text-dark")
+		$("#run-button").text("Stop").removeClass("btn-outline-success btn-outline-warning").addClass("btn-outline-danger")
+		$("#state").val("Running").addClass("bg-warning text-dark").removeClass("bg-primary text-white")
 	} else if ($("#run-button").text() == "Stop") {
 		$("#time-end").val(clickTime)
-		$("#run-button").text("Restart")
-		$("#run-button").removeClass("btn-outline-danger")
-		$("#run-button").addClass("btn-outline-warning")
-		$("#state").val("Complete")
-		$("#state").removeClass("bg-warning")
-		$("#state").addClass("bg-primary")
-		$("#state").removeClass("text-dark")
-		$("#state").addClass("text-white")
+		$("#run-button").text("Restart").removeClass("btn-outline-danger").addClass("btn-outline-warning")
+		$("#state").val("Complete").removeClass("bg-warning text-dark").addClass("bg-primary text-white")
 	}
 });
 
-// Delete evidence AJAX handler
+// Delete evidence by requesting its URL and then remove its list item.
 $(document).on("click", ".evidence-delete", function(event) {
-	target = event.target.tagName == "I" ? event.target.parentNode : event.target
-	colour = $(target).attr("class").includes("evidence-red") ? "red" : "blue"
-	url = $(target).next("a").attr("href").split("?")[0]
-	url = url.replace("/evidence/", `/evidence/${colour}/`)
+	const button = $(event.currentTarget)
+	const item = button.closest(".evidence-item")
+	const colour = item.hasClass("evidence-red") ? "red" : "blue"
+	const evidenceUrl = item.find('a[href*="/evidence/"]').first().attr("href").split("?")[0]
+	const filename = item.attr("data-filename")
+	const deleteUrl = evidenceUrl.replace("/evidence/", `/evidence/${colour}/`)
 
 	$.ajax({
-		url: url,
+		url: deleteUrl,
 		type: 'DELETE',
-		success: function(result) {
-			$(target).parent().remove()
+		success: function() {
+			item.remove()
+			syncEvidenceOrder(colour)
 		}
 	});
 });
 
-// AJAX inject new evidence HTML on testcase save
+// Add uploaded evidence to the page after the save succeeds.
 function displayNewEvidence(form) {
 	["red", "blue"].forEach(colour => {
 		form.getAll(`${colour}files`).forEach(file => {
-			if (file.name == "") {
-				return
+			if (!file.name) return
+			const filename = file.name.split(/[\\/]/).pop()
+			const safeFilename = santiseFilename(filename)
+			const testcaseId = window.location.pathname.split("/").pop()
+			const item = $(`<li class="list-group-item evidence-item evidence-${colour}" data-filename="${filename}">
+				<div class="btn-group btn-group-sm me-2" role="group">
+					<button type="button" class="btn btn-outline-secondary evidence-move-up" title="Move earlier" aria-label="Move evidence earlier"><i class="bi-arrow-up">&zwnj;</i></button>
+					<button type="button" class="btn btn-outline-secondary evidence-move-down" title="Move later" aria-label="Move evidence later"><i class="bi-arrow-down">&zwnj;</i></button>
+				</div>
+				<button type="button" class="btn btn-outline-danger btn-sm me-2 evidence-delete" title="Delete"><i class="bi-trash small">&zwnj;</i></button>
+				<a href="/testcase/${testcaseId}/evidence/${encodeURIComponent(filename)}?download=true" class="btn btn-outline-primary btn-sm me-2"><i class="bi-download small">&zwnj;</i></a>
+				<span class="name small">${$('<span>').text(filename).html()}</span>
+				<input type="hidden" class="evidence-order-input" name="${colour}files_order" value="${$('<span>').text(filename).html()}">
+			</li>`)
+			if (/\.(png|jpe?g)$/i.test(filename)) {
+				item.find(".name").replaceWith(`<a href="/testcase/${testcaseId}/evidence/${encodeURIComponent(filename)}" target="_blank"><img class="img-fluid img-thumbnail" style="max-width: 80%" src="/testcase/${testcaseId}/evidence/${encodeURIComponent(filename)}"/></a><input style="margin-left: 6em; width:80%;" class="form-control form-control-sm" type="text" placeholder="Caption..." value="" id="${colour.toUpperCase()}${safeFilename}" name="${colour.toUpperCase()}${safeFilename}"/>`)
 			}
-			const cleanedFilename = santiseFilename(file.name);
-			testcaseId = window.location.pathname.split("/").slice(-1)[0]
-			html = `
-				<li class="list-group-item">
-					<button type="button" class="btn btn-outline-danger btn-sm me-2 evidence-delete evidence-${colour}">
-						<i class="bi-trash small">&zwnj;</i>
-					</button>
-					<a href="/testcase/${testcaseId}/evidence/${file.name}?download=true" class="btn btn-outline-primary btn-sm me-2">
-						<i class="bi-download small">&zwnj;</i>
-					</a>`
-			if (file.name.toLowerCase().endsWith(".png") || 
-				file.name.toLowerCase().endsWith(".jpg") ||
-				file.name.toLowerCase().endsWith(".jpeg")) {
-					html += `
-						<a href="/testcase/${testcaseId}/evidence/${file.name}" target="_blank">
-							<img class="img-fluid img-thumbnail" style="max-width: 80%" src="/testcase/${testcaseId}/evidence/${file.name}"/>
-						</a>
-						<input style="margin-left: 6em; width:80%;" class="form-control form-control-sm" type="text" placeholder="Caption..." value="" id="${colour.toUpperCase()}${cleanedFilename}" name="${colour.toUpperCase()}${cleanedFilename}"/>
-					`
-				} else {
-					html += `<span class="name small">${ file.name }</span>`
-				}
-			$(`#evidence-${colour}`).append(html)
+			$(`#evidence-${colour}`).append(item)
 			$(`#${colour}files`).val("")
-		}) 
+		})
+		syncEvidenceOrder(colour)
 	})
 }
 

@@ -8,6 +8,33 @@ from flask_security import auth_required, roles_accepted, current_user
 
 blueprint_testcase = Blueprint('blueprint_testcase', __name__)
 
+
+def sort_files_by_order(files, requested_order):
+    """Order evidence using the submitted filename sequence, retaining omitted files."""
+    if not requested_order:
+        ordered = list(files)
+    else:
+        requested_order = [secure_filename(name) for name in requested_order if name]
+        file_map = {secure_filename(file["name"]): file for file in files}
+        ordered = []
+        seen = set()
+
+        for name in requested_order:
+            if name in file_map and name not in seen:
+                ordered.append(file_map[name])
+                seen.add(name)
+
+        for file in files:
+            name = secure_filename(file["name"])
+            if name not in seen:
+                ordered.append(file)
+                seen.add(name)
+
+    for index, file in enumerate(ordered):
+        file["order"] = index
+    return ordered
+
+
 @blueprint_testcase.route('/testcase/<id>/single', methods = ['POST'])
 @auth_required()
 @roles_accepted('Admin', 'Red')
@@ -76,20 +103,23 @@ def testcasesave(id):
         files = []
         for file in testcase[field]:
             if file.name.lower().split(".")[-1] in ["png", "jpg", "jpeg"]:
-                caption = request.form[field.replace("files", "").upper() + file.name]
+                caption = request.form.get(field.replace("files", "").upper() + file.name, file.caption)
             else:
-                caption = ""
+                caption = file.caption
             files.append({
                 "name": secure_filename(file.name),
                 "path": file.path,
-                "caption": caption
+                "caption": caption,
+                "order": getattr(file, "order", len(files))
             })
-        for file in request.files.getlist(field):
-            if request.files.getlist(field)[0].filename:
-                filename = secure_filename(file.filename)
+        for uploaded_file in request.files.getlist(field):
+            if uploaded_file.filename:
+                filename = secure_filename(uploaded_file.filename)
                 path = f"files/{testcase.assessmentid}/{str(testcase.id)}/{filename}"
-                file.save(path)
-                files.append({"name": filename, "path": path, "caption": ""})
+                uploaded_file.save(path)
+                files.append({"name": filename, "path": path, "caption": "", "order": len(files)})
+
+        files = sort_files_by_order(files, request.form.getlist(f"{field}_order"))
         if field == "redfiles":
             testcase.update(set__redfiles=files)
         else:
